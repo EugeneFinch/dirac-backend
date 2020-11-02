@@ -1,0 +1,13 @@
+{
+  "host": "localhost",
+  "port": 3030,
+  "public": "../public/",
+  "paginate": {
+    "default": 10,
+    "max": 50
+  },
+  "mysql": "mysql://root:@localhost:3306/dirac_backend",
+  "AWS_ACCESS_KEY_ID":"AKIAXHVYGZ73BY5DPPPW",
+  "AWS_SECRET_ACCESS_KEY":"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"
+
+}
