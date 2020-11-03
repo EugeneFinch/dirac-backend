@@ -5,7 +5,7 @@ const multer = require('multer');
 const multipartMiddleware = multer();
 const blobService = require('feathers-blob');
 const fs = require('fs-blob-store');
-// const blobStorage = fs('./uploads');
+const blobStorage = fs('./uploads');
 const S3BlobStore = require('s3-blob-store');
 const AWS = require('aws-sdk');
 
@@ -26,7 +26,7 @@ module.exports = function (app) {
         req.feathers.file = req.file;
         next();
     },
-    blobService({returnUri:false,Model: blobStore})
+    blobService({returnUri:false,Model: blobStorage})
   );
   // Get our initialized service so that we can register hooks
   const service = app.service('upload');
