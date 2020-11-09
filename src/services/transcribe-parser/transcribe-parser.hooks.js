@@ -1,5 +1,5 @@
 
-const startTranscribe = require('../../hooks/recordings/start-transcribe');
+
 module.exports = {
   before: {
     all: [],
@@ -15,7 +15,7 @@ module.exports = {
     all: [],
     find: [],
     get: [],
-    create: [startTranscribe],
+    create: [],
     update: [],
     patch: [],
     remove: []

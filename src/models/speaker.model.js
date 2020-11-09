@@ -5,24 +5,18 @@ const DataTypes = Sequelize.DataTypes;
 
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
-  const transcribe = sequelizeClient.define('transcribe', {
-    text: {
-      type: DataTypes.STRING,
-      allowNull: false
-    }
-  }, {
-    hooks: {
-      beforeCount(options) {
-        options.raw = true;
-      }
-    }
+  const speaker = sequelizeClient.define('speaker', {
+    id: { type: DataTypes.INTEGER, autoIncrement: true,primaryKey:true },
+    name: { type: DataTypes.STRING },
+  },{
+    timestamps: false
   });
 
   // eslint-disable-next-line no-unused-vars
-  transcribe.associate = function (models) {
+  speaker.associate = function (models) {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
   };
 
-  return transcribe;
+  return speaker;
 };

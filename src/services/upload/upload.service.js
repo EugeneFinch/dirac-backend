@@ -23,10 +23,10 @@ module.exports = function (app) {
   app.use('/upload',
     multipartMiddleware.single('file'),
     function(req,res,next){
-        req.feathers.file = req.file;
-        next();
+      req.feathers.file = req.file;
+      next();
     },
-    blobService({returnUri:false,Model: blobStorage})
+    blobService({returnUri:false,Model: blobStore})
   );
   // Get our initialized service so that we can register hooks
   const service = app.service('upload');

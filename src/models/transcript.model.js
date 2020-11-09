@@ -5,25 +5,13 @@ const DataTypes = Sequelize.DataTypes;
 
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
-  const recording = sequelizeClient.define('recording', {
+  const transcribe = sequelizeClient.define('transcript', {
     id: { type: DataTypes.INTEGER, autoIncrement: true,primaryKey:true },
-    filename: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    url: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    status: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
+    speaker_id: { type: DataTypes.INTEGER },
+    recording_id: { type: DataTypes.INTEGER },
+    content: { type: DataTypes.INTEGER },
+    start_time: { type: DataTypes.STRING },
     created_at: {
-      type: DataTypes.DATE,
-      defaultValue: Sequelize.NOW
-    },
-    updated_at: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.NOW
     }
@@ -31,5 +19,11 @@ module.exports = function (app) {
     timestamps: false
   });
 
-  return recording;
+  // eslint-disable-next-line no-unused-vars
+  transcribe.associate = function (models) {
+    // Define associations here
+    // See http://docs.sequelizejs.com/en/latest/docs/associations/
+  };
+
+  return transcribe;
 };
