@@ -1,5 +1,6 @@
 
 const startTranscribe = require('../../hooks/recordings/start-transcribe');
+const signUrl = require('../../hooks/recordings/sign-url');
 module.exports = {
   before: {
     all: [],
@@ -14,7 +15,7 @@ module.exports = {
   after: {
     all: [],
     find: [],
-    get: [],
+    get: [signUrl],
     create: [startTranscribe],
     update: [],
     patch: [],
