@@ -55,12 +55,12 @@ class Service {
     const s3File =rep.TranscriptionJob.Transcript.RedactedTranscriptFileUri;
     const {lines,speakers} = await transform(s3File);
     
-    const speakerIds = await this.options.app.service('speaker').create(Object.keys(speakers));
+    const speakerIds = await this.options.app.service('speaker').create(speakers);
     
     const insertData = lines.map(l=>{
-      const speakerIdx = speakers[l.speaker];
+      const speakerIdx = speakers.findIndex(v=>v===l.speaker);
       return {
-        speaker_id : get(speakerIds ,`${speakerIdx}.id` ),
+        speaker_id : get(speakerIds ,`${speakerIdx}.id`),
         recording_id : id,
         content : l.line,
         start_time : l.time,

@@ -3,12 +3,12 @@ const convert = data => {
 
   const labels  = data.results.speaker_labels.segments;
   const speaker_start_times = {};
-  const speakers = {};
+  const speakers = [];
   labels.forEach((label)=>{
     label.items.forEach( v=>{
       speaker_start_times[v.start_time] = label.speaker_label;
-      if(!speakers[label.speaker_label]){
-        speakers[label.speaker_label] = Object.keys(speakers).length;
+      if(!speakers.includes(label.speaker_label)){
+        speakers.push(label.speaker_label);
       }
     });
   });
