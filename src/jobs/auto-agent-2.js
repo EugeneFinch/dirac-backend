@@ -50,7 +50,7 @@ puppeteer.use(StealthPlugin());
       // FF still does prefix this unstable method
       var stream = audio.captureStream ? audio.captureStream() : audio.mozCaptureStream();
       // create a MediaRecorder from our stream
-      var rec = new MediaRecorder(stream);
+      var rec = new MediaRecorder(stream,{mimeType:'audio/webm'});
       // every time we've got a bit of data, store it
       rec.ondataavailable = e => chunks.push(e.data);
       // once everything is done
@@ -58,9 +58,16 @@ puppeteer.use(StealthPlugin());
         // audio.pause();
         // concatenate our chunks into one file
         console.log('stop');
-        let final = new Blob(chunks);
-        const url = window.URL.createObjectURL(final);
-        console.log(url);
+        final = new Blob(chunks, { type: 'audio/webm'});
+        file = new File([final],'a.weba',{
+          type: 'audio/webm',
+        });
+        var formData = new FormData();
+        formData.append('file', file,'a.weba');
+        var request = new XMLHttpRequest();
+        request.open('POST', 'http://localhost:3030/upload');
+        request.send(formData);
+
       };
       rec.onerror = e => {
         console.log('e --->>',e);
