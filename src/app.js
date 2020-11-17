@@ -8,6 +8,7 @@ const logger = require('./logger');
 const feathers = require('@feathersjs/feathers');
 const configuration = require('@feathersjs/configuration');
 const express = require('@feathersjs/express');
+const socketio = require('@feathersjs/socketio');
 
 
 
@@ -19,6 +20,7 @@ const channels = require('./channels');
 const sequelize = require('./sequelize');
 
 const app = express(feathers());
+app.configure(socketio(require('./socketio')));
 
 // Load app configuration
 app.configure(configuration());

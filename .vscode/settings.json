@@ -2,5 +2,11 @@
   "files.autoSave": "onFocusChange",
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "modifications",
-  "eslint.format.enable": true
+  "eslint.format.enable": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "eslint.validate": [
+    "javascript"
+  ]
 }

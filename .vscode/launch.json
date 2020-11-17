@@ -13,5 +13,14 @@
       ],
       "program": "${workspaceFolder}/src"
     }
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Agent",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/src/jobs/auto-agent"
+    }
   ]
 }
