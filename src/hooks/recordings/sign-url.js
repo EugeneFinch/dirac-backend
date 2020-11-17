@@ -6,7 +6,7 @@ module.exports = function (context) {
     accessKeyId: context.app.get('AWS_ACCESS_KEY_ID'),
     secretAccessKey: context.app.get('AWS_SECRET_ACCESS_KEY'),
   });
-  var params = {Bucket: 'transcripts-dirac', Key: context.result.filename};
+  var params = {Bucket: 'transcripts-dirac', Key: context.result.url};
   var url = s3.getSignedUrl('getObject', params);
   context.result.url = url; 
 };

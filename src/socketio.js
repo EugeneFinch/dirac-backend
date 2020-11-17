@@ -1,3 +1,26 @@
+const fs = require('fs');
+const axios = require('axios');
+var FormData = require('form-data');
+const path = require('path');
+const uploadRecording = (path)=>{
+  const data = new FormData();
+  data.append('file', fs.createReadStream(path));
+  const config = {
+    method: 'post',
+    url: 'http://localhost:3030/upload',
+    data : data,
+    headers:data.getHeaders()
+  };
+  
+  return axios(config)
+    .then(function (response) {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  
+};
 
 module.exports = function(io) {
   io.on('connection', function(socket) {
@@ -6,7 +29,8 @@ module.exports = function(io) {
       const fileName  = data.file;
       if(!fileName) return;
       console.log('start', fileName);
-      const writer = fs.createWriteStream(fileName);
+      const filePath = path.join(__dirname,'../uploads',fileName);
+      const writer = fs.createWriteStream(filePath);
       const dataEvent = `data-${fileName}`;
       const endEvent = `end-${fileName}`;
 
@@ -18,6 +42,7 @@ module.exports = function(io) {
         writer.end();
         socket.removeAllListeners([dataEvent,endEvent]);
         console.log(endEvent);
+        uploadRecording(filePath);
       });
     });
   });

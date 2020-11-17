@@ -60,9 +60,11 @@ puppeteer.use(StealthPlugin());
         rec.onstop = e => {
           console.log('stop');
           socketio.emit(endEvent,{file:fileName});
+          return resolve('stop');
         };
         rec.onerror = e => {
           console.log('e --->>',e);
+          return reject(e);
         };
 
         socketio.emit('start',{file:fileName});

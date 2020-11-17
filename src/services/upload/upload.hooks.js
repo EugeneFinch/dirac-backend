@@ -9,9 +9,9 @@ module.exports = {
     create: [
       function(context) {
         if (!context.data.uri && context.params.file){
-            const file = context.params.file;
-            const uri = dauria.getBase64DataURI(file.buffer, file.mimetype);
-            context.data = {uri: uri,filename:file.originalname};
+          const file = context.params.file;
+          const uri = dauria.getBase64DataURI(file.buffer, file.mimetype);
+          context.data = {uri: uri,filename:file.originalname};
         }
       },
     ],
@@ -29,13 +29,13 @@ module.exports = {
       const filename = context.data.filename;
       await recordingSV.create({
         filename,
-        url : `https://transcripts-dirac.s3-ap-southeast-1.amazonaws.com/${filename}`,
+        url : context.result.id,
         status :'waiting'
       });
       if (context.result.uri ){
-          delete context.result.uri;
+        delete context.result.uri;
       }
-  }],
+    }],
     update: [],
     patch: [],
     remove: []

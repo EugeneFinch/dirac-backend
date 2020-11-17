@@ -10,14 +10,14 @@ module.exports = function (context) {
   var params = {
     TranscriptionJobName: `dirac-dev-${context.result.id}`, //required
     Media: { /* required */
-      MediaFileUri: `s3://transcripts-dirac/${context.data.filename}`
+      MediaFileUri: `s3://transcripts-dirac/${context.data.url}`
     },
     ContentRedaction: {
       RedactionOutput: 'redacted' ,
       RedactionType: 'PII' 
     },
     LanguageCode: 'en-US',
-    MediaFormat: 'mp3',
+    MediaFormat: 'webm',
     Settings: {
       MaxSpeakerLabels:2,
       ShowSpeakerLabels: true ,
