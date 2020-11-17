@@ -70,7 +70,9 @@ puppeteer.use(StealthPlugin());
 
         socketio.emit('start',{file:fileName});
         rec.start();
-        setTimeout(()=>rec.stop(),5000);
+        audio.onended = (event) => {
+          rec.stop();
+        };
       });
 
 
