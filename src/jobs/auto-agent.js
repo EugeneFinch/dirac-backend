@@ -64,6 +64,7 @@ puppeteer.use(StealthPlugin());
         };
         rec.onerror = e => {
           console.log('e --->>',e);
+          socket.disconnect(true);
           return reject(e);
         };
 
@@ -76,8 +77,8 @@ puppeteer.use(StealthPlugin());
       
     });    
   });
-  await page.screenshot({path: 'join.png'});
-
+  console.log('Stop simulator');
+  process.exit(1);
  
 
 })();
