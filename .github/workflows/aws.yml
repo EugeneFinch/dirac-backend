@@ -67,7 +67,7 @@ jobs:
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
-        task-definition: dirac-dev.json
+        task-definition: dirac-dev/1.json
         container-name: custom
         image: ${{ steps.build-image.outputs.image }}
 
