@@ -46,8 +46,8 @@ jobs:
     - name: Login to DockerHub
       uses: docker/login-action@v1
       with:
-        username: thiennhan2310
-        password: thiennhan152322
+        username: thiennhan
+        password: NQ28JQLHgRufc28
 
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
