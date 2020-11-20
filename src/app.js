@@ -27,7 +27,8 @@ app.configure(configuration());
 // Enable security, CORS, compression, favicon and body parsing
 app.use(helmet());
 app.use(cors({
-  origin:['http://localhost:3000',' http://app.diracnlp.com']
+  origin:['http://localhost:3000',' http://app.diracnlp.com/'],
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
 }));
 app.use(compress());
 app.use(express.json());
