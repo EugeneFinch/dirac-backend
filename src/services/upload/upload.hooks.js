@@ -30,7 +30,7 @@ module.exports = {
       await recordingSV.create({
         filename,
         url : context.result.id,
-        status :'waiting'
+        status :'IN_PROGRESS'
       });
       if (context.result.uri ){
         delete context.result.uri;

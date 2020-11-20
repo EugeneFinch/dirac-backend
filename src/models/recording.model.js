@@ -16,7 +16,7 @@ module.exports = function (app) {
       allowNull: false
     },
     status: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM('QUEUED','IN_PROGRESS','FAILED','COMPLETED'),
       allowNull: false
     },
     created_at: {

@@ -7,7 +7,7 @@
     "max": 50
   },
   "mysql": "mysql://admin:v9rSQcrQHcayqX8@dirac-dev.crmcsvd5oslk.ap-southeast-1.rds.amazonaws.com:3306/dev",
-  "AWS_ACCESS_KEY_ID":"AKIAXHVYGZ73MO542LFI",
-  "AWS_SECRET_ACCESS_KEY":"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"
+  "AWS_ACCESS_KEY_ID": "AKIAXHVYGZ73MOMEUP4H",
+  "AWS_SECRET_ACCESS_KEY": "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"
 
 }

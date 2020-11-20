@@ -53,8 +53,13 @@ class Service {
     const job  ={TranscriptionJobName:`dirac-dev-${id}`};
     const rep = await  transcribeservice.getTranscriptionJob(job).promise();
     const s3File =rep.TranscriptionJob.Transcript.RedactedTranscriptFileUri;
+    const status = rep.TranscriptionJob.TranscriptionJobStatus;
+    await this.options.app.service('recording').patch(id,{status});
+    if(status !== 'COMPLETED'){
+      return; 
+    }
+
     const {lines,speakers} = await transform(s3File);
-    
     const speakerIds = await this.options.app.service('speaker').create(speakers);
     
     const insertData = lines.map(l=>{
@@ -67,7 +72,6 @@ class Service {
       };
     });
     await this.options.app.service('transcript').create(insertData);
-
     return {message:'done'};
 
   }
