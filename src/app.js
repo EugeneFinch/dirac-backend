@@ -29,6 +29,7 @@ app.use(helmet());
 app.use(cors({
   origin:['http://localhost:3000',' http://app.diracnlp.com'],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials:true
 }));
 app.use(compress());
 app.use(express.json());
