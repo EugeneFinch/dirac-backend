@@ -17,7 +17,6 @@ module.exports = function (context) {
       RedactionType: 'PII' 
     },
     LanguageCode: 'en-US',
-    MediaFormat: 'webm',
     Settings: {
       MaxSpeakerLabels:2,
       ShowSpeakerLabels: true ,
