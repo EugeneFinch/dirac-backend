@@ -50,6 +50,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASS }}
 
     - name: Build, tag, and push image
+      id: build-image
       env:
         ECR_REGISTRY: thiennhan
         ECR_REPOSITORY: dirac
