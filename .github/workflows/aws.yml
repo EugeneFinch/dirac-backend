@@ -49,16 +49,12 @@ jobs:
         username: thiennhan
         password: NQ28JQLHgRufc28
 
-    - name: Build, tag, and push image to Amazon ECR
-      id: build-image
+    - name: Build, tag, and push image
       env:
         ECR_REGISTRY: thiennhan
         ECR_REPOSITORY: dirac
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        # Build a docker container and
-        # push it to ECR so that it can
-        # be deployed to ECS.
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
@@ -71,10 +67,15 @@ jobs:
         container-name: dirac-prod
         image: ${{ steps.build-image.outputs.image }}
 
-    - name: Deploy Amazon ECS task definition
-      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@master
       with:
-        task-definition: ${{ steps.task-def.outputs.task-definition }}
-        service: dirac-prod
-        cluster: dirac-prod
-        wait-for-service-stability: true
+        host: 13.212.87.240
+        username: ${{ secrets.USERNAME }}
+        password: ec2-user
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          docker pull ${{ steps.build-image.outputs.image }}
+          docker stop dirac-backend && docker rm dirac-backend
+          docker run -d --name=dirac-backend  --cap-add=SYS_ADMIN -p 80:3030  ${{ steps.build-image.outputs.image }}
+
