@@ -6,12 +6,13 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 
 (async() => {
-
+  const roomURL = process.argv[2].split('=')[1];
+  
   const browser = await puppeteer.launch({
     args: [ '--use-fake-ui-for-media-stream' ],
   });
   const page = await browser.newPage();
-  await page.goto('https://meet.google.com/pcd-tpqw-drr?pli=1&authuser=1', {waitUntil: 'load'});
+  await page.goto(roomURL, {waitUntil: 'load'});
   await page.waitForSelector('input',{visible:true,timeout:10000});
 
   // Type our query into the search bar
