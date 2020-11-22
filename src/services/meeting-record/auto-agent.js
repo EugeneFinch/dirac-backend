@@ -59,9 +59,10 @@ puppeteer.use(StealthPlugin());
         };
         // once everything is done
         rec.onstop = e => {
-          console.log('stop');
-          socketio.emit(endEvent,{file:fileName});
-          return resolve('stop');
+          console.log('stop',socketio.connected);
+          socketio.emit(endEvent,{file:fileName},()=>{
+            return resolve('stop');
+          });
         };
         rec.onerror = e => {
           console.log('e --->>',e);
@@ -74,6 +75,7 @@ puppeteer.use(StealthPlugin());
         audio.onended = (event) => {
           rec.stop();
         };
+        // setTimeout(()=>rec.stop(),180000);
       });
 
 

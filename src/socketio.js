@@ -11,6 +11,7 @@ const uploadRecording = (path)=>{
     data : data,
     headers:data.getHeaders()
   };
+  console.log('uploading');
   
   return axios(config)
     .then(function (response) {
@@ -38,12 +39,19 @@ module.exports = function(io) {
         writer.write(data);
         console.log(dataEvent);
       });
-      socket.once(endEvent, function (data) {
+      socket.on(endEvent, function (data) {
+        console.log(endEvent);
         writer.end();
         socket.removeAllListeners([dataEvent,endEvent]);
-        console.log(endEvent);
         uploadRecording(filePath);
       });
     });
   });
+
+
+  io.on('disconnect', function(socket) {
+    console.log('disconnect');
+  });
+  
+
 };
