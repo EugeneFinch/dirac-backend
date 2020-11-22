@@ -16,7 +16,7 @@ puppeteer.use(StealthPlugin());
   await page.waitForSelector('input',{visible:true,timeout:10000});
 
   // Type our query into the search bar
-  await page.type('input','puppeteer');
+  await page.type('input','Dirac Agent');
 
   // Submit form
   await page.keyboard.press('Enter');
