@@ -49,15 +49,15 @@ jobs:
         username: thiennhan
         password: NQ28JQLHgRufc28
 
-    - name: Build, tag, and push image
-      env:
-        ECR_REGISTRY: thiennhan
-        ECR_REPOSITORY: dirac
-        IMAGE_TAG: ${{ github.sha }}
-      run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+    # - name: Build, tag, and push image
+    #   env:
+    #     ECR_REGISTRY: thiennhan
+    #     ECR_REPOSITORY: dirac
+    #     IMAGE_TAG: ${{ github.sha }}
+    #   run: |
+    #     docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+    #     docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    #     echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
     # - name: Fill in the new image ID in the Amazon ECS task definition
     #   id: task-def
@@ -71,11 +71,10 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
         host: 13.212.87.240
-        username: ${{ secrets.USERNAME }}
-        password: ec2-user
+        username: ec2-user
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          docker pull ${{ steps.build-image.outputs.image }}
+          docker pull thiennhan/dirac:dffa9f4aee5b239a468a2bd386369f2986b13c96
           docker stop dirac-backend && docker rm dirac-backend
-          docker run -d --name=dirac-backend  --cap-add=SYS_ADMIN -p 80:3030  ${{ steps.build-image.outputs.image }}
+          docker run -d --name=dirac-backend  --cap-add=SYS_ADMIN -p 80:3030  thiennhan/dirac:dffa9f4aee5b239a468a2bd386369f2986b13c96
 
