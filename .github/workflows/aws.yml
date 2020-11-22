@@ -70,5 +70,3 @@ jobs:
           docker pull ${{ steps.build-image.outputs.image }}
           docker stop dirac-backend && docker rm dirac-backend
           docker run -d --name=dirac-backend  --cap-add=SYS_ADMIN -p 80:3030 ${{ steps.build-image.outputs.image }}
-          docker rmi ${{ steps.build-image.outputs.image }}
-
