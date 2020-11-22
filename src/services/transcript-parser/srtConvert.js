@@ -1,7 +1,6 @@
+const get = require('lodash/get');
 const convert = data => {
-
-
-  const labels  = data.results.speaker_labels.segments;
+  const labels  = get(data,'results.speaker_labels.segments',[]);
   const speaker_start_times = {};
   const speakers = [];
   labels.forEach((label)=>{
@@ -22,6 +21,10 @@ const convert = data => {
   let speaker = null;
   items.forEach(item=>{
     const content = item.alternatives[0].content;
+    if(!content){
+      return;
+    }
+    
     let current_speaker = null;
     if (item['start_time']) {
       current_speaker = speaker_start_times[item.start_time];
@@ -51,12 +54,14 @@ const convert = data => {
   });
 
   // Record the last line since there was no speaker change.
-  lines.push({
-    'speaker' : speaker,
-    'line' : line,
-    'time' : time,
-  });
-
+  if(speaker!=null){
+    lines.push({
+      'speaker' : speaker,
+      'line' : line,
+      'time' : time,
+    });
+  }
+ 
   return {lines,speakers};
 
 };
