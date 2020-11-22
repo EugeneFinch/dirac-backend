@@ -66,7 +66,8 @@ jobs:
         username: ec2-user
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          docker pull thiennhan/dirac:dffa9f4aee5b239a468a2bd386369f2986b13c96
+          docker pull ${{ steps.build-image.outputs.image }}
           docker stop dirac-backend && docker rm dirac-backend
-          docker run -d --name=dirac-backend  --cap-add=SYS_ADMIN -p 80:3030  thiennhan/dirac:dffa9f4aee5b239a468a2bd386369f2986b13c96
+          docker run -d --name=dirac-backend  --cap-add=SYS_ADMIN -p 80:3030 ${{ steps.build-image.outputs.image }}
+          docker rmi ${{ steps.build-image.outputs.image }}
 
