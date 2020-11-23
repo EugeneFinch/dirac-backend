@@ -60,7 +60,7 @@ class Service {
     }
 
     const {lines,speakers} = await transform(s3File);
-    const speakerIds = await this.options.app.service('speaker').create(speakers);
+    const speakerIds = await this.options.app.service('speaker').create(speakers.map(v=>({name:v})));
     
     const insertData = lines.map(l=>{
       const speakerIdx = speakers.findIndex(v=>v===l.speaker);
