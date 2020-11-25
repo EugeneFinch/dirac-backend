@@ -39,11 +39,12 @@ module.exports = function(io) {
         writer.write(data);
         console.log(dataEvent);
       });
-      socket.on(endEvent, function (data) {
+      socket.on(endEvent, function (data,callback) {
         console.log(endEvent);
         writer.end();
         socket.removeAllListeners([dataEvent,endEvent]);
         uploadRecording(filePath);
+        callback({status:'ok'});
       });
     });
   });
