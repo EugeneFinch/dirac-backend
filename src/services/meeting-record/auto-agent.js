@@ -4,7 +4,7 @@ const puppeteer = require('puppeteer-extra');
 // add stealth plugin and use defaults (all evasion techniques)
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
-
+const TEN_SECOND = 10000;
 (async() => {
   // const roomURL = 'https://meet.google.com/pcd-tpqw-drr?pli=1&authuser=1';
   const roomURL = process.argv[2].split('=')[1];
@@ -80,7 +80,7 @@ puppeteer.use(StealthPlugin());
           };
   
           socketio.emit('start',{file:fileName});
-          rec.start();
+          rec.start(TEN_SECOND);
           audio.onended = (event) => {
             rec.stop();
           };
@@ -93,7 +93,7 @@ puppeteer.use(StealthPlugin());
               rec.stop();
             }
   
-          },10000);
+          },TEN_SECOND);
         });
   
   
