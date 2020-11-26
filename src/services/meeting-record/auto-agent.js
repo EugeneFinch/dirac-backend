@@ -4,7 +4,6 @@ const puppeteer = require('puppeteer-extra');
 // add stealth plugin and use defaults (all evasion techniques)
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
-const TEN_SECOND = 10000;
 (async() => {
   // const roomURL = 'https://meet.google.com/pcd-tpqw-drr?pli=1&authuser=1';
   const roomURL = process.argv[2].split('=')[1];
@@ -47,6 +46,7 @@ const TEN_SECOND = 10000;
   
     await page.evaluate(() => {
       return new Promise((resolve,reject)=>{
+        const TEN_SECOND = 10000;
         var socketio = io('http://localhost:3030');
         var d = new Date();
         const fileName = `${d.getMinutes()}-${d.getSeconds()}.weba`;
