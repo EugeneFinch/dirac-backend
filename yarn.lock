@@ -64,17 +64,6 @@
     debug "^4.2.0"
     lodash "^4.17.20"
 
-"@feathersjs/authentication-oauth2@^1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@feathersjs/authentication-oauth2/-/authentication-oauth2-1.3.1.tgz#a9d678d5f4e1999d096995d47f7fe256378652eb"
-  integrity sha512-NiKQZioganfaDCooODfIBGNcviBlm65Ovsy1E2UaKoNdsv4tb9JU222azKIYt/tqUogaGZU6WKUzwTiC51azxg==
-  dependencies:
-    "@feathersjs/commons" "^4.0.0"
-    "@feathersjs/errors" "^3.3.6"
-    "@feathersjs/express" "^1.3.1"
-    debug "^4.0.0"
-    lodash.merge "^4.6.1"
-
 "@feathersjs/authentication-oauth@^4.5.10":
   version "4.5.10"
   resolved "https://registry.yarnpkg.com/@feathersjs/authentication-oauth/-/authentication-oauth-4.5.10.tgz#c6459267dcf2ed2107daf8a92705871d61e4a48b"
@@ -144,7 +133,7 @@
   dependencies:
     debug "^4.2.0"
 
-"@feathersjs/express@^1.2.7", "@feathersjs/express@^1.3.1":
+"@feathersjs/express@^1.2.7":
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/@feathersjs/express/-/express-1.3.1.tgz#fbd775c640f9c4e4341fdb1ca516a7835f11cbdc"
   integrity sha512-7Bj3pWj0/p2G5bpK9+0b4D9SR6LnpDxkWQcrkFQrHuMuiuPMZlnxfVgNogUUj5CaKNAKiRpXe+g/qwQGw60J6A==
@@ -2844,7 +2833,7 @@ lodash.isstring@^4.0.1:
   resolved "https://registry.yarnpkg.com/lodash.isstring/-/lodash.isstring-4.0.1.tgz#d527dfb5456eca7cc9bb95d5daeaf88ba54a5451"
   integrity sha1-1SfftUVuynzJu5XV2ur4i6VKVFE=
 
-lodash.merge@^4.6.0, lodash.merge@^4.6.1:
+lodash.merge@^4.6.0:
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
