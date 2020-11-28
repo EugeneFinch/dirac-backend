@@ -10,15 +10,15 @@ module.exports = function (app) {
   const options = {
     Model,
     paginate,
-    multi:['create']
+    multi: ['create']
   };
 
   // Initialize our service with any options it requires
-  app.use('/transcript', function(req, res, next){
-    req.feathers.token=req.headers.authorization;
+  app.use('/transcript', function (req, res, next) {
+    req.feathers.token = req.headers.authorization;
     next();
   },
-  createService(options));
+    createService(options));
 
   // Get our initialized service so that we can register hooks
   const service = app.service('transcript');

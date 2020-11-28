@@ -7,9 +7,7 @@ class GoogleStrategy extends OAuthStrategy {
   async getEntityData(profile) {
 
     // this will set 'googleId'
-    console.log(profile)
     const baseData = await super.getEntityData(profile);
-    console.log(baseData)
     // this will grab the picture and email address of the Google profile
     return {
       ...baseData,
@@ -28,5 +26,20 @@ module.exports = app => {
   authentication.register('google', new GoogleStrategy());
 
   app.use('/authentication', authentication);
+
+  app.get('/oauth/cookie', (req, res) => {
+    const { access_token } = req.query;
+
+    if (access_token) {
+      res.cookie('access_token', access_token, {
+        httpOnly: false
+        // other cookie options here
+      });
+    }
+
+    res.redirect(app.get('front-end'));
+    // res.redirect('http://localhost:8000');
+  });
+
   app.configure(expressOauth());
 };

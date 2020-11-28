@@ -1,18 +1,10 @@
 const { authenticate } = require('@feathersjs/authentication');
-
+const { configAuthentication } = require('../../utils');
 
 module.exports = {
   before: {
     all: [],
-    find: [
-      context=>{
-        context.params.authentication = {
-          strategy: 'jwt',
-          accessToken:context.params.token
-        };
-      },
-      
-      authenticate('jwt')],
+    find: [configAuthentication, authenticate('jwt')],
     get: [],
     create: [],
     update: [],

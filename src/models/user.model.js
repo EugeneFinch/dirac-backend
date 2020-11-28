@@ -5,7 +5,8 @@ const DataTypes = Sequelize.DataTypes;
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
   const user = sequelizeClient.define('user', {
-    email: { type: DataTypes.STRING, primaryKey: true },
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    email: { type: DataTypes.STRING },
     password: { type: DataTypes.STRING },
 
     type: {
