@@ -1,7 +1,5 @@
-
-const { authenticate } = require('@feathersjs/authentication');
-const startTranscribe = require('../../hooks/recordings/start-transcribe');
-const signUrl = require('../../hooks/recordings/sign-url');
+const { authenticate } = require('@feathersjs/authentication').hooks;
+const { protect } = require('@feathersjs/authentication-local').hooks;
 const { configAuthentication } = require('../../utils');
 
 module.exports = {
@@ -16,10 +14,14 @@ module.exports = {
   },
 
   after: {
-    all: [],
+    all: [
+      // Make sure the password field is never sent to the client
+      // Always must be the last hook
+      protect('password')
+    ],
     find: [],
-    get: [signUrl],
-    create: [startTranscribe],
+    get: [],
+    create: [],
     update: [],
     patch: [],
     remove: []
