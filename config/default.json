@@ -41,9 +41,8 @@
           "openid",
           "https://www.googleapis.com/auth/calendar"
         ],
-        "custom_params": {
-          "access_type": "offline"
-        }
+        "redirect_uri": "https://app.diracnlp.com/oauth/google/callback",
+        "nonce": true
       }
     }
   },
