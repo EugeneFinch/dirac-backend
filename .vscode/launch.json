@@ -12,7 +12,7 @@
         "<node_internals>/**"
       ],
       "program": "${workspaceFolder}/src"
-    }
+    },
     {
       "type": "node",
       "request": "launch",
@@ -20,7 +20,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/src/jobs/auto-agent"
+      "program": "${workspaceFolder}/src/jobs/watch-gmail.js"
     }
   ]
 }

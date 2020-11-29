@@ -12,7 +12,6 @@ const uploadRecording = (path)=>{
     headers:data.getHeaders()
   };
   console.log('uploading');
-  return;
   return axios(config)
     .then(function (response) {
       console.log(JSON.stringify(response.data));
