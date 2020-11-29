@@ -26,11 +26,6 @@ app.configure(socketio(require('./socketio')));
 app.configure(configuration());
 // Enable security, CORS, compression, favicon and body parsing
 app.use(helmet());
-app.use(cors({
-  origin:['http://localhost:3000','http://localhost:8000','http://app.diracnlp.com'],
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  credentials:true
-}));
 app.use(compress());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
