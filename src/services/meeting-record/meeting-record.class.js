@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 const path = require('path');
 const { spawn } = require('child_process');
+const gmail = require('../../gmail');
 
 class Service {
   constructor (options) {
@@ -18,13 +19,20 @@ class Service {
   }
 
   async create (data, params) {
-    if (Array.isArray(data)) {
-      return Promise.all(data.map(current => this.create(current, params)));
+    let message = data.message.data;
+    let buff = Buffer.from(message, 'base64');  
+    message = JSON.parse(buff.toString('utf-8')); 
+    const historyId = message.historyId;
+    const auth = gmail.authorize();
+    const roomURL = await gmail.getRoomURL(auth,historyId);
+    if(!roomURL){
+      console.log(`No room url found ${historyId}`);
+      return { message: `No room url found for history ${historyId}`};
     }
 
-
     const autoAgentPath = path.join(__dirname,'./auto-agent');
-    const ls = spawn('node', [autoAgentPath,`room_url=${data.room_url}`],{
+    console.log('roomURL', roomURL);
+    const ls = spawn('node', [autoAgentPath,`room_url=${roomURL}`],{
       PATH: process.env.PATH
     });
 
