@@ -37,7 +37,7 @@ module.exports = app => {
       });
     }
 
-    res.redirect(app.get('front-end'));
+    res.redirect(`${app.get('front-end')}/user/login/success?access_token=${access_token}`);
     // res.redirect('http://localhost:8000');
   });
 
