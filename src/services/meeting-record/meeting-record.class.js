@@ -19,17 +19,7 @@ class Service {
   }
 
   async create (data, params) {
-    let message = data.message.data;
-    let buff = Buffer.from(message, 'base64');  
-    message = JSON.parse(buff.toString('utf-8')); 
-    const historyId = message.historyId;
-    const auth = gmail.authorize();
-    const roomURL = await gmail.getRoomURL(auth,historyId);
-    if(!roomURL){
-      console.log(`No room url found ${historyId}`);
-      return { message: `No room url found for history ${historyId}`};
-    }
-
+    const roomURL = data.room_url;
     const autoAgentPath = path.join(__dirname,'./auto-agent');
     console.log('roomURL', roomURL);
     const ls = spawn('node', [autoAgentPath,`room_url=${roomURL}`],{

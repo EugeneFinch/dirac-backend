@@ -91,8 +91,10 @@ async function  getRoomURL(auth,startHistoryId) {
       userId:'me',
       labelIds:['INBOX'],
       startHistoryId,
-      historyTypes:'MESSAGE_ADDED'
+      historyTypes:'MESSAGE_ADDED',
+      maxResults:1
     });
+
     if(!history.data.history){
       console.log('NO HISTORY');
       return;

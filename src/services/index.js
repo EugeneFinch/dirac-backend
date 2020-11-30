@@ -5,6 +5,7 @@ const speaker = require('./speaker/speaker.service.js');
 const transcript = require('./transcript/transcript.service.js');
 const meetingRecord = require('./meeting-record/meeting-record.service.js');
 const users = require('./users/users.service.js');
+const mailHistory = require('./mail-history/mail-history.service.js');
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
   app.configure(upload);
@@ -14,4 +15,5 @@ module.exports = function (app) {
   app.configure(transcript);
   app.configure(meetingRecord);
   app.configure(users);
+  app.configure(mailHistory);
 };
