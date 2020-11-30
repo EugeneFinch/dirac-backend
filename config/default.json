@@ -41,7 +41,7 @@
           "openid",
           "https://www.googleapis.com/auth/calendar"
         ],
-        "redirect_uri": "https://app.diracnlp.com/oauth/google/callback",
+        "redirect_uri": "https://api.diracnlp.com/oauth/google/callback",
         "nonce": true
       }
     }
