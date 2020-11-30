@@ -39,8 +39,8 @@
       },
       "redirect": "/oauth/cookie?",
       "google": {
-        "key": "168877722390-koccvrf4569t1m6l9ib3ahf5ctf7p88e.apps.googleusercontent.com",
-        "secret": "d0QmVeOt3PC_MNEU6nzUw9dq",
+        "key": "17235609396-f5icsnaaarj8fh9f71tebn4629igpaja.apps.googleusercontent.com",
+        "secret": "j09APku7Lu4I0HiKVSfR9Zqe",
         "scope": [
           "email",
           "openid",
