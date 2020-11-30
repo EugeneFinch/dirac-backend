@@ -32,6 +32,11 @@
       "expiresIn": "1d"
     },
     "oauth": {
+      "defaults":{ 
+        "host":"api.diracnlp.com", 
+        "protocol":"https", 
+        "transport":"session"
+      },
       "redirect": "/oauth/cookie?",
       "google": {
         "key": "168877722390-koccvrf4569t1m6l9ib3ahf5ctf7p88e.apps.googleusercontent.com",
