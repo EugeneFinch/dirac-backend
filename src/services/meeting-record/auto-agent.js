@@ -5,8 +5,8 @@ const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 (async() => {
-  // const roomURL = 'https://meet.google.com/pcd-tpqw-drr?pli=1&authuser=1';
-  const roomURL = process.argv[2].split('=')[1];
+  const roomURL = 'https://meet.google.com/pcd-tpqw-drr?pli=1&authuser=1';
+  // const roomURL = process.argv[2].split('=')[1];
   const browser = await puppeteer.launch({
     args: [ '--use-fake-ui-for-media-stream' ],
   });
@@ -54,13 +54,24 @@ puppeteer.use(StealthPlugin());
         const endEvent = `end-${fileName}`;
         socketio.on('connect', function() {
           var interval = null;
-          var audio = document.querySelector('audio');
-          var stream = audio.captureStream ? audio.captureStream() : audio.mozCaptureStream();
+          const ctx = new AudioContext();
+          const dest = ctx.createMediaStreamDestination();
+          var audios = document.querySelectorAll('audio');
+          let streams = [];
+          audios.forEach(a=>{streams.push( a.captureStream() );});
+          streams.map(stream => {
+            ctx.createMediaStreamSource(stream).connect(dest);
+          });
+
+          const stream = new MediaStream(dest.stream.getTracks());
+
           var rec = new MediaRecorder(stream,{mimeType:'audio/webm'});
+          rec.start(TEN_SECOND);
+
           rec.ondataavailable = e => {
             socketio.emit(dataEvent,e.data);
           };
-          // once everything is done
+
           rec.onstop = e => {
             console.log('stop');
             socketio.emit(endEvent,{file:fileName},()=>{
@@ -80,16 +91,12 @@ puppeteer.use(StealthPlugin());
           };
   
           socketio.emit('start',{file:fileName});
-          rec.start(TEN_SECOND);
-          audio.onended = (event) => {
-            rec.stop();
-          };
   
           document.querySelector('[data-tooltip="Show everyone"]').click();
           interval = setInterval(()=>{
             const totalPeopleNode = document.querySelectorAll('[aria-label=Participants] [role=listitem]');
             console.log('totalPeopleNode', totalPeopleNode.length);
-            if(totalPeopleNode.length===1){
+            if(totalPeopleNode.length <=1){
               rec.stop();
             }
   
