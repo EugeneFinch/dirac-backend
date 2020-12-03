@@ -19,13 +19,13 @@ const convert = data => {
   let line = '';
   let time = 0;
   let speaker = null;
+  let current_speaker = null;
   items.forEach(item=>{
     const content = item.alternatives[0].content;
     if(!content){
       return;
     }
     
-    let current_speaker = null;
     if (item['start_time']) {
       current_speaker = speaker_start_times[item.start_time];
     }
