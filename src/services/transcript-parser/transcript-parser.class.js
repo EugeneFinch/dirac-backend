@@ -5,15 +5,16 @@ const https = require('https');
 const SrtConvert = require('./srtConvert');
 const get = require('lodash/get');
 const path = require('path');
-const transform =(s3File) => {
+const transform =(s3File,jobName) => {
   return new Promise((resolve, reject) => {
-    const filePath = path.join(process.cwd(),'./uploads/data.json');
+    const filePath = path.join(process.cwd(),`./uploads/${jobName}.json`);
     const file = fs.createWriteStream(filePath);
     https.get(s3File, response => {
       var stream = response.pipe(file);
     
       stream.on('finish', function() {
-        const lines = SrtConvert(require(filePath));
+        const string = fs.readFileSync(filePath);
+        const lines = SrtConvert(JSON.parse(string));
         return resolve(lines);
       });
     });
@@ -54,12 +55,13 @@ class Service {
     const rep = await  transcribeservice.getTranscriptionJob(job).promise();
     const s3File =rep.TranscriptionJob.Transcript.RedactedTranscriptFileUri;
     const status = rep.TranscriptionJob.TranscriptionJobStatus;
+    const jobName = rep.TranscriptionJob.TranscriptionJobName;
     await this.options.app.service('recording').patch(id,{status});
     if(status !== 'COMPLETED'){
       return; 
     }
 
-    const {lines,speakers} = await transform(s3File);
+    const {lines,speakers} = await transform(s3File,jobName);
     const speakerIds = await this.options.app.service('speaker').create(speakers.map(v=>({name:v})));
     
     const insertData = lines.map(l=>{
