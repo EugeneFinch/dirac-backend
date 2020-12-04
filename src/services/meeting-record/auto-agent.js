@@ -5,8 +5,8 @@ const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 (async() => {
-  const roomURL = 'https://meet.google.com/pcd-tpqw-drr?pli=1&authuser=1';
-  // const roomURL = process.argv[2].split('=')[1];
+  // const roomURL = 'https://meet.google.com/pcd-tpqw-drr?pli=1&authuser=1';
+  const roomURL = process.argv[2].split('=')[1];
   const browser = await puppeteer.launch({
     args: [ '--use-fake-ui-for-media-stream' ],
   });
