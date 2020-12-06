@@ -12,10 +12,7 @@ module.exports = function (app) {
   };
 
   // Initialize our service with any options it requires
-  app.use('/users', function (req, res, next) {
-    req.feathers.token = req.headers.authorization;
-    next();
-  }, createService(options));
+  app.use('/users', createService(options));
 
   // Get our initialized service so that we can register hooks
   const service = app.service('users');

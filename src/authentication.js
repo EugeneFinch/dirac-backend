@@ -41,5 +41,15 @@ module.exports = app => {
     // res.redirect('http://localhost:8000');
   });
 
+  app.use('*',(req,res,next)=>{
+    if(req.headers.authorization){
+      req.feathers.authentication = {
+        strategy: 'jwt',
+        accessToken:req.headers.authorization
+      };
+    }
+    next();
+  })
+
   app.configure(expressOauth());
 };
