@@ -20,9 +20,10 @@ class Service {
 
   async create (data, params) {
     const roomURL = data.room_url;
+    const recordingId = data.record_id;
     const autoAgentPath = path.join(__dirname,'./auto-agent');
     console.log('roomURL', roomURL);
-    const ls = spawn('node', [autoAgentPath,`room_url=${roomURL}`],{
+    const ls = spawn('node', [autoAgentPath,`room_url=${roomURL}`,`record_id=${recordingId}`],{
       PATH: process.env.PATH
     });
 

@@ -1,11 +1,10 @@
 // Initializes the `upload` service on path `/upload`
-const createService = require('./upload.class.js');
 const hooks = require('./upload.hooks');
 const multer = require('multer');
 const multipartMiddleware = multer();
 const blobService = require('feathers-blob');
-const fs = require('fs-blob-store');
-const blobStorage = fs('./uploads');
+// const fs = require('fs-blob-store');
+// const blobStorage = fs('./uploads');
 const S3BlobStore = require('s3-blob-store');
 const AWS = require('aws-sdk');
 

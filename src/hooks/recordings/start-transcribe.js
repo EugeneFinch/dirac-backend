@@ -7,6 +7,11 @@ module.exports = function (context) {
     secretAccessKey: context.app.get('AWS_SECRET_ACCESS_KEY'),
     region:'ap-southeast-1'
   });
+  
+  if(context.result==='COMPLETED' || !context.data.url){
+    return;
+  }
+
   var params = {
     TranscriptionJobName: `dirac-dev-${context.result.id}`, //required
     Media: { /* required */

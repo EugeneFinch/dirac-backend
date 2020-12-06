@@ -1,5 +1,7 @@
 
 const dauria = require('dauria');
+const { authenticate } = require('@feathersjs/authentication');
+const get = require('lodash/get');
 
 module.exports = {
   before: {
@@ -7,6 +9,7 @@ module.exports = {
     find: [],
     get: [],
     create: [
+      // authenticate('jwt'),
       function(context) {
         if (!context.data.uri && context.params.file){
           const file = context.params.file;
@@ -27,11 +30,23 @@ module.exports = {
     create: [ async function(context) {
       const recordingSV = context.app.service('recording');
       const filename = context.data.filename;
-      await recordingSV.create({
-        filename,
-        url : context.result.id,
-        status :'IN_PROGRESS'
-      });
+      const userId = get(context,'params.user.id',0);
+      const recordingId = get(context,'params.query.recording_id',null);
+      if(recordingId === null){
+        await recordingSV.create({
+          filename,
+          url : context.result.id,
+          status :'IN_PROGRESS',
+          user_id: userId
+        });
+      }else{
+        await recordingSV.patch(recordingId,{
+          filename,
+          url : context.result.id,
+          status :'IN_PROGRESS',
+        });
+      }
+      
       if (context.result.uri ){
         delete context.result.uri;
       }

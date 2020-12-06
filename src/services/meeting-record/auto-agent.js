@@ -7,6 +7,7 @@ puppeteer.use(StealthPlugin());
 (async() => {
   // const roomURL = 'https://meet.google.com/pcd-tpqw-drr?pli=1&authuser=1';
   const roomURL = process.argv[2].split('=')[1];
+  const recordingId = process.argv[3].split('=')[1];
   const browser = await puppeteer.launch({
     args: [ '--use-fake-ui-for-media-stream' ],
   });
@@ -44,7 +45,7 @@ puppeteer.use(StealthPlugin());
     });
     await page.evaluate(jquery_ev_fn);
   
-    await page.evaluate(() => {
+    await page.evaluate(({recordingId}) => {
       return new Promise((resolve,reject)=>{
         const TEN_SECOND = 10000;
         var socketio = io('http://localhost:3030');
@@ -90,7 +91,7 @@ puppeteer.use(StealthPlugin());
             return reject(e);
           };
   
-          socketio.emit('start',{file:fileName});
+          socketio.emit('start',{file:fileName,recordingId});
   
           document.querySelector('[data-tooltip="Show everyone"]').click();
           interval = setInterval(()=>{
@@ -106,7 +107,7 @@ puppeteer.use(StealthPlugin());
   
         
       });    
-    });
+    },{recordingId});
     console.log('Stop simulator');
     await page.click('[data-tooltip="Leave call"]').catch(err=>console.log('notfound [data-tooltip="Leave call"] button'));
     await browser.close();

@@ -17,6 +17,7 @@ const CREDENTIAL_PATH = path.join(__dirname,'../config/dirac-296815-b32c0222cbfe
  * @param {Object} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
+watchInbox(authorize());
 function authorize() {
   const content = fs.readFileSync(CREDENTIAL_PATH);
   const credentials = JSON.parse(content);
@@ -84,8 +85,13 @@ function watchInbox(auth) {
    
   });
 }
-async function  getRoomURL(auth,startHistoryId) {
+async function getInviteInfo (auth,startHistoryId) {
   const gmail = google.gmail({version: 'v1', auth});
+  const result = {
+    host:'',
+    roomURL:''
+  };
+
   try{
     const history = await gmail.users.history.list({
       userId:'me',
@@ -99,19 +105,24 @@ async function  getRoomURL(auth,startHistoryId) {
       console.log('NO HISTORY');
       return;
     }
-    console.log('res.data.history', history.data.history);
+
     const messageId = history.data.history[0].messages[0].id;
     const message = await gmail.users.messages.get({
       userId:'me',
       id:messageId
     });
   
-    const exp = /meet.google.com\/(\w|-)+/g;
-    const roomURL = exp.exec(message.data.snippet);
-    if(!roomURL){
-      return null;
+    const roomRegex = /meet.google.com\/(\w|-)+/g;
+    const roomURL = roomRegex.exec(message.data.snippet);
+    const hostRegex = /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/g;
+    const host = hostRegex.exec(message.data.snippet);
+    if(!roomURL || !host){
+      return result;
     }
-    return `https://${roomURL[0]}`;
+
+    result.roomURL = `https://${roomURL[0]}`;
+    result.host = host[0];
+    return result;
   }catch(err) {
     console.log('err', err);
     throw err;
@@ -121,7 +132,5 @@ async function  getRoomURL(auth,startHistoryId) {
 
 module.exports = {
   authorize,
-  getRoomURL,
-  watchInbox,
-
+  getInviteInfo,
 };

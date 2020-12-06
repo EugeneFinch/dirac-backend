@@ -2,11 +2,12 @@
 const { authenticate } = require('@feathersjs/authentication');
 const startTranscribe = require('../../hooks/recordings/start-transcribe');
 const signUrl = require('../../hooks/recordings/sign-url');
+const queryByUserId = require('../../hooks/query-by-userId.hooks');
 
 module.exports = {
   before: {
     all: [],
-    find: [ authenticate('jwt')],
+    find: [ authenticate('jwt'),queryByUserId],
     get: [],
     create: [],
     update: [],
@@ -20,7 +21,7 @@ module.exports = {
     get: [signUrl],
     create: [startTranscribe],
     update: [],
-    patch: [],
+    patch: [startTranscribe],
     remove: []
   },
 

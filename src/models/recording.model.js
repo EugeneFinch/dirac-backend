@@ -7,6 +7,10 @@ module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
   const recording = sequelizeClient.define('recording', {
     id: { type: DataTypes.INTEGER, autoIncrement: true,primaryKey:true },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
     filename: {
       type: DataTypes.STRING,
       allowNull: false
@@ -16,7 +20,7 @@ module.exports = function (app) {
       allowNull: false
     },
     status: {
-      type: DataTypes.ENUM('QUEUED','IN_PROGRESS','FAILED','COMPLETED'),
+      type: DataTypes.ENUM('RECORDING','QUEUED','IN_PROGRESS','FAILED','COMPLETED'),
       allowNull: false
     },
     created_at: {
