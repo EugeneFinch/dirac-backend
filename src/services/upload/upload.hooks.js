@@ -2,14 +2,27 @@
 const dauria = require('dauria');
 const { authenticate } = require('@feathersjs/authentication');
 const get = require('lodash/get');
-
+const { NotAuthenticated } = require('@feathersjs/errors');
 module.exports = {
   before: {
     all: [],
     find: [],
     get: [],
     create: [
-      // authenticate('jwt'),
+      function(context) {
+        //by pass when upload at local src/socketio.js
+        const recordingId = get(context,'params.query.recording_id',null);
+        const APP_SECRET = get(context,'params.query.APP_SECRET',null);
+        if(recordingId){
+          const isAuth = APP_SECRET===context.app.get('APP_SECRET');
+          if(!isAuth){
+            throw new NotAuthenticated('Missing APP_SECRET');
+          }
+          return;
+        }
+
+        authenticate('jwt');
+      },
       function(context) {
         if (!context.data.uri && context.params.file){
           const file = context.params.file;

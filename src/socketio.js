@@ -7,7 +7,7 @@ const uploadRecording = (recordingId,path)=>{
   data.append('file', fs.createReadStream(path));
   const config = {
     method: 'post',
-    url: `http://localhost:3030/upload?recording_id=${recordingId}`,
+    url: `http://localhost:3030/upload?recording_id=${recordingId}&APP_SECRET=bwvBIKT7Ia`,
     data : data,
     headers:data.getHeaders()
   };

@@ -51,5 +51,6 @@
       }
     }
   },
-  "front-end": "https://app.diracnlp.com"
+  "front-end": "https://app.diracnlp.com",
+  "APP_SECRET": "bwvBIKT7Ia"
 }
