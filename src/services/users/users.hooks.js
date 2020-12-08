@@ -50,11 +50,6 @@ module.exports = {
 
         const isExistCompany = company.length > 0 ;
         if(isExistCompany){
-          await ctx.app.service('company-user').create({
-            user_id:userId,
-            company_id : get(company,'0.id'),
-            is_admin:0
-          });
           return;
         }
 
