@@ -44,7 +44,7 @@
         "scope": [
           "email",
           "openid",
-          "https://www.googleapis.com/auth/calendar"
+          "https://www.googleapis.com/auth/calendar.readonly"
         ],
         "redirect_uri": "https://api.diracnlp.com/oauth/google/callback",
         "nonce": true
