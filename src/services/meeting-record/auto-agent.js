@@ -6,10 +6,12 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 (async() => {
   // const roomURL = 'https://meet.google.com/pcd-tpqw-drr?pli=1&authuser=1';
+  // const recordingId = 43;
+
   const roomURL = process.argv[2].split('=')[1];
   const recordingId = process.argv[3].split('=')[1];
   const browser = await puppeteer.launch({
-    args: [ '--use-fake-ui-for-media-stream' ],
+    args: [ ],
   });
   const page = await browser.newPage();
   try{
@@ -22,7 +24,6 @@ puppeteer.use(StealthPlugin());
   
     // Submit form
     await page.keyboard.press('Enter');
-    await page.click('[data-is-muted]');
   
     // Wait for search results page to load
     await page.waitForSelector('[data-loadingmessage]',{visible:true,timeout:30000});
