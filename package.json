@@ -47,6 +47,7 @@
     "feathers-authentication": "^1.3.1",
     "feathers-authentication-jwt": "^0.3.2",
     "feathers-blob": "^2.3.0",
+    "feathers-hooks-common": "^5.0.4",
     "feathers-sequelize": "^4.0.0",
     "form-data": "^3.0.0",
     "fs-blob-store": "^5.2.1",

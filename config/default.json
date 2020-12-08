@@ -33,8 +33,8 @@
     },
     "oauth": {
       "defaults":{ 
-        "host":"api.diracnlp.com", 
-        "protocol":"https", 
+        "host": "api.diracnlp.com",
+        "protocol": "https",
         "transport":"session"
       },
       "redirect": "/oauth/cookie?",
