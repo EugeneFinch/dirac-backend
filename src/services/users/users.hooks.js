@@ -1,7 +1,7 @@
 const { get } = require('lodash');
-const { disallow } = require('feathers-hooks-common');
+const { disallow,iff,isProvider ,required} = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { protect } = require('@feathersjs/authentication-local').hooks;
+const { protect,hashPassword } = require('@feathersjs/authentication-local').hooks;
 
 module.exports = {
   before: {
@@ -9,13 +9,18 @@ module.exports = {
     find: [authenticate('jwt')],
     get: [],
     create: [
-      // disallow('external')
-    ],
+      iff(isProvider('external') ,[
+        // authenticate('jwt'),
+        required('password'),
+        hashPassword('password')
+      ])
+    ],   
     update: [
-      disallow('external')
+      disallow('external'),
     ],
     patch: [
-      disallow('external')
+      disallow('external'),
+      hashPassword('password')
     ],
     remove: []
   },
