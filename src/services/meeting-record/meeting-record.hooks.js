@@ -13,6 +13,14 @@ module.exports = {
           const history = await mailHistoryService.get(1);
           const historyId = history.history_id;
           const auth = gmail.authorize();
+
+          const data = context.data;
+          let message = data.message.data;
+          let buff = Buffer.from(message, 'base64');  
+          message = JSON.parse(buff.toString('utf-8')); 
+          const newHistoryId = message.historyId;
+          await mailHistoryService.patch(1,{history_id : newHistoryId});
+
           const info = await gmail.getInviteInfo(auth,historyId);
           if(!info){
             context.result = { message: 'No Info'};
@@ -40,13 +48,6 @@ module.exports = {
             filename:'',
             url:'',
           });
-  
-          const data = context.data;
-          let message = data.message.data;
-          let buff = Buffer.from(message, 'base64');  
-          message = JSON.parse(buff.toString('utf-8')); 
-          const newHistoryId = message.historyId;
-          await mailHistoryService.patch(1,{history_id : newHistoryId});
   
           if(!roomURL){
             console.log(`No room url found ${historyId}`);
