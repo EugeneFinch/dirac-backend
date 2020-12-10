@@ -23,8 +23,10 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   user.associate = function (models) {
-    // Define associations here
-    // See http://docs.sequelizejs.com/en/latest/docs/associations/
+    user.hasOne(models.company_user,{
+      foreignKey: {
+        name: 'user_id'
+      }});
   };
 
   return user;

@@ -5,12 +5,15 @@ const { authenticate } = require('@feathersjs/authentication').hooks;
 
 const isAdmin = async (ctx) => {
   const requestedUser = ctx.params.user;
-  const isAdmin = await ctx.app.service('company-user').find({
-    query:{
+  const sequelize = ctx.app.get('sequelizeClient');
+  const { company_user } = sequelize.models;
+
+  const isAdmin = await company_user.count({
+    where:{
       user_id : requestedUser.id,
       is_admin: 1,
     }
-  }).then(((data)=> get(data,'data.0',false)));
+  }).then(c => c >0);
   if(!isAdmin){
     throw new Forbidden('Access Denied');
   }
@@ -30,7 +33,12 @@ module.exports = {
         }
         
         const companyId = companyUser.get('company_id');
-        context.params.query.company_id = companyId;
+        context.params.query = {
+          ...context.params.query,
+          company_id : companyId,
+          user_id : {$ne: userId}
+        };
+
         context.params.sequelize = {
           include: [ {
             model: user,

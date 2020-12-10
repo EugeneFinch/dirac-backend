@@ -7,7 +7,18 @@ module.exports = {
   before: {
     all: [],
     find: [authenticate('jwt')],
-    get: [],
+    get: [
+      context=>{
+        const sequelize = context.app.get('sequelizeClient');
+        const { company_user } = sequelize.models;
+        context.params.sequelize = {
+          include: [ {
+            model: company_user,
+            attributes: ['is_admin'],
+          } ]
+        };
+      }
+    ],
     create: [
       iff(isProvider('external') ,[
         // authenticate('jwt'),
