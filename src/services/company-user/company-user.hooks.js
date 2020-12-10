@@ -19,7 +19,27 @@ const isAdmin = async (ctx) => {
 module.exports = {
   before: {
     all: [authenticate('jwt')],
-    find: [],
+    find: [
+      async context => {
+        const userId = context.params.user.id;
+        const sequelize = context.app.get('sequelizeClient');
+        const { user,company_user } = sequelize.models;
+        const companyUser = await company_user.findOne({where :{user_id:userId}});
+        if(!companyUser){
+          throw new NotFound ('Company not found');
+        }
+        
+        const companyId = companyUser.get('company_id');
+        context.params.query.company_id = companyId;
+        context.params.sequelize = {
+          include: [ {
+            model: user,
+            attributes: ['email'],
+          } ]
+        };
+      }
+
+    ],
     get: [],
     create: [
       required('email','company_id','is_admin'),
