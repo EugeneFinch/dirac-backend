@@ -9,7 +9,7 @@ module.exports = {
     find: [],
     get: [],
     create: [
-      function(context) {
+      async function(context) {
         //by pass when upload at local src/socketio.js
         const recordingId = get(context,'params.query.recording_id',null);
         const APP_SECRET = get(context,'params.query.APP_SECRET',null);
@@ -21,7 +21,7 @@ module.exports = {
           return;
         }
 
-        authenticate('jwt');
+        await authenticate('jwt')(context);
       },
       function(context) {
         if (!context.data.uri && context.params.file){
