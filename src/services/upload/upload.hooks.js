@@ -3,6 +3,7 @@ const dauria = require('dauria');
 const { authenticate } = require('@feathersjs/authentication');
 const get = require('lodash/get');
 const { NotAuthenticated } = require('@feathersjs/errors');
+const dayjs = require('dayjs');
 module.exports = {
   before: {
     all: [],
@@ -18,16 +19,19 @@ module.exports = {
           if(!isAuth){
             throw new NotAuthenticated('Missing APP_SECRET');
           }
+          context.params.user_upload = false;
           return;
         }
 
         await authenticate('jwt')(context);
+        context.params.user_upload = true;
       },
       function(context) {
         if (!context.data.uri && context.params.file){
           const file = context.params.file;
           const uri = dauria.getBase64DataURI(file.buffer, file.mimetype);
-          context.data = {uri: uri,filename:file.originalname};
+          const fileName = context.params.user_upload ? `Uploaded-$Uploaded-Filename-${dayjs().format('DDMMYYHHmmss')}` : file.originalname;
+          context.data = {uri: uri,filename:fileName};
         }
       },
     ],
@@ -45,6 +49,7 @@ module.exports = {
       const filename = context.data.filename;
       const userId = get(context,'params.user.id',0);
       const recordingId = get(context,'params.query.recording_id',null);
+
       if(recordingId === null){
         await recordingSV.create({
           filename,
