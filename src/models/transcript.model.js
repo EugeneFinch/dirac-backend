@@ -9,7 +9,8 @@ module.exports = function (app) {
     id: { type: DataTypes.INTEGER, autoIncrement: true,primaryKey:true },
     speaker_id: { type: DataTypes.INTEGER },
     recording_id: { type: DataTypes.INTEGER },
-    content: { type: DataTypes.INTEGER },
+    content: { type: DataTypes.STRING },
+    search_content: { type: DataTypes.STRING },
     start_time: { type: DataTypes.STRING },
     created_at: {
       type: DataTypes.DATE,
