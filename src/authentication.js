@@ -40,6 +40,7 @@ class GoogleStrategy extends OAuthStrategy {
           updated: item.updated,
           summary: item.summary,
           location: item.location,
+          time_zone: item.start.timeZone,
           user_id: get(user, '0.id'),
           attendees: item.attendees,
           start: item.start.dateTime,

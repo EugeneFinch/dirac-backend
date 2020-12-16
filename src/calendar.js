@@ -41,9 +41,9 @@ function getEventList({ token, email, key }) {
     },
     params: {
       key,
-      maxResults: 50,
+      maxResults: 20,
       timeMin: new Date().toISOString(),
-      // singleEvents: true
+      singleEvents: true
     }
   })
 }

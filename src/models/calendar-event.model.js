@@ -53,6 +53,9 @@ module.exports = function (app) {
       type: DataTypes.DATE,
       defaultValue: Sequelize.NOW
     },
+    time_zone: {
+      type: DataTypes.STRING,
+    },
     end: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.NOW
