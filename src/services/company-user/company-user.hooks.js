@@ -29,7 +29,8 @@ module.exports = {
         const { user,company_user } = sequelize.models;
         const companyUser = await company_user.findOne({where :{user_id:userId}});
         if(!companyUser){
-          throw new NotFound ('Company not found');
+          context.result = {data:[]} ;
+          return;
         }
         
         const companyId = companyUser.get('company_id');
