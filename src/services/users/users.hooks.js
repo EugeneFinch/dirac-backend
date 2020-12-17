@@ -10,17 +10,17 @@ module.exports = {
     get: [
       context=>{
         const sequelize = context.app.get('sequelizeClient');
-        const { company_user } = sequelize.models;
+        const { team_user } = sequelize.models;
         context.params.sequelize = {
           include: [ {
-            model: company_user,
+            model: team_user,
             attributes: ['is_admin'],
           } ]
         };
       }
     ],
     create: [
-      disallow('external'),
+      // disallow('external'),
       iff(ctx=>ctx.data.password, hashPassword('password')),
       async context=>{
         const sequelize = context.app.get('sequelizeClient');
@@ -60,25 +60,25 @@ module.exports = {
           return;
         }
 
-        const {data:company} = await ctx.app.service('company').find({
+        const {data:team} = await ctx.app.service('team').find({
           query: {
             email_domain:domain
           }
         });
 
-        const isExistCompany = company.length > 0 ;
+        const isExistCompany = team.length > 0 ;
         if(isExistCompany){
           return;
         }
 
-        const res = await ctx.app.service('company').create({
+        const res = await ctx.app.service('team')._create({
           name:domain.toUpperCase(),
           email_domain:domain
         });
 
-        await ctx.app.service('company-user').create({
+        await ctx.app.service('team-user')._create({
           user_id:userId,
-          company_id : get(res,'id'),
+          team_id : get(res,'id'),
           is_admin:1
         });
       }

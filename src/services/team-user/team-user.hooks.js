@@ -6,9 +6,9 @@ const { authenticate } = require('@feathersjs/authentication').hooks;
 const isAdmin = async (ctx) => {
   const requestedUser = ctx.params.user;
   const sequelize = ctx.app.get('sequelizeClient');
-  const { company_user } = sequelize.models;
+  const { team_user } = sequelize.models;
 
-  const isAdmin = await company_user.count({
+  const isAdmin = await team_user.count({
     where:{
       user_id : requestedUser.id,
       is_admin: 1,
@@ -26,17 +26,17 @@ module.exports = {
       async context => {
         const userId = context.params.user.id;
         const sequelize = context.app.get('sequelizeClient');
-        const { user,company_user } = sequelize.models;
-        const companyUser = await company_user.findOne({where :{user_id:userId}});
-        if(!companyUser){
+        const { user,team_user } = sequelize.models;
+        const teamUser = await team_user.findOne({where :{user_id:userId}});
+        if(!teamUser){
           context.result = {data:[]} ;
           return;
         }
         
-        const companyId = companyUser.get('company_id');
+        const teamId = teamUser.get('team_id');
         context.params.query = {
           ...context.params.query,
-          company_id : companyId,
+          team_id : teamId,
           user_id : {$ne: userId}
         };
 
@@ -56,18 +56,18 @@ module.exports = {
       async ctx=>{
         const userId = ctx.params.user.id;
         const sequelize = ctx.app.get('sequelizeClient');
-        const { company_user:cUserModel } = sequelize.models;
-        const companyUser = await cUserModel.findOne({where :{user_id:userId}});
-        if(!companyUser){
+        const { team_user:cUserModel } = sequelize.models;
+        const teamUser = await cUserModel.findOne({where :{user_id:userId}});
+        if(!teamUser){
           throw new NotFound ('Company not found');
         }
 
         const email = ctx.data.email;
-        const companyId = companyUser.get('company_id');
+        const teamId = teamUser.get('team_id');
         // const domain = email.split('@')[1];
-        // const company = await ctx.app.service('company').get(companyId);
-        // if(company.email_domain != domain){
-        //   throw new BadRequest('Email is not same domain with company');
+        // const team = await ctx.app.service('team').get(teamId);
+        // if(team.email_domain != domain){
+        //   throw new BadRequest('Email is not same domain with team');
         // }
 
         let user = await ctx.app.service('users').find({
@@ -88,18 +88,18 @@ module.exports = {
           }
         });
 
-        if(addUser && addUser.get('company_id') == companyId){
+        if(addUser && addUser.get('team_id') == teamId){
           throw new BadRequest('User is existed');
         }
 
-        if(addUser && addUser.get('company_id') != companyId){
-          throw new BadRequest('User is in another company');
+        if(addUser && addUser.get('team_id') != teamId){
+          throw new BadRequest('User is in another team');
         }
        
 
         ctx.data = {
           user_id : user.id,
-          company_id: companyId,
+          team_id: teamId,
           is_admin:ctx.data.is_admin || 0
         };
       }
@@ -109,7 +109,7 @@ module.exports = {
 
     ],
     patch: [
-      preventChanges('id','user_id','company_id'),
+      preventChanges('id','user_id','team_id'),
       required('is_admin'),
       isAdmin
     ],

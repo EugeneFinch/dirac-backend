@@ -5,7 +5,7 @@ const DataTypes = Sequelize.DataTypes;
 
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
-  const company = sequelizeClient.define('company', {
+  const team = sequelizeClient.define('team', {
     id: { type: DataTypes.INTEGER, autoIncrement: true,primaryKey:true },
     name: {
       type: DataTypes.STRING,
@@ -32,5 +32,5 @@ module.exports = function (app) {
     }
   });
 
-  return company;
+  return team;
 };

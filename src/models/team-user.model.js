@@ -5,13 +5,13 @@ const DataTypes = Sequelize.DataTypes;
 
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
-  const companyUser = sequelizeClient.define('company_user', {
+  const teamUser = sequelizeClient.define('team_user', {
     id: { type: DataTypes.INTEGER, autoIncrement: true,primaryKey:true },
     user_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    company_id: {
+    team_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -29,11 +29,11 @@ module.exports = function (app) {
   });
 
   // eslint-disable-next-line no-unused-vars
-  companyUser.associate = function (models) {
-    companyUser.belongsTo(models.user,{
+  teamUser.associate = function (models) {
+    teamUser.belongsTo(models.user,{
       foreignKey: {
         name: 'user_id'
       }});
   };
-  return companyUser;
+  return teamUser;
 };
