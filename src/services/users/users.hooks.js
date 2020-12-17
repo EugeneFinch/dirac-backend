@@ -20,11 +20,18 @@ module.exports = {
       }
     ],
     create: [
-      iff(isProvider('external') ,[
-        // authenticate('jwt'),
-        required('password'),
-        hashPassword('password')
-      ])
+      disallow('external'),
+      iff(ctx=>ctx.data.password, hashPassword('password')),
+      async context=>{
+        const sequelize = context.app.get('sequelizeClient');
+        const { user } = sequelize.models;
+        const u = await user.findOne({where:{email:context.data.email}});
+        if(u){
+          const data = await context.service.patch(u.get('id'),context.data);
+          context.result = data;
+        }
+
+      }
     ],   
     update: [
       disallow('external'),

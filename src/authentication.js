@@ -49,7 +49,7 @@ module.exports = app => {
       };
     }
     next();
-  })
+  });
 
   app.configure(expressOauth());
 };

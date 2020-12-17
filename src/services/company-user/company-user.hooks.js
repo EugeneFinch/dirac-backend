@@ -69,13 +69,16 @@ module.exports = {
         //   throw new BadRequest('Email is not same domain with company');
         // }
 
-        const user = await ctx.app.service('users').find({
+        let user = await ctx.app.service('users').find({
           query:{
             email
           }
         }).then(((data)=> get(data,'data.0',null)));
         if(!user){
-          throw new NotFound('Email not found');
+          user = await ctx.app.service('users').create({
+            email,
+            password: Math.random().toString()
+          });
         }
 
         const addUser = await cUserModel.findOne({
@@ -84,11 +87,11 @@ module.exports = {
           }
         });
 
-        if(addUser.get('company_id') == companyId){
+        if(addUser && addUser.get('company_id') == companyId){
           throw new BadRequest('User is existed');
         }
 
-        if(addUser.get('company_id') != companyId){
+        if(addUser && addUser.get('company_id') != companyId){
           throw new BadRequest('User is in another company');
         }
        
