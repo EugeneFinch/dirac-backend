@@ -27,5 +27,13 @@ module.exports = function (app) {
       }
     }
   });
+
+  // eslint-disable-next-line no-unused-vars
+  companyUser.associate = function (models) {
+    companyUser.belongsTo(models.user,{
+      foreignKey: {
+        name: 'user_id'
+      }});
+  };
   return companyUser;
 };
