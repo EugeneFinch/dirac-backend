@@ -17,7 +17,7 @@ module.exports = function (app) {
 
     console.log(req)
     next()
-  }
+  },
     createService(options));
 
   // Get our initialized service so that we can register hooks
