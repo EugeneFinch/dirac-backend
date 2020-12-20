@@ -8,8 +8,8 @@ const users = require('./users/users.service.js');
 const mailHistory = require('./mail-history/mail-history.service.js');
 const team = require('./team/team.service.js');
 const teamUser = require('./team-user/team-user.service.js');
-const company = require('./company/company.service.js');
-const companyUser = require('./company-user/company-user.service.js');
+// const company = require('./company/company.service.js');
+// const companyUser = require('./company-user/company-user.service.js');
 const calendarEvent = require('./calendar-event/calendar-event.service.js');
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
@@ -23,7 +23,7 @@ module.exports = function (app) {
   app.configure(mailHistory);
   app.configure(team);
   app.configure(teamUser);
-  app.configure(company);
-  app.configure(companyUser);
+  // app.configure(company);
+  // app.configure(companyUser);
   app.configure(calendarEvent);
 };
