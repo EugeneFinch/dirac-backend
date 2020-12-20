@@ -9,6 +9,7 @@
   "mysql": "mysql://admin:sLWJYX7qqPu33m7@dirac-dev.crmcsvd5oslk.ap-southeast-1.rds.amazonaws.com:3306/dev",
   "AWS_ACCESS_KEY_ID": "AKIAXHVYGZ73MOMEUP4H",
   "AWS_SECRET_ACCESS_KEY": "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",
+  "GOOGLE_API_KEY": "AIzaSyDDSpnXTeYt13QFQt5wJGRsPi1QBzAT9Jg",
   "authentication": {
     "local": {
       "usernameField": "email",
@@ -32,10 +33,10 @@
       "expiresIn": "1d"
     },
     "oauth": {
-      "defaults":{ 
+      "defaults": {
         "host": "api.diracnlp.com",
         "protocol": "https",
-        "transport":"session"
+        "transport": "session"
       },
       "redirect": "/oauth/cookie?",
       "google": {
