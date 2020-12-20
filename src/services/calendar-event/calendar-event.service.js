@@ -13,7 +13,11 @@ module.exports = function (app) {
   };
 
   // Initialize our service with any options it requires
-  app.use('/calendar-event',
+  app.use('/calendar-event', (req, res, next) => {
+
+    console.log(req)
+    next()
+  }
     createService(options));
 
   // Get our initialized service so that we can register hooks
