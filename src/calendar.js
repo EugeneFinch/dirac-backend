@@ -1,5 +1,6 @@
 const axios = require('axios');
-const { get, forEach, filter } = require('lodash');
+const dayjs = require('dayjs');
+const { get, forEach } = require('lodash');
 
 function watchCalendar({ token, email, id, resourceId }) {
   return axios(`https://www.googleapis.com/calendar/v3/calendars/${email}/events/watch`, {
@@ -41,7 +42,8 @@ function getEventList({ token, email, key, syncToken }) {
   let params = {
     key,
     maxResults: 10000,
-    timeMin: new Date().toISOString(),
+    timeMax: dayjs().add(7, 'day').toISOString(),
+    timeMin: dayjs().toISOString(),
     singleEvents: true,
   }
 
