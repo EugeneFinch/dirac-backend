@@ -38,13 +38,7 @@ module.exports = function (app) {
       type: DataTypes.STRING,
     },
     attendees: {
-      type: DataTypes.STRING,
-      get: function () {
-        return JSON.parse(this.getDataValue('attendees'));
-      },
-      set: function (val) {
-        return this.setDataValue('attendees', JSON.stringify(val));
-      }
+      type: DataTypes.TEXT,
     },
     creator: {
       type: DataTypes.STRING,

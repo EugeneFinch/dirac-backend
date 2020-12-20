@@ -1,25 +1,15 @@
 const { AuthenticationService, JWTStrategy } = require('@feathersjs/authentication');
 const { LocalStrategy } = require('@feathersjs/authentication-local');
 const { expressOauth, OAuthStrategy } = require('@feathersjs/authentication-oauth');
-const { get, map } = require('lodash');
+const { get } = require('lodash');
 const calendar = require('./calendar');
 
 class GoogleStrategy extends OAuthStrategy {
   async getProfile(authResult) {
     const profile = await super.getProfile(authResult);
     const email = authResult.id_token.payload.email;
-    const sub = authResult.id_token.payload.sub;
     const key = this.app.get('GOOGLE_API_KEY');
 
-    calendar.watchCalendar({
-      token: authResult.access_token,
-      email,
-      id: sub
-    })
-
-    const response = await calendar.getEventList({ token: authResult.access_token, email, key });
-    const items = get(response, 'data.items');
-    const db = this.app.get('sequelizeClient')
     const { data: user } = await this.app.service('users').find({
       query: {
         email,
@@ -28,36 +18,25 @@ class GoogleStrategy extends OAuthStrategy {
     });
 
     if (user.length > 0) {
-      map(items, item => {
-        const params = {
-          id: item.id,
-          kind: item.kind,
-          etag: item.etag,
-          status: item.status,
-          htmlLink: item.htmlLink,
-          created: item.created,
-          creator: get(item, 'creator.email', ''),
-          updated: item.updated,
-          summary: item.summary,
-          location: item.location,
-          time_zone: item.start.timeZone,
-          user_id: get(user, '0.id'),
-          attendees: item.attendees,
-          start: item.start.dateTime,
-          end: item.end.dateTime,
-          description: item.description,
-          hangoutLink: item.hangoutLink,
-        }
-        db.models.calendar_event.upsert(params)
-          .then(o => console.log('upsert success'))
-          .catch(e => console.log('upsert error', e));
-      })
+      const response = await calendar.watchCalendar({
+        token: authResult.access_token,
+        email,
+        id: get(user, '0.id'),
+        resourceId: get(user, '0.resourceId')
+      });
+
+      const resourceId = get(response, 'data.resourceId');
+
+      if (resourceId) {
+        await this.app.service('users').patch(get(user, '0.id'), { resourceId })
+      }
+
+      calendar.handleUpdateCalendarEvent({ app: this.app, token: authResult.access_token, email, key, user_id: get(user, '0.id'), })
     }
 
     return profile;
   }
   async getEntityData(profile) {
-
     // this will set 'googleId'
     const baseData = await super.getEntityData(profile);
     // this will grab the picture and email address of the Google profile

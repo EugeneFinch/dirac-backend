@@ -16,6 +16,8 @@ module.exports = function (app) {
     auth0Id: { type: DataTypes.STRING, },
 
     googleId: { type: DataTypes.STRING, },
+    nextSyncToken: { type: DataTypes.STRING, },
+    resourceId: { type: DataTypes.STRING, },
 
   }, {
     timestamps: true
@@ -23,10 +25,11 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   user.associate = function (models) {
-    user.hasOne(models.team_user,{
+    user.hasOne(models.team_user, {
       foreignKey: {
         name: 'user_id'
-      }});
+      }
+    });
   };
 
   return user;

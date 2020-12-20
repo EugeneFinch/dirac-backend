@@ -1,7 +1,8 @@
 const axios = require('axios');
+const { get, forEach, filter } = require('lodash');
 
-function watchCalendar({ token, email, id }) {
-  axios(`https://www.googleapis.com/calendar/v3/calendars/${email}/events/watch`, {
+function watchCalendar({ token, email, id, resourceId }) {
+  return axios(`https://www.googleapis.com/calendar/v3/calendars/${email}/events/watch`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -11,11 +12,14 @@ function watchCalendar({ token, email, id }) {
       id, // Your channel ID.
       type: "web_hook",
       address: "https://api.diracnlp.com/calendar-event", // Your receiving URL.
-      // "token": "target=myApp-myCalendarChannelDest", // (Optional) Your channel token.
+      token, // (Optional) Your channel token.
       // "expiration": 1426325213000 // (Optional) Your requested channel expiration time.
     }
   })
-    .then(() => console.log('push watch calendar success'))
+    .then(data => {
+      console.log('push watch calendar success')
+      return data;
+    })
     .catch(error => {
       if (error.response) {
         // Request made and server responded
@@ -29,28 +33,77 @@ function watchCalendar({ token, email, id }) {
         // Something happened in setting up the request that triggered an Error
         console.log('Error', error.message);
       }
+      return null;
     })
 }
 
-function getEventList({ token, email, key }) {
+function getEventList({ token, email, key, syncToken }) {
+  let params = {
+    key,
+    maxResults: 10000,
+    timeMin: new Date().toISOString(),
+    singleEvents: true,
+  }
+
+  if (syncToken) {
+    params = {
+      key,
+      syncToken
+    }
+  }
+
   return axios(`https://www.googleapis.com/calendar/v3/calendars/${email}/events`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
-    params: {
-      key,
-      maxResults: 20,
-      timeMin: new Date().toISOString(),
-      singleEvents: true
-    }
+    params
   })
 }
 
+async function handleUpdateCalendarEvent({ app, token, email, key, syncToken, user_id }) {
+  const db = app.get('sequelizeClient')
+  try {
+    const response = await getEventList({ token, email, key, syncToken });
 
+    let items = get(response, 'data.items');
+    const nextSyncToken = get(response, 'data.nextSyncToken');
+
+    await app.service('users').patch(user_id, { nextSyncToken })
+
+    forEach(items, item => {
+      const params = {
+        id: item.id,
+        kind: item.kind,
+        etag: item.etag,
+        status: item.status,
+        htmlLink: item.htmlLink,
+        created: item.created,
+        creator: get(item, 'creator.email', ''),
+        updated: item.updated,
+        summary: item.summary,
+        location: item.location,
+        time_zone: get(item, 'start.timeZone', ''),
+        user_id,
+        attendees: JSON.stringify(item.attendees),
+        start: get(item, 'start.dateTime', ''),
+        end: get(item, 'end.dateTime', ''),
+        description: item.description,
+        hangoutLink: item.hangoutLink,
+      }
+      db.models.calendar_event.upsert(params)
+        .then(o => console.log('upsert success'))
+        .catch(e => console.log('upsert error', e));
+    })
+
+  } catch (error) {
+    console.log('asdjkfhnsda', error)
+  }
+}
 
 module.exports = {
   watchCalendar,
-  getEventList
+  getEventList,
+  handleUpdateCalendarEvent
 };
