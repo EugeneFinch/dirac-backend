@@ -2,9 +2,12 @@
 const queryByUserId = require('../../hooks/query-by-userId.hooks');
 const { authenticate } = require('@feathersjs/authentication');
 
+
 module.exports = {
   before: {
-    all: [],
+    all: [ctx=> {
+      console.log('ctx', ctx);
+    }],
     find: [authenticate('jwt'), queryByUserId],
     get: [],
     create: [],
