@@ -4,6 +4,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { get } = require('lodash')
 const calendar = require('../../calendar')
 
+
 module.exports = {
   before: {
     all: [],
