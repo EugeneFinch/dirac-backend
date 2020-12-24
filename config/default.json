@@ -40,8 +40,8 @@
       },
       "redirect": "/oauth/cookie?",
       "google": {
-        "key": "17235609396-f5icsnaaarj8fh9f71tebn4629igpaja.apps.googleusercontent.com",
-        "secret": "j09APku7Lu4I0HiKVSfR9Zqe",
+        "key": "17235609396-qb2974k8338ubq5ikmn4d4o68he9vhq0.apps.googleusercontent.com",
+        "secret": "kJaYi1uE69cibbFlkJL2JA0M",
         "scope": [
           "email",
           "openid",
