@@ -1,6 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 
-const { discardQuery } = require('feathers-hooks-common');
+const { discardQuery ,discard} = require('feathers-hooks-common');
 const { searchByKeyword, hightLightKeyword } = require('./utils');
 
 
@@ -21,7 +21,7 @@ module.exports = {
 
   after: {
     all: [],
-    find: [hightLightKeyword],
+    find: [hightLightKeyword,discard('search_content')],
     get: [],
     create: [],
     update: [],

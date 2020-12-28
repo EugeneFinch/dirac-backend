@@ -3,7 +3,6 @@ const dauria = require('dauria');
 const { authenticate } = require('@feathersjs/authentication');
 const get = require('lodash/get');
 const { NotAuthenticated } = require('@feathersjs/errors');
-const dayjs = require('dayjs');
 module.exports = {
   before: {
     all: [],
