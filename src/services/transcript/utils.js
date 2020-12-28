@@ -12,7 +12,6 @@ const searchByKeyword = (ctx) => {
   }
   const query = {
     $or: PREDEFINED_KEYWORD[keyword].map(v=>( { search_content: {$like: `%${v}%`}})),
-    $select: ['id','search_content','start_time']
   };
 
   ctx.params.query = {
