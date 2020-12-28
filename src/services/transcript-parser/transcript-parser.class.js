@@ -70,6 +70,7 @@ class Service {
         speaker_id : get(speakerIds ,`${speakerIdx}.id`),
         recording_id : id,
         content : l.line,
+        search_content : l.line.toLowerCase(),
         start_time : l.time,
       };
     });
