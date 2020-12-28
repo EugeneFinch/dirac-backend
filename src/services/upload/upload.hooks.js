@@ -30,8 +30,7 @@ module.exports = {
         if (!context.data.uri && context.params.file){
           const file = context.params.file;
           const uri = dauria.getBase64DataURI(file.buffer, file.mimetype);
-          const fileName = context.params.user_upload ? `Uploaded-$Uploaded-Filename-${dayjs().format('DDMMYYHHmmss')}` : file.originalname;
-          context.data = {uri: uri,filename:fileName};
+          context.data = {uri: uri,filename:file.originalname};
         }
       },
     ],
