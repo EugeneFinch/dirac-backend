@@ -36,8 +36,7 @@ module.exports = {
         const teamId = teamUser.get('team_id');
         context.params.query = {
           ...context.params.query,
-          team_id : teamId,
-          user_id : {$ne: userId}
+          team_id : teamId
         };
 
         context.params.sequelize = {
