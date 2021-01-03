@@ -1,6 +1,12 @@
 const get = require('lodash/get');
 const flatMap = require('lodash/flatMap');
-const {PREDEFINED_KEYWORD}  = require('./constants');
+const {PREDEFINED_KEYWORD}  = require('../transcript-keyword/constants');
+const KEYWORD_CRITERIA = PREDEFINED_KEYWORD.reduce((result,v)=>{
+  return {
+    ...result,
+    [v.code] : v.criteria
+  };
+},{});
 
 const searchByKeyword = (ctx) => {
   const keywords = get(ctx,'params.query.predefined_keyword');
@@ -11,10 +17,10 @@ const searchByKeyword = (ctx) => {
   const keywordArr = keywords.split(',');
 
   const query = flatMap(keywordArr,keyword =>{
-    if(!Object.keys(PREDEFINED_KEYWORD).includes(keyword)){
+    if(!Object.keys(KEYWORD_CRITERIA).includes(keyword)){
       return;
     }
-    return PREDEFINED_KEYWORD[keyword].map(v=>( { search_content: {$like: `%${v}%`}}));
+    return KEYWORD_CRITERIA[keyword].map(v=>( { search_content: {$like: `%${v}%`}}));
   });
 
   ctx.params.query = {
@@ -40,7 +46,7 @@ const hightLightKeyword = (ctx) => {
     ...ctx.result,
     data: ctx.result.data.map(v=>({
       ...v,
-      highlight_keyword: keywordArr.map(keyword=> PREDEFINED_KEYWORD[keyword].find(k=>v.search_content.includes(k)))[0]
+      highlight_keyword: keywordArr.map(keyword=> KEYWORD_CRITERIA[keyword].find(k=>v.search_content.includes(k)))[0]
     }))};
 };
 
