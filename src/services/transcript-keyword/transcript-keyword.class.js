@@ -29,6 +29,7 @@ class Service {
     return PREDEFINED_KEYWORD.map((v,idx)=>({
       name:v.name,
       code:v.code,
+      color:v.color,
       total:get(totals,idx),
     }));
   }
