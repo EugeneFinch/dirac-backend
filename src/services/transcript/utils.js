@@ -46,19 +46,22 @@ const hightLightKeyword = (ctx) => {
   ctx.result = {
     ...ctx.result,
     data: ctx.result.data.map(v=>{
-      const {criteria,keyword} = keywordArr.map(keyword=> {
+      const founds = keywordArr.map(keyword=> {
         const c = KEYWORD_CRITERIA[keyword].find(k=>v.search_content.includes(k));
         return {
           criteria: c ,
           keyword: c && keyword
         };
       }
-      )[0];
-      const reg = new RegExp(criteria,'i');
-      const idx = v.content.search(reg);
-      const hightLightKeyword =  `<span class='${keyword}'>${v.content.substr(idx,criteria.length)}</span>`;
-      v.content = v.content.replace(reg,hightLightKeyword);
+      ).filter(v=>v.keyword);
 
+      founds.forEach(({criteria,keyword})=>{
+        const reg = new RegExp(criteria,'i');
+        const idx = v.content.search(reg);
+        const hightLightKeyword =  `<span class='${keyword}'>${v.content.substr(idx,criteria.length)}</span>`;
+        v.content = v.content.replace(reg,hightLightKeyword);
+      });
+     
       return v;
     })};
 };
