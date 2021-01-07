@@ -9,9 +9,12 @@ const uploadRecording = (recordingId,path)=>{
     method: 'post',
     url: `http://localhost:3030/upload?recording_id=${recordingId}&APP_SECRET=bwvBIKT7Ia`,
     data : data,
-    headers:data.getHeaders()
+    maxContentLength: Infinity,
+    maxBodyLength: Infinity,
+    headers: {'Content-Type': 'multipart/form-data;boundary=' + data.getBoundary()}
   };
   console.log('uploading');
+  
   return axios(config)
     .then(function (response) {
       console.log(JSON.stringify(response.data));
