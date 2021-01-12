@@ -8,6 +8,7 @@ module.exports = function (app) {
   const speaker = sequelizeClient.define('speaker', {
     id: { type: DataTypes.INTEGER, autoIncrement: true,primaryKey:true },
     name: { type: DataTypes.STRING },
+    team_member: { type: DataTypes.INTEGER },
   },{
     timestamps: false
   });
