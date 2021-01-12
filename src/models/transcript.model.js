@@ -12,6 +12,7 @@ module.exports = function (app) {
     content: { type: DataTypes.STRING },
     search_content: { type: DataTypes.STRING },
     start_time: { type: DataTypes.STRING },
+    end_time: { type: DataTypes.STRING },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.NOW

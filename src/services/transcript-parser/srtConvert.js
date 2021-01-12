@@ -17,7 +17,8 @@ const convert = data => {
   const items = data.results.items;
   const lines = [];
   let line = '';
-  let time = 0;
+  let startTime = 0;
+  let endTime = 0;
   let speaker = null;
   let current_speaker = null;
   items.forEach(item=>{
@@ -39,17 +40,19 @@ const convert = data => {
         lines.push({
           'speaker' : speaker,
           'line' : line,
-          'time' : time,
+          'start_time' : startTime,
+          'end_time' : endTime,
         });
       }
 
       line = content;
       speaker = current_speaker;
-      time = item.start_time;
+      startTime = item.start_time;
     }
 
     else if (item.type != 'punctuation') {
       line += ' ' + content;
+      endTime = item.end_time;
     }
   });
 
@@ -58,7 +61,8 @@ const convert = data => {
     lines.push({
       'speaker' : speaker,
       'line' : line,
-      'time' : time,
+      'start_time' : startTime,
+      'end_time' : endTime,
     });
   }
  

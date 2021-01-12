@@ -71,11 +71,12 @@ class Service {
         recording_id : id,
         content : l.line,
         search_content : l.line.toLowerCase(),
-        start_time : l.time,
+        start_time : l.start_time,
+        end_time : l.end_time,
       };
     });
     await this.options.app.service('transcript').create(insertData);
-    await this.options.app.service('transcript-coaching').update(id);
+    // await this.options.app.service('transcript-coaching').update(id);
 
     return {message:'done'};
 
