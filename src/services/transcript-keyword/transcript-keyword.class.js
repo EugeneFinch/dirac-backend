@@ -1,6 +1,5 @@
 const get = require('lodash/get');
 const Sequelize = require('sequelize');
-const {PREDEFINED_KEYWORD}  = require('./constants');
 
 const Op = Sequelize.Op;
 /* eslint-disable no-unused-vars */
@@ -12,9 +11,9 @@ class Service {
   async find (params) {
     const recordingId = get(params,'query.recording_id');
     const sequelize = this.options.app.get('sequelizeClient');
-    const { transcript } = sequelize.models;
-
-    const queries =  PREDEFINED_KEYWORD.map(v=>v.criteria.map(c=> ({ search_content: {[Op.like]: `%${c}%`}})));
+    const { transcript,transcript_keyword_recap_config } = sequelize.models;
+    const keywords = await transcript_keyword_recap_config.findAll();
+    const queries =  keywords.map(v=>v.get('criteria').map(c=> ({ search_content: {[Op.like]: `%${c}%`}})));
 
     const totals = await Promise.all(
       queries.map(q=>transcript.count({
@@ -26,7 +25,7 @@ class Service {
     );
 
 
-    return PREDEFINED_KEYWORD.map((v,idx)=>({
+    return keywords.map((v,idx)=>({
       name:v.name,
       code:v.code,
       color:v.color,

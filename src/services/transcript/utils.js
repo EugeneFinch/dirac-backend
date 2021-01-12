@@ -1,26 +1,30 @@
 const get = require('lodash/get');
 const flatMap = require('lodash/flatMap');
-const {PREDEFINED_KEYWORD}  = require('../transcript-keyword/constants');
-const KEYWORD_CRITERIA = PREDEFINED_KEYWORD.reduce((result,v)=>{
-  return {
+
+const getKeywordCriteria = async (ctx) => {
+  const sequelize = ctx.app.get('sequelizeClient');
+  const { transcript_keyword_recap_config:config } = sequelize.models;
+  const keywords = await config.findAll();
+  return keywords.reduce((result,v)=>({
     ...result,
     [v.code] : v.criteria
-  };
-},{});
+  }),{});
+};
 
-const searchByKeyword = (ctx) => {
+const searchByKeyword = async (ctx) => {
   const keywords = get(ctx,'params.query.predefined_keyword');
   if(!keywords){
     return ;
   }
 
   const keywordArr = keywords.split(',');
+  const kwCriteria = await getKeywordCriteria(ctx);
 
   const query = flatMap(keywordArr,keyword =>{
-    if(!Object.keys(KEYWORD_CRITERIA).includes(keyword)){
+    if(!Object.keys(kwCriteria).includes(keyword)){
       return;
     }
-    return KEYWORD_CRITERIA[keyword].map(v=>( { search_content: {$like: `%${v}%`}}));
+    return kwCriteria[keyword].map(v=>( { search_content: {$like: `%${v}%`}}));
   });
 
   ctx.params.query = {
@@ -31,7 +35,7 @@ const searchByKeyword = (ctx) => {
  
 };
 
-const hightLightKeyword = (ctx) => {
+const hightLightKeyword = async (ctx) => {
   if(ctx.type !== 'after') {
     return;
   }
@@ -42,12 +46,13 @@ const hightLightKeyword = (ctx) => {
   }
   const keywordArr = keywords.split(',');
 
+  const kwCriteria = await getKeywordCriteria(ctx);
   
   ctx.result = {
     ...ctx.result,
     data: ctx.result.data.map(v=>{
       const founds = keywordArr.map(keyword=> {
-        const c = KEYWORD_CRITERIA[keyword].find(k=>v.search_content.includes(k));
+        const c = kwCriteria[keyword].find(k=>v.search_content.includes(k));
         return {
           criteria: c ,
           keyword: c && keyword

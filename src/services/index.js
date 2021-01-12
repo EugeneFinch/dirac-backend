@@ -12,6 +12,7 @@ const teamUser = require('./team-user/team-user.service.js');
 // const companyUser = require('./company-user/company-user.service.js');
 const calendarEvent = require('./calendar-event/calendar-event.service.js');
 const transcriptKeyword = require('./transcript-keyword/transcript-keyword.service.js');
+const transcriptKeywordRecapConfig = require('./transcript-keyword-recap-config/transcript-keyword-recap-config.service.js');
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
   app.configure(upload);
@@ -28,4 +29,5 @@ module.exports = function (app) {
   // app.configure(companyUser);
   app.configure(calendarEvent);
   app.configure(transcriptKeyword);
+  app.configure(transcriptKeywordRecapConfig);
 };
