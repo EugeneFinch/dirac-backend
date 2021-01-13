@@ -76,7 +76,7 @@ class Service {
       };
     });
     await this.options.app.service('transcript').create(insertData);
-    // await this.options.app.service('transcript-coaching').update(id);
+    // await this.options.app.service('transcript-coaching').update(id,{});
 
     return {message:'done'};
 
