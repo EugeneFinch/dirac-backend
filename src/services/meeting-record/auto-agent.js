@@ -6,7 +6,7 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 const getPlatform = (roomURL) => {
   if(roomURL.includes('meet.google.com')){
-    return 'Gmeet';
+    return 'Gmeet meeting';
   }
 };
 
