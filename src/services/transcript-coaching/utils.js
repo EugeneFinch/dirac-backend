@@ -104,9 +104,33 @@ const getFillerWordPerMin = async (ctx)=> {
 
 };
 
+const getNextStep = async (ctx)=> {
+  const recordingId = get(ctx,'data.transcripts.0.recording_id');
+  if(!recordingId){
+    return null;
+  }
+
+  const nextStep = await ctx.app.service('transcript').find({
+    query:{
+      $skip: 0,
+      $limit: 1,
+      recording_id: recordingId,
+      predefined_keyword: 'next_step'
+    }
+  });
+  
+
+  ctx.data={
+    ...ctx.data,
+    next_steps:(nextStep.total > 0)
+  };
+
+};
+
 
 module.exports = {
   fetchTranScript,
   getFillerWordPerMin,
-  getTeamTalkTime
+  getTeamTalkTime,
+  getNextStep,
 };
