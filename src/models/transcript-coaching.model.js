@@ -17,7 +17,7 @@ module.exports = function (app) {
     longest_monologue : {
       type: DataTypes.INTEGER,
     },
-    word_per_min : {
+    filler_word_per_min : {
       type: DataTypes.INTEGER,
     },
     resp_time : {

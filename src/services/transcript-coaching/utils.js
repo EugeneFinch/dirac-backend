@@ -64,8 +64,49 @@ const getTeamTalkTime = async (ctx)=> {
 
 };
 
+const getFillerWordPerMin = async (ctx)=> {
+  const transcripts = get(ctx,'data.transcripts');
+  if(!transcripts){
+    return null;
+  }
+
+  const sequelize = ctx.app.get('sequelizeClient');
+  const {speaker } = sequelize.models;
+  const speakerIds = uniq(transcripts.map(v=>v.speaker_id));
+
+  const speakers = await speaker.findAll({
+    where: {
+      id : { [Op.in]: speakerIds}
+    }
+  });
+
+  const speakerObj  = keyBy(speakers,v=>v.get('id'));
+  const fillerReg = new RegExp('\\b(ah|uh|erm|like|you know|I mean|okay|so|actually|basically|right)\\b','gi');
+
+  const agg = transcripts.reduce((cur,v)=>{
+    const speakerId = v.get('speaker_id');
+    if(get(speakerObj,[speakerId,'team_member']) == 1){
+      const isFiller = fillerReg.test(v.content);
+      if (isFiller){
+        cur.no_filer += 1;
+      }
+      cur.talk_time += (v.end_time - v.start_time);
+    }
+
+    return cur;
+  },{talk_time:0,no_filer:0});
+
+  const res  = Math.round(agg.no_filer/ Math.floor((agg.talk_time/60)));
+  ctx.data={
+    ...ctx.data,
+    filler_word_per_min:res
+  };
+
+};
+
 
 module.exports = {
   fetchTranScript,
+  getFillerWordPerMin,
   getTeamTalkTime
 };

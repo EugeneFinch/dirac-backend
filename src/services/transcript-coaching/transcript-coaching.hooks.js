@@ -1,4 +1,4 @@
-const {fetchTranScript,getTeamTalkTime } = require('./utils');
+const {fetchTranScript,getTeamTalkTime,getFillerWordPerMin } = require('./utils');
 
 module.exports = {
   before: {
@@ -7,7 +7,11 @@ module.exports = {
     get: [],
     create: [],
     update: [],
-    patch: [fetchTranScript,getTeamTalkTime],
+    patch: [
+      fetchTranScript,
+      getTeamTalkTime,
+      getFillerWordPerMin,
+    ],
     remove: []
   },
 
