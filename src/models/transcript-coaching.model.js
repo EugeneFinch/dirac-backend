@@ -13,35 +13,27 @@ module.exports = function (app) {
     },
     team_talk_time : {
       type: DataTypes.INTEGER,
-      allowNull: false
     },
     longest_monologue : {
       type: DataTypes.INTEGER,
-      allowNull: false
     },
     word_per_min : {
       type: DataTypes.INTEGER,
-      allowNull: false
     },
     resp_time : {
       type: DataTypes.INTEGER,
-      allowNull: false
     },
     no_engage_question : {
       type: DataTypes.INTEGER,
-      allowNull: false
     },
     no_customer_objection : {
       type: DataTypes.INTEGER,
-      allowNull: false
     },
     next_steps : {
       type: DataTypes.INTEGER,
-      allowNull: false
     },
     no_competitor_mention: {
       type: DataTypes.INTEGER,
-      allowNull: false
     },
   }, {
     timestamps: false,

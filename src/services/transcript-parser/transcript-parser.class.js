@@ -75,8 +75,23 @@ class Service {
         end_time : l.end_time,
       };
     });
+    const transcript = await this.options.app.service('transcript')._find({
+      query: {
+        $limit: 1,
+        recording_id:id
+      }
+    });
+
+    if(transcript.total >0 ){
+      await this.options.app.service('transcript')._remove(null,{
+        query: {
+          recording_id:id
+        }
+      });
+    }
+  
     await this.options.app.service('transcript').create(insertData);
-    // await this.options.app.service('transcript-coaching').update(id,{});
+    await this.options.app.service('transcript-coaching').create({recording_id:id});
 
     return {message:'done'};
 
