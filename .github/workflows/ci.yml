@@ -2,8 +2,9 @@ on:
   push:
     branches:
       - master
+      - dev
 
-name: Deploy to Amazon ECS
+name: Deploy to AWS
 
 jobs:
   deploy:
@@ -32,16 +33,29 @@ jobs:
       env:
         ECR_REGISTRY: thiennhan
         ECR_REPOSITORY: dirac
-        IMAGE_TAG: ${{ github.sha }}
+        IMAGE_TAG: ${github.ref}-${{ github.sha }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-    - name: executing remote ssh commands using password
+    - name: deploy prod
       uses: appleboy/ssh-action@master
+      if: github.ref == 'refs/heads/master'
       with:
         host: 54.255.176.251
+        username: ec2-user
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          docker pull ${{ steps.build-image.outputs.image }}
+          docker stop dirac-backend && docker rm dirac-backend
+          docker run -d --name=dirac-backend  --cap-add=SYS_ADMIN -p 80:3030 ${{ steps.build-image.outputs.image }}
+
+    - name: deploy dev
+      uses: appleboy/ssh-action@master
+      if: github.ref == 'refs/heads/master'
+      with:
+        host: 54.255.239.159
         username: ec2-user
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
