@@ -57,7 +57,6 @@ module.exports = {
         });
       }else{
         await recordingSV.patch(recordingId,{
-          filename,
           url : context.result.id,
           status :'IN_PROGRESS',
         });

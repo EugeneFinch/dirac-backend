@@ -4,12 +4,6 @@ const puppeteer = require('puppeteer-extra');
 // add stealth plugin and use defaults (all evasion techniques)
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
-const getPlatform = (roomURL) => {
-  if(roomURL.includes('meet.google.com')){
-    return 'Gmeet meeting';
-  }
-};
-
 
 (async() => {
   // const roomURL = 'https://meet.google.com/pcd-tpqw-drr?pli=1&authuser=1';
@@ -17,7 +11,6 @@ const getPlatform = (roomURL) => {
 
   const roomURL = process.argv[2].split('=')[1];
   const recordingId = process.argv[3].split('=')[1];
-  const platform = getPlatform(roomURL);
   const browser = await puppeteer.launch({
     args: [ ],
   });
@@ -54,11 +47,12 @@ const getPlatform = (roomURL) => {
     });
     await page.evaluate(jquery_ev_fn);
   
-    await page.evaluate(({recordingId,platform}) => {
+    await page.evaluate(({recordingId}) => {
       return new Promise((resolve,reject)=>{
         const TEN_SECOND = 10000;
         var socketio = io('http://localhost:3030');
-        const fileName = platform;
+        var d = new Date();
+        const fileName = `${d.getMinutes()}-${d.getSeconds()}.weba`;
         const dataEvent = `data-${fileName}`;
         const endEvent = `end-${fileName}`;
         socketio.on('connect', function() {
@@ -115,7 +109,7 @@ const getPlatform = (roomURL) => {
   
         
       });    
-    },{recordingId,platform});
+    },{recordingId});
     console.log('Stop simulator');
     await page.click('[data-tooltip="Leave call"]').catch(err=>console.log('notfound [data-tooltip="Leave call"] button'));
     await browser.close();

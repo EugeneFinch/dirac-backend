@@ -1,6 +1,13 @@
 const gmail = require('../../gmail');
 const get = require('lodash/get');
 
+const getRecordingName = (roomURL) => {
+  if(roomURL.includes('meet.google.com')){
+    return 'Gmeet meeting';
+  }
+};
+
+
 module.exports = {
   before: {
     all: [],
@@ -41,19 +48,20 @@ module.exports = {
             context.result = { message: msg};
             return;
           }
-  
-          const record = await context.app.service('recording').create({
-            user_id:get(user,'0.id'),
-            status: 'RECORDING',
-            filename:'',
-            url:'',
-          });
-  
+
           if(!roomURL){
             console.log(`No room url found ${historyId}`);
             context.result = { message: `No room url found for history ${historyId}`};
             return;
           }
+  
+          const record = await context.app.service('recording').create({
+            user_id:get(user,'0.id'),
+            status: 'RECORDING',
+            filename:getRecordingName(roomURL),
+            url:'',
+          });
+  
   
           context.data.room_url = roomURL;
           context.data.record_id = record.id;
