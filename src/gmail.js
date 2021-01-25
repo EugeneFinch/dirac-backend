@@ -73,7 +73,7 @@ function watchInbox(topic,auth) {
     }
   }, (err, res) => {
     if (err) return console.log('The API returned an error: ' + err);
-    console.log('res', res);
+    console.log('Watch sucess');
    
   });
 }
