@@ -32,7 +32,7 @@
     },
     "oauth": {
       "defaults": {
-        "host": "api-dev.diracnlp.com",
+        "host": "dev-api.diracnlp.com",
         "protocol": "https",
         "transport": "session"
       },
