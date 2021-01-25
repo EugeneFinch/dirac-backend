@@ -55,7 +55,7 @@ jobs:
       uses: appleboy/ssh-action@master
       if: ${{github.ref == 'refs/heads/dev'}}
       with:
-        host: 54.255.239.159
+        host: 18.139.77.12
         username: ec2-user
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
