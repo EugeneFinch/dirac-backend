@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-
+const env = process.env.NODE_ENV || 'dev';
 
 module.exports = function (context) {
   const transcribeservice = new AWS.TranscribeService({
@@ -13,7 +13,7 @@ module.exports = function (context) {
   }
 
   var params = {
-    TranscriptionJobName: `dirac-dev-${context.result.id}`, //required
+    TranscriptionJobName: `dirac-${env}-${context.result.id}`, //required
     Media: { /* required */
       MediaFileUri: `s3://transcripts-dirac/${context.data.url}`
     },

@@ -5,6 +5,8 @@ const https = require('https');
 const SrtConvert = require('./srtConvert');
 const get = require('lodash/get');
 const path = require('path');
+const env = process.env.NODE_ENV || 'dev';
+
 const transform =(s3File,jobName) => {
   return new Promise((resolve, reject) => {
     const filePath = path.join(process.cwd(),`./uploads/${jobName}.json`);
@@ -51,7 +53,7 @@ class Service {
       secretAccessKey: this.options.app.get('AWS_SECRET_ACCESS_KEY'),
       region:'ap-southeast-1'
     });
-    const job  ={TranscriptionJobName:`dirac-dev-${id}`};
+    const job  ={TranscriptionJobName:`dirac-${env}-${id}`};
     const rep = await  transcribeservice.getTranscriptionJob(job).promise();
     const s3File =rep.TranscriptionJob.Transcript.RedactedTranscriptFileUri;
     const status = rep.TranscriptionJob.TranscriptionJobStatus;
