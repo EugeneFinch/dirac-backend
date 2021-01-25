@@ -13,10 +13,10 @@ const TOKEN_PATH = path.join(__dirname,`../config/${process.env.NODE_ENV}.token.
  * @param {function} callback The callback to call with the authorized client.
  */
 function authorize(app) {
-  const credentials = app.get('web');
-  const {client_secret, client_id, redirect_uris} = credentials;
+  const credentials = app.get('authentication');
+  const {secret, key, redirect_uri} = credentials.oauth.google;
   const oAuth2Client = new google.auth.OAuth2(
-    client_id, client_secret, redirect_uris[0]);
+    key, secret, redirect_uri);
 
   // Check if we have previously stored a token.
   try{

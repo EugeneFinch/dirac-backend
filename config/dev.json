@@ -52,19 +52,5 @@
   },
   "front-end": "https://app-dev.diracnlp.com",
   "APP_SECRET": "bwvBIKT7Ia",
-  "MAIL_INBOX_TOPIC": "projects/dirac-296815/topics/mail-inbox-dev",
-  "web": {
-    "client_id": "17235609396-qb2974k8338ubq5ikmn4d4o68he9vhq0.apps.googleusercontent.com",
-    "project_id": "dirac-296815",
-    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    "token_uri": "https://oauth2.googleapis.com/token",
-    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-    "client_secret": "kJaYi1uE69cibbFlkJL2JA0M",
-    "redirect_uris": [
-      "http://localhost:3030"
-    ],
-    "javascript_origins": [
-      "http://localhost:3030"
-    ]
-  }
+  "MAIL_INBOX_TOPIC": "projects/dirac-296815/topics/mail-inbox-dev"
 }

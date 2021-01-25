@@ -1,7 +1,7 @@
 {
   "host": "localhost",
   "port": 3030,
-  "mysql": "mysql://admin:XPDQVsIOkZ8csDFrOnNY@dirac-prod.crmcsvd5oslk.ap-southeast-1.rds.amazonaws.com/dev",
+  "mysql": "mysql://admin:XPDQVsIOkZ8csDFrOnNY@dirac-prod.crmcsvd5oslk.ap-southeast-1.rds.amazonaws.com/dirac",
   "AWS_ACCESS_KEY_ID": "AKIAXHVYGZ73MOMEUP4H",
   "AWS_SECRET_ACCESS_KEY": "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",
   "GOOGLE_API_KEY": "AIzaSyDDSpnXTeYt13QFQt5wJGRsPi1QBzAT9Jg",
