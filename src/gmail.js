@@ -3,13 +3,8 @@ const path = require('path');
 const readline = require('readline');
 const {google} = require('googleapis');
 
-// If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
-// The file token.json stores the user's access and refresh tokens, and is
-// created automatically when the authorization flow completes for the first
-// time.
-const TOKEN_PATH = 'token.json';
-const CREDENTIAL_PATH = path.join(__dirname,'../config/dirac-296815-b32c0222cbfe.json');
+const TOKEN_PATH = path.join(__dirname,`../config/${process.env.NODE_ENV}.token.json`);
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -17,12 +12,9 @@ const CREDENTIAL_PATH = path.join(__dirname,'../config/dirac-296815-b32c0222cbfe
  * @param {Object} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
-watchInbox(authorize());
-function authorize() {
-  const content = fs.readFileSync(CREDENTIAL_PATH);
-  const credentials = JSON.parse(content);
-
-  const {client_secret, client_id, redirect_uris} = credentials.web;
+function authorize(app) {
+  const credentials = app.get('web');
+  const {client_secret, client_id, redirect_uris} = credentials;
   const oAuth2Client = new google.auth.OAuth2(
     client_id, client_secret, redirect_uris[0]);
 
@@ -71,12 +63,12 @@ function getNewToken(oAuth2Client) {
  *
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
-function watchInbox(auth) {
+function watchInbox(topic,auth) {
   const gmail = google.gmail({version: 'v1', auth});
   gmail.users.watch({
     userId: 'me',
     requestBody:{
-      topicName:'projects/dirac-296815/topics/mail-inbox',
+      topicName:topic,
       labelIds:['INBOX']
     }
   }, (err, res) => {
@@ -133,4 +125,5 @@ async function getInviteInfo (auth,startHistoryId) {
 module.exports = {
   authorize,
   getInviteInfo,
+  watchInbox,
 };
