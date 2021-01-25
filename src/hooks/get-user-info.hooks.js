@@ -1,5 +1,3 @@
-const get = require('lodash/get');
-const set = require('lodash/set');
 
 module.exports = async function (ctx) {
   const sequelize = ctx.app.get('sequelizeClient');
