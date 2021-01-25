@@ -25,14 +25,14 @@
       "header": {
         "typ": "access"
       },
-      "audience": "https://dev-app.diracnlp.com",
+      "audience": "https://app.dev.diracnlp.com",
       "issuer": "feathers",
       "algorithm": "HS256",
       "expiresIn": "1d"
     },
     "oauth": {
       "defaults": {
-        "host": "dev-api.diracnlp.com",
+        "host": "api.dev.diracnlp.com",
         "protocol": "https",
         "transport": "session"
       },
@@ -45,11 +45,11 @@
           "openid",
           "https://www.googleapis.com/auth/calendar.readonly"
         ],
-        "redirect_uri": "https://dev-api.diracnlp.com/oauth/google/callback",
+        "redirect_uri": "https://api.dev.diracnlp.com/oauth/google/callback",
         "nonce": true
       }
     }
   },
-  "front-end": "https://app.diracnlp.com",
+  "front-end": "https://app.dev.diracnlp.com",
   "APP_SECRET": "bwvBIKT7Ia"
 }
