@@ -17,6 +17,7 @@ const appHooks = require('./app.hooks');
 const channels = require('./channels');
 
 const sequelize = require('./sequelize');
+const {watchInbox,authorize} = require('./gmail');
 const authentication = require('./authentication');
 
 const app = express(feathers());
@@ -39,6 +40,8 @@ app.configure(express.rest());
 
 app.configure(sequelize);
 
+//Watch agent mail inbox
+watchInbox(app.get('MAIL_INBOX_TOPIC'),authorize(app));
 
 // Configure other middleware (see `middleware/index.js`)
 app.configure(middleware);
