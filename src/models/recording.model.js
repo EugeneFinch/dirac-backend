@@ -35,5 +35,12 @@ module.exports = function (app) {
     timestamps: false
   });
 
+  recording.associate = function (models) {
+    recording.belongsTo(models.user,{
+      foreignKey: {
+        name: 'user_id'
+      }});
+  };
+
   return recording;
 };
