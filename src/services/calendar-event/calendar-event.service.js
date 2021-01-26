@@ -2,7 +2,8 @@
 const createService = require('feathers-sequelize');
 const createModel = require('../../models/calendar-event.model');
 const hooks = require('./calendar-event.hooks');
-const { get } = require('lodash')
+const { get } = require('lodash');
+const env = process.env.NODE_ENV || 'dev';
 
 module.exports = function (app) {
   const Model = createModel(app);
@@ -18,8 +19,8 @@ module.exports = function (app) {
     (req, res, next) => {
       if (req.headers) {
         const access_token = get(req, 'headers.x-goog-channel-token');
-        const user_id = get(req, 'headers.x-goog-channel-id');
-        req.feathers.body = { user_id, access_token }
+        const user_id = get(req, 'headers.x-goog-channel-id').split(`${env}-`)[1];
+        req.feathers.body = { user_id, access_token };
       }
       next();
     },
