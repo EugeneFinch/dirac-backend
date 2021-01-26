@@ -3,6 +3,7 @@ const { LocalStrategy } = require('@feathersjs/authentication-local');
 const { expressOauth, OAuthStrategy } = require('@feathersjs/authentication-oauth');
 const { get } = require('lodash');
 const calendar = require('./calendar');
+const env = process.env.NODE_ENV || 'dev';
 
 class GoogleStrategy extends OAuthStrategy {
   async getProfile(authResult) {
@@ -21,17 +22,17 @@ class GoogleStrategy extends OAuthStrategy {
       const response = await calendar.watchCalendar({
         token: authResult.access_token,
         email,
-        id: get(user, '0.id'),
-        resourceId: get(user, '0.resourceId')
+        id: `${env}-${get(user, '0.id')}`,
+        resourceId: `${env}-${get(user, '0.resourceId')}`
       });
 
       const resourceId = get(response, 'data.resourceId');
 
       if (resourceId) {
-        await this.app.service('users').patch(get(user, '0.id'), { resourceId })
+        await this.app.service('users').patch(get(user, '0.id'), { resourceId });
       }
 
-      calendar.handleUpdateCalendarEvent({ app: this.app, token: authResult.access_token, email, key, user_id: get(user, '0.id'), })
+      calendar.handleUpdateCalendarEvent({ app: this.app, token: authResult.access_token, email, key, user_id: get(user, '0.id'), });
     }
 
     return profile;

@@ -11,14 +11,14 @@ function watchCalendar({ token, email, id, resourceId }) {
     },
     data: {
       id, // Your channel ID.
-      type: "web_hook",
-      address: "https://api.diracnlp.com/calendar-event", // Your receiving URL.
+      type: 'web_hook',
+      address: 'https://api.diracnlp.com/calendar-event', // Your receiving URL.
       token, // (Optional) Your channel token.
       // "expiration": 1426325213000 // (Optional) Your requested channel expiration time.
     }
   })
     .then(data => {
-      console.log('push watch calendar success')
+      console.log('push watch calendar success');
       return data;
     })
     .catch(error => {
@@ -35,7 +35,7 @@ function watchCalendar({ token, email, id, resourceId }) {
         console.log('Error', error.message);
       }
       return null;
-    })
+    });
 }
 
 function getEventList({ token, email, key, syncToken }) {
@@ -45,13 +45,13 @@ function getEventList({ token, email, key, syncToken }) {
     timeMax: dayjs().add(7, 'day').toISOString(),
     timeMin: dayjs().toISOString(),
     singleEvents: true,
-  }
+  };
 
   if (syncToken) {
     params = {
       key,
       syncToken
-    }
+    };
   }
 
   return axios(`https://www.googleapis.com/calendar/v3/calendars/${email}/events`, {
@@ -61,18 +61,18 @@ function getEventList({ token, email, key, syncToken }) {
       'Content-Type': 'application/json',
     },
     params
-  })
+  });
 }
 
 async function handleUpdateCalendarEvent({ app, token, email, key, syncToken, user_id }) {
-  const db = app.get('sequelizeClient')
+  const db = app.get('sequelizeClient');
   try {
     const response = await getEventList({ token, email, key, syncToken });
 
     let items = get(response, 'data.items');
     const nextSyncToken = get(response, 'data.nextSyncToken');
 
-    await app.service('users').patch(user_id, { nextSyncToken })
+    await app.service('users').patch(user_id, { nextSyncToken });
 
     forEach(items, item => {
       const params = {
@@ -93,14 +93,14 @@ async function handleUpdateCalendarEvent({ app, token, email, key, syncToken, us
         end: get(item, 'end.dateTime', ''),
         description: item.description,
         hangoutLink: item.hangoutLink,
-      }
+      };
       db.models.calendar_event.upsert(params)
         .then(o => console.log('upsert success'))
         .catch(e => console.log('upsert error', e));
-    })
+    });
 
   } catch (error) {
-    console.log('asdjkfhnsda', error)
+    console.log('asdjkfhnsda', error);
   }
 }
 
