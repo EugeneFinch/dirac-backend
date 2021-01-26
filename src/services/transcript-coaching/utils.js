@@ -96,7 +96,7 @@ const getFillerWordPerMin = async (ctx)=> {
     return cur;
   },{talk_time:0,no_filer:0});
 
-  const res  = Math.round(agg.no_filer/ Math.floor((agg.talk_time/60)));
+  const res  = agg.talk_time == 0 ? 0 : Math.round(agg.no_filer/ Math.floor((agg.talk_time/60)));
   ctx.data={
     ...ctx.data,
     filler_word_per_min:res
