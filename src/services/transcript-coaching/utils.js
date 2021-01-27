@@ -89,10 +89,8 @@ const getFillerWordPerMin = async (ctx)=> {
   const agg = transcripts.reduce((cur,v)=>{
     const speakerId = v.get('speaker_id');
     if(get(speakerObj,[speakerId,'team_member']) == 1){
-      const isFiller = fillerReg.test(v.content);
-      if (isFiller){
-        cur.no_filer += 1;
-      }
+      const arr = [...v.content.matchAll(fillerReg)];
+      cur.no_filer += arr.length;
       cur.talk_time += (v.end_time - v.start_time);
     }
 
