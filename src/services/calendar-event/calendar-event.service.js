@@ -19,7 +19,7 @@ module.exports = function (app) {
     (req, res, next) => {
       if (req.headers) {
         const access_token = get(req, 'headers.x-goog-channel-token');
-        const user_id = get(req, 'headers.x-goog-channel-id').split(`${env}-`)[1];
+        const user_id = get(req, 'headers.x-goog-channel-id','').split(`${env}-`)[1];
         req.feathers.body = { user_id, access_token };
       }
       next();
