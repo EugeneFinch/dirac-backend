@@ -12,7 +12,7 @@
         "<node_internals>/**"
       ],
       "env": {
-        "NODE_ENV": "dev"
+        "NODE_ENV": "prod"
       },
       "program": "${workspaceFolder}/src"
     },

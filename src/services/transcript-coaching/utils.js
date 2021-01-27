@@ -1,5 +1,6 @@
 const get = require('lodash/get');
 const maxBy = require('lodash/maxBy');
+const minBy = require('lodash/minBy');
 const keyBy = require('lodash/keyBy');
 const uniq = require('lodash/uniq');
 const Sequelize = require('sequelize');
@@ -55,7 +56,9 @@ const getTeamTalkTime = async (ctx)=> {
     return cur;
   },0);
 
-  const totalTime = maxBy(transcripts,v=>v.get('end_time')).get('end_time');
+  const endTime = maxBy(transcripts,v=>v.get('end_time')).get('end_time');
+  const startTime = minBy(transcripts,v=>v.get('start_time')).get('start_time');
+  const totalTime = endTime - startTime;
   const res  = Math.round(teamTime/totalTime*100);
   ctx.data={
     ...ctx.data,
@@ -96,7 +99,7 @@ const getFillerWordPerMin = async (ctx)=> {
     return cur;
   },{talk_time:0,no_filer:0});
 
-  const res  = agg.talk_time == 0 ? 0 : Math.round(agg.no_filer/ Math.floor((agg.talk_time/60)));
+  const res  = agg.talk_time == 0 ? 0 : Math.round(agg.no_filer/ (agg.talk_time/60));
   ctx.data={
     ...ctx.data,
     filler_word_per_min:res
