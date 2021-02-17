@@ -22,6 +22,7 @@ function authorize(app) {
   try{
     const token = fs.readFileSync(TOKEN_PATH);
     oAuth2Client.setCredentials(JSON.parse(token));
+    console.log("token auth", token);
     return oAuth2Client;
   }catch(err) {
     return getNewToken(oAuth2Client);
@@ -65,6 +66,7 @@ function getNewToken(oAuth2Client) {
  */
 function watchInbox(topic,auth) {
   const gmail = google.gmail({version: 'v1', auth});
+  console.log("GMAIL", gmail);
   gmail.users.watch({
     userId: 'me',
     requestBody:{
@@ -83,7 +85,7 @@ async function getInviteInfo (auth,startHistoryId) {
     host:'',
     roomURL:''
   };
-
+  console.log("RESULT", result);
   try{
     const history = await gmail.users.history.list({
       userId:'me',
@@ -92,7 +94,7 @@ async function getInviteInfo (auth,startHistoryId) {
       historyTypes:'MESSAGE_ADDED',
       maxResults:1
     });
-
+    console.log("HISTORY", history);
     if(!history.data.history){
       console.log('NO HISTORY');
       return;
@@ -103,11 +105,15 @@ async function getInviteInfo (auth,startHistoryId) {
       userId:'me',
       id:messageId
     });
-  
+    console.log("message", message);
     const roomRegex = /meet.google.com\/(\w|-)+/g;
     const roomURL = roomRegex.exec(message.data.snippet);
     const hostRegex = /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/g;
     const host = hostRegex.exec(message.data.snippet);
+    console.log("roomRegex", roomRegex);
+    console.log("roomUrl", roomURL);
+    console.log("hostRegex", hostRegex);
+    console.log("host", host);
     if(!roomURL || !host){
       return result;
     }
