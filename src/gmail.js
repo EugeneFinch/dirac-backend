@@ -20,9 +20,10 @@ function authorize(app) {
   try{
     const token = fs.readFileSync(TOKEN_PATH);
     oAuth2Client.setCredentials(JSON.parse(token));
-    console.log("token auth", token);
+    console.log("token auth", JSON.parse(token));
     return oAuth2Client;
   }catch(err) {
+    console.log("New Token");
     return getNewToken(oAuth2Client);
   }
 }
