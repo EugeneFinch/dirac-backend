@@ -15,9 +15,7 @@ const TOKEN_PATH = path.join(__dirname,`../config/${process.env.NODE_ENV}.token.
 function authorize(app) {
   const credentials = app.get('authentication');
   const {secret, key, redirect_uri} = credentials.oauth.google;
-  const oAuth2Client = new google.auth.OAuth2(
-    key, secret, redirect_uri);
-
+  const oAuth2Client = new google.auth.OAuth2(key, secret, redirect_uri);
   // Check if we have previously stored a token.
   try{
     const token = fs.readFileSync(TOKEN_PATH);
@@ -65,6 +63,7 @@ function getNewToken(oAuth2Client) {
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
 function watchInbox(topic,auth) {
+  console.log("auth", auth);
   const gmail = google.gmail({version: 'v1', auth});
   console.log("GMAIL", gmail);
   gmail.users.watch({
@@ -74,7 +73,11 @@ function watchInbox(topic,auth) {
       labelIds:['INBOX']
     }
   }, (err, res) => {
-    if (err) return console.log('The API returned an error: ' + err);
+    if (err) {
+      console.log("err", err);
+      console.log("res", res);
+      return console.log("The API returned an error: " + err);
+    }
     console.log('Watch sucess');
    
   });
