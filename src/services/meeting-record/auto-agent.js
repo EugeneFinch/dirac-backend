@@ -6,11 +6,11 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 
 (async() => {
-  // const roomURL = 'https://meet.google.com/pcd-tpqw-drr?pli=1&authuser=1';
-  // const recordingId = 43;
+  const roomURL = 'https://meet.google.com/pcd-tpqw-drr?pli=1&authuser=1';
+  const recordingId = 43;
 
-  const roomURL = process.argv[2].split('=')[1];
-  const recordingId = process.argv[3].split('=')[1];
+  // const roomURL = process.argv[2].split('=')[1];
+  // const recordingId = process.argv[3].split('=')[1];
   const browser = await puppeteer.launch({
     headless:true,
     args: [ '--use-fake-ui-for-media-stream' ],
@@ -60,15 +60,10 @@ puppeteer.use(StealthPlugin());
       }
     });
     
-  
-    // Wait for search results page to load
-    await page.waitForSelector('[data-loadingmessage]',{visible:true,timeout:30000});
-    await page.waitForSelector('[data-loadingmessage]',{hidden:true,timeout:30000});
-    const rejectXpath = '//div[text()[contains(.,"Someone in the call denied your request to join")] ]';
-    const ele = await page.$x(rejectXpath);
-    if(ele && ele.length >0 ){
-      throw new Error('Reject to join meeting');
-    }
+    //Wait to allow join
+    await page.waitForSelector('[data-self-name="You"]',{visible:true,timeout:30000}).catch(()=>{
+      throw new Error('Not allow to join meeting');
+    });
 
     console.log('JOIN!', page.url());
   
