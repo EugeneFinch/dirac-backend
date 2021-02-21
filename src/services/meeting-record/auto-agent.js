@@ -6,11 +6,11 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 
 (async() => {
-  const roomURL = 'https://meet.google.com/pcd-tpqw-drr?pli=1&authuser=1';
-  const recordingId = 43;
+  // const roomURL = 'https://meet.google.com/pcd-tpqw-drr?pli=1&authuser=1';
+  // const recordingId = 43;
 
-  // const roomURL = process.argv[2].split('=')[1];
-  // const recordingId = process.argv[3].split('=')[1];
+  const roomURL = process.argv[2].split('=')[1];
+  const recordingId = process.argv[3].split('=')[1];
   const browser = await puppeteer.launch({
     headless:true,
     args: [ '--use-fake-ui-for-media-stream' ],
