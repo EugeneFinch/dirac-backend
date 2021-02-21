@@ -15,15 +15,15 @@ const TOKEN_PATH = path.join(__dirname,`../config/${process.env.NODE_ENV}.token.
 function authorize(app) {
   const credentials = app.get('authentication');
   const {secret, key, redirect_uri} = credentials.oauth.google;
-  const oAuth2Client = new google.auth.OAuth2(
-    key, secret, redirect_uri);
-
+  const oAuth2Client = new google.auth.OAuth2(key, secret, redirect_uri);
   // Check if we have previously stored a token.
   try{
     const token = fs.readFileSync(TOKEN_PATH);
     oAuth2Client.setCredentials(JSON.parse(token));
+    console.log('token auth', JSON.parse(token));
     return oAuth2Client;
   }catch(err) {
+    console.log('New Token');
     return getNewToken(oAuth2Client);
   }
 }
@@ -72,7 +72,11 @@ function watchInbox(topic,auth) {
       labelIds:['INBOX']
     }
   }, (err, res) => {
-    if (err) return console.log('The API returned an error: ' + err);
+    if (err) {
+      console.log('err', err);
+      console.log('res', res);
+      return console.log('The API returned an error: ' + err);
+    }
     console.log('Watch sucess');
    
   });
@@ -83,7 +87,7 @@ async function getInviteInfo (auth,startHistoryId) {
     host:'',
     roomURL:''
   };
-
+  console.log('RESULT', result);
   try{
     const history = await gmail.users.history.list({
       userId:'me',
@@ -92,7 +96,7 @@ async function getInviteInfo (auth,startHistoryId) {
       historyTypes:'MESSAGE_ADDED',
       maxResults:1
     });
-
+    console.log('HISTORY', history);
     if(!history.data.history){
       console.log('NO HISTORY');
       return;
@@ -103,11 +107,15 @@ async function getInviteInfo (auth,startHistoryId) {
       userId:'me',
       id:messageId
     });
-  
+    console.log('message', message);
     const roomRegex = /meet.google.com\/(\w|-)+/g;
     const roomURL = roomRegex.exec(message.data.snippet);
     const hostRegex = /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/g;
     const host = hostRegex.exec(message.data.snippet);
+    console.log('roomRegex', roomRegex);
+    console.log('roomUrl', roomURL);
+    console.log('hostRegex', hostRegex);
+    console.log('host', host);
     if(!roomURL || !host){
       return result;
     }

@@ -12,25 +12,39 @@ puppeteer.use(StealthPlugin());
   const roomURL = process.argv[2].split('=')[1];
   const recordingId = process.argv[3].split('=')[1];
   const browser = await puppeteer.launch({
-    args: [ ],
+    headless:true,
+    args: [ '--use-fake-ui-for-media-stream' ],
   });
   const page = await browser.newPage();
   try{
-   
-    await page.goto(roomURL, {waitUntil: 'load'});
-    await page.waitForSelector('input',{visible:true,timeout:10000});
-    await page.waitForTimeout(1000);
-    // Type our query into the search bar
-    await page.type('input','Dirac Agent', {delay: 100});
-  
-    // Submit form
+    await page.goto('https://accounts.google.com/signin/v2/identifier', { waitUntil: 'networkidle2' });
+    // Wait for email input.
+    await page.waitForSelector('#identifierId');
+    
+    // Keep trying email until user inputs email correctly.
+    // This will error due to captcha if too many incorrect inputs.
+    const email = 'ai@diracnlp.com';
+    await page.type('#identifierId', email);
     await page.keyboard.press('Enter');
+    await page.waitForSelector('#password input[type="password"]',{visible:true});
+    console.log('Enter email');
+    const password = 'nhan2021!';
+    // Wait for password input
+    await page.type('#password input[type="password"]', password);
+    await page.keyboard.press('Enter');
+    console.log('Enter password');
+    await page.waitForNavigation();
+    console.log('Logged in');
+
+    await page.goto(roomURL, {waitUntil: 'load'});
+    console.log('Wait join Button');
+    const joinBtn = '//span[contains(.,"Ask to join") or contains(.,"Join now")]//parent::div';
+    await page.waitForXPath(joinBtn,{visible:true,timeout:10000});
+    await page.waitForTimeout(1000);
+    const [button] = await page.$x(joinBtn);
+    await button.click();
+    console.log('click join Button');
   
-    // Wait for search results page to load
-    await page.waitForSelector('[data-loadingmessage]',{visible:true,timeout:30000});
-    await page.waitForSelector('[data-loadingmessage]',{hidden:true,timeout:30000});
-    console.log('JOIN!', page.url());
-    // await page.screenshot({path: 'join.png'});
     page.on('console', msg => {
       for (let i = 0; i < msg.args().length; ++i)
         console.log(`${i}: ${msg.args()[i]}`);
@@ -39,6 +53,24 @@ puppeteer.use(StealthPlugin());
       for (let i = 0; i < msg.args().length; ++i)
         console.log(`Error: ${msg.args()[i]}`);
     });
+    page.on('response', req => {
+      if(req.url()==='https://meet.google.com/$rpc/google.rtc.meetings.v1.MeetingDeviceService/CreateMeetingDevice'){
+        console.log('req',req.url());
+        console.log('status',req._status);
+      }
+    });
+    
+  
+    // Wait for search results page to load
+    await page.waitForSelector('[data-loadingmessage]',{visible:true,timeout:30000});
+    await page.waitForSelector('[data-loadingmessage]',{hidden:true,timeout:30000});
+    const rejectXpath = '//div[text()[contains(.,"Someone in the call denied your request to join")] ]';
+    const ele = await page.$x(rejectXpath);
+    if(ele && ele.length >0 ){
+      throw new Error('Reject to join meeting');
+    }
+
+    console.log('JOIN!', page.url());
   
     var jquery_ev_fn = await page.evaluate(function(){
       return window.fetch('https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js').then(function(res){
@@ -116,7 +148,6 @@ puppeteer.use(StealthPlugin());
     process.exit(1);
   }catch(err){
     console.log('err', err);
-    await page.screenshot({path: 'error.png'});
     await browser.close();
     process.exit(1);
   }
