@@ -41,7 +41,6 @@ app.configure(express.rest());
 app.configure(sequelize);
 
 //Watch agent mail inbox
-console.log("Watchinbox");
 watchInbox(app.get('MAIL_INBOX_TOPIC'),authorize(app));
 
 // Configure other middleware (see `middleware/index.js`)
