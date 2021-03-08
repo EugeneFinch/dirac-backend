@@ -24,8 +24,10 @@ RUN apk update && apk upgrade && \
 RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
     && mkdir -p /home/pptruser/Downloads /app \
     && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser /app 
+    && chown -R pptruser:pptruser /app
 RUN mkdir /app/uploads && chown -R pptruser:pptruser /app/uploads
+
+RUN echo "*/2 * * * * node src/calendar-cronjob.js" >> /etc/crontabs/root
 
 # Run everything after as non-privileged user.
 USER pptruser
@@ -33,4 +35,5 @@ USER pptruser
 COPY . .
 
 EXPOSE 3030
+
 ENTRYPOINT yarn start

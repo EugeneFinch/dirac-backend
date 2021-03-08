@@ -59,6 +59,10 @@ module.exports = function (app) {
     },
     hangoutLink: {
       type: DataTypes.STRING,
+    },
+    joined: {
+      type: DataTypes.TINYINT,
+      defaultValue: 0
     }
   }, {
     timestamps: false,
