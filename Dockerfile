@@ -3,9 +3,6 @@ WORKDIR app
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-COPY docker-entrypoint.sh /app/docker-entrypoint.sh
-RUN chmod +x /app/docker-entrypoint.sh
-
 COPY package.json yarn.lock ./
 RUN yarn install --prod
 
@@ -31,18 +28,20 @@ RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
 
 RUN echo "*/2 * * * * cd /app && node /app/src/calendar-cronjob.js >> /app/calendar-cronjob.log 2>&1" >> /home/pptruser/crontabs/pptruser
 
+COPY . .
+
 RUN chown -R pptruser:pptruser /home/pptruser \
     && chown -R pptruser:pptruser /app \
     && chown -R pptruser:pptruser /usr/sbin/crond \
     && setcap cap_setgid=ep /usr/sbin/crond
 RUN mkdir /app/uploads && chown -R pptruser:pptruser /app/uploads
 
+RUN chmod +x /app/docker-entrypoint.sh
+
 RUN crontab /home/pptruser/crontabs/pptruser
 # Run everything after as non-privileged user.
 USER pptruser
 
-COPY . .
-
 EXPOSE 3030
 
-ENTRYPOINT yarn start
+ENTRYPOINT /app/docker-entrypoint.sh
