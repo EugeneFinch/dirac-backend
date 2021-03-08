@@ -39,7 +39,7 @@ RUN crontab /home/pptruser/crontabs/pptruser
 # Run everything after as non-privileged user.
 USER pptruser
 
-RUN crond -b -l 8
+RUN crond -c /home/pptruser/crontabs
 
 COPY . .
 
