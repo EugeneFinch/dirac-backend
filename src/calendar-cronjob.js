@@ -43,6 +43,8 @@ const calendarCronjob = async (app) => {
     }
   })
 
+  console.log(moment().utc().format('YYYY-MM-DD HH:mm:ss'))
+  console.log(moment().utc().add(15, 'minutes').format('YYYY-MM-DD HH:mm:ss'))
   console.log(calendarEventsQuery);
 
   const calendarEvents = calendarEventsQuery.data;
