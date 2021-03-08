@@ -45,4 +45,4 @@ COPY . .
 
 EXPOSE 3030
 
-ENTRYPOINT /app/docker-entrypoint.sh
+ENTRYPOINT yarn start
