@@ -174,13 +174,16 @@ puppeteer.use(StealthPlugin());
     await page.click('[data-tooltip="Leave call"]').catch(err=>console.log('notfound [data-tooltip="Leave call"] button'));
     await browser.close();
     process.exit(1);
-  }catch(err){
+  } catch (err){
     if (calendarEventId) {
       await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 0 });
     }
     console.log('err', err);
     await browser.close();
-    process.exit(1);
+    return process.exit(1);
+  } finally {
+    await browser.close();
+    return process.exit(1);
   }
 
 })();
