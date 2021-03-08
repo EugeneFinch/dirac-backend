@@ -1,7 +1,6 @@
 const axios = require('axios');
 const dayjs = require('dayjs');
 const { get, forEach } = require('lodash');
-const { v4: uuidv4 } = require('uuid');
 
 
 function watchCalendar({ token, email, id, resourceId }) {
@@ -12,7 +11,7 @@ function watchCalendar({ token, email, id, resourceId }) {
       'Content-Type': 'application/json',
     },
     data: {
-      id: uuidv4(), // Your channel ID.
+      id, // Your channel ID.
       type: 'web_hook',
       address: 'https://api.diracnlp.com/calendar-event', // Your receiving URL.
       token, // (Optional) Your channel token.
@@ -68,6 +67,7 @@ function getEventList({ token, email, key, syncToken }) {
 }
 
 async function handleUpdateCalendarEvent({ app, token, email, key, syncToken, user_id }) {
+  console.log('handle update calendar event', user_id);
   const db = app.get('sequelizeClient');
   try {
     const response = await getEventList({ token, email, key, syncToken });

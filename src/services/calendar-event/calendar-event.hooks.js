@@ -13,8 +13,8 @@ module.exports = {
     create: [
       async context => {
         try {
+          console.log('before create calendar');
           const key = context.app.get('GOOGLE_API_KEY');
-          console.log(context);
           const user_id = get(context, 'params.body.user_id');
           const access_token = get(context, 'params.body.access_token');
           const userInfo = await context.app.service('users').get(user_id);
