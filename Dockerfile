@@ -27,13 +27,13 @@ RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
     && chown -R pptruser:pptruser /app
 RUN mkdir /app/uploads && chown -R pptruser:pptruser /app/uploads
 
+RUN echo "*/2 * * * * node src/calendar-cronjob.js" >> /etc/crontabs/root
+
 # Run everything after as non-privileged user.
 USER pptruser
 
 COPY . .
 
 EXPOSE 3030
-
-RUN echo "*/2 * * * * node src/calendar-cronjob.js" >> /etc/crontabs/root
 
 ENTRYPOINT yarn start
