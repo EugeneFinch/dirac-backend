@@ -45,5 +45,4 @@ COPY . .
 
 EXPOSE 3030
 
-RUN chmod +x /app/docker-entrypoint.sh
 ENTRYPOINT /app/docker-entrypoint.sh
