@@ -23,16 +23,16 @@ RUN apk update && apk upgrade && \
     # Add user so we don't need --no-sandbox.
 RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
     && mkdir -p /home/pptruser/Downloads /app \
+    && mkdir -p /home/pptruser/crontabs
     && chown -R pptruser:pptruser /home/pptruser \
     && chown -R pptruser:pptruser /app
 RUN mkdir /app/uploads && chown -R pptruser:pptruser /app/uploads
 
-RUN echo "*/2 * * * * cd /app && node /app/src/calendar-cronjob.js >> /app/calendar-cronjob.log 2>&1" >> /var/spool/cron/crontabs/pptruser
-
-RUN crond -f &
-
 # Run everything after as non-privileged user.
 USER pptruser
+
+RUN echo "*/2 * * * * cd /app && node /app/src/calendar-cronjob.js >> /app/calendar-cronjob.log 2>&1" >> /home/pptruser/crontabs/pptruser
+RUN crond -c & /home/pptruser/crontabs
 
 COPY . .
 
