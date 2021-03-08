@@ -18,17 +18,23 @@ app.hooks(appHooks);
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 
+const getRecordingName = (roomURL) => {
+  if(roomURL.includes('meet.google.com')){
+    return 'Gmeet meeting';
+  }
+};
+
 (async() => {
   // const roomURL = 'https://meet.google.com/pcd-tpqw-drr?pli=1&authuser=1';
   // const recordingId = 43;
 
   const roomURL = process.argv[2].split('=')[1];
-  const recordingId = process.argv[3].split('=')[1];
+  let recordingId = process.argv[3].split('=')[1];
   const calendarEventId = process.argv[4].split('=')[1];
-  let calendarEvent;
+  const userId = process.argv[5].split('=')[1];
 
   if (calendarEventId) {
-    calendarEvent = await app.service('cronjob-calendar-event').get(calendarEventId)
+    const calendarEvent = await app.service('cronjob-calendar-event').get(calendarEventId)
     // 1 meaning joining, 2 meaning joined
     // When joining or joined exit process
     if (calendarEvent.joined === 1 || calendarEvent.joined === 2) {
@@ -98,6 +104,13 @@ puppeteer.use(StealthPlugin());
     if (calendarEventId) {
       // set flag joined = 2
       await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 2 });
+      const record = await app.service('recording').create({
+        user_id,
+        status: 'RECORDING',
+        filename: getRecordingName(roomURL),
+        url:'',
+      });
+      recordingId = record;
     }
 
     var jquery_ev_fn = await page.evaluate(function(){

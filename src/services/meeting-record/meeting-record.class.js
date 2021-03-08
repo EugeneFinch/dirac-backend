@@ -22,6 +22,7 @@ class Service {
   async create (data, params) {
     const roomURL = data.room_url;
     const recordingId = data.record_id;
+    const userId = data.user_id;
     const calendarEventId = data.calendar_event_id
     const autoAgentPath = path.join(__dirname,'./auto-agent');
     const detached = data.joinFromCronjobCalendar ? true : false;
@@ -29,7 +30,7 @@ class Service {
     if (data.joinFromCronjobCalendar) {
       const stdoutStream = fs.openSync('./auto-agent.log', 'a');
       const stderrStream = fs.openSync('./auto-agent.log', 'a');
-      spawn('node', [autoAgentPath,`room_url=${roomURL}`,`record_id=${recordingId}`, `calendar_event_id=${calendarEventId}`],{
+      spawn('node', [autoAgentPath,`room_url=${roomURL}`,`record_id=0`, `calendar_event_id=${calendarEventId}`, `user_id=${userId}`],{
         PATH: process.env.PATH,
         detached,
         stdio: [ 'ignore', stdoutStream, stderrStream ]

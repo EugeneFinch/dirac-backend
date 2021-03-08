@@ -62,17 +62,18 @@ module.exports = {
             }
 
             user_id = get(user, '0.id')
+
+            const record = await context.app.service('recording').create({
+              user_id,
+              status: 'RECORDING',
+              filename:getRecordingName(roomURL),
+              url:'',
+            });
+
+            context.data.record_id = record.id;
           }
 
-          const record = await context.app.service('recording').create({
-            user_id,
-            status: 'RECORDING',
-            filename:getRecordingName(roomURL),
-            url:'',
-          });
-
           context.data.room_url = roomURL;
-          context.data.record_id = record.id;
         }catch(err){
           console.log('err', err);
         }
