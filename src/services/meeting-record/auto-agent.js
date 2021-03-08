@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 const puppeteer = require('puppeteer-extra');
- 
+
 // add stealth plugin and use defaults (all evasion techniques)
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
@@ -20,7 +20,7 @@ puppeteer.use(StealthPlugin());
     await page.goto('https://accounts.google.com/signin/v2/identifier', { waitUntil: 'networkidle2' });
     // Wait for email input.
     await page.waitForSelector('#identifierId');
-    
+
     // Keep trying email until user inputs email correctly.
     // This will error due to captcha if too many incorrect inputs.
     const email = 'ai@diracnlp.com';
@@ -28,7 +28,7 @@ puppeteer.use(StealthPlugin());
     await page.keyboard.press('Enter');
     await page.waitForSelector('#password input[type="password"]',{visible:true});
     console.log('Enter email');
-    const password = 'nhan2021!';
+    const password = 'aidev2021!';
     // Wait for password input
     await page.type('#password input[type="password"]', password);
     await page.keyboard.press('Enter');
@@ -44,7 +44,7 @@ puppeteer.use(StealthPlugin());
     const [button] = await page.$x(joinBtn);
     await button.click();
     console.log('click join Button');
-  
+
     page.on('console', msg => {
       for (let i = 0; i < msg.args().length; ++i)
         console.log(`${i}: ${msg.args()[i]}`);
@@ -59,11 +59,16 @@ puppeteer.use(StealthPlugin());
         console.log('status',req._status);
       }
     });
-    
-  
+
+
     // Wait for search results page to load
-    await page.waitForSelector('[data-loadingmessage]',{visible:true,timeout:30000});
-    await page.waitForSelector('[data-loadingmessage]',{hidden:true,timeout:30000});
+    try {
+      await page.waitForSelector('[data-loadingmessage]',{visible:true,timeout:30000});
+      await page.waitForSelector('[data-loadingmessage]',{hidden:true,timeout:30000});
+    } catch (error) {
+      console.log(error);
+    }
+
     const rejectXpath = '//div[text()[contains(.,"Someone in the call denied your request to join")] ]';
     const ele = await page.$x(rejectXpath);
     if(ele && ele.length >0 ){
@@ -71,14 +76,14 @@ puppeteer.use(StealthPlugin());
     }
 
     console.log('JOIN!', page.url());
-  
+
     var jquery_ev_fn = await page.evaluate(function(){
       return window.fetch('https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js').then(function(res){
         return res.text();
       });
     });
     await page.evaluate(jquery_ev_fn);
-  
+
     await page.evaluate(({recordingId}) => {
       return new Promise((resolve,reject)=>{
         const TEN_SECOND = 10000;
@@ -117,16 +122,16 @@ puppeteer.use(StealthPlugin());
               return;
             });
           };
-  
+
           rec.onerror = e => {
             console.log('e --->>',e);
             clearInterval(interval);
             socketio.disconnect(true);
             return reject(e);
           };
-  
+
           socketio.emit('start',{file:fileName,recordingId});
-  
+
           document.querySelector('[data-tooltip="Show everyone"]').click();
           interval = setInterval(()=>{
             const totalPeopleNode = document.querySelectorAll('[aria-label=Participants] [role=listitem]');
@@ -134,13 +139,13 @@ puppeteer.use(StealthPlugin());
             if(totalPeopleNode.length <=1){
               rec.stop();
             }
-  
+
           },TEN_SECOND);
         });
-  
-  
-        
-      });    
+
+
+
+      });
     },{recordingId});
     console.log('Stop simulator');
     await page.click('[data-tooltip="Leave call"]').catch(err=>console.log('notfound [data-tooltip="Leave call"] button'));
@@ -151,5 +156,5 @@ puppeteer.use(StealthPlugin());
     await browser.close();
     process.exit(1);
   }
-  
+
 })();
