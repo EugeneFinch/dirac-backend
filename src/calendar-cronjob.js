@@ -38,10 +38,12 @@ const calendarCronjob = async (app) => {
       status: 'confirmed',
       start: {
         $gte: moment().utc().format('YYYY-MM-DD HH:mm:ss'),
-        $lte: moment().add(15, 'minutes').format('YYYY-MM-DD HH:mm:ss')
+        $lte: moment().utc().add(15, 'minutes').format('YYYY-MM-DD HH:mm:ss')
       }
     }
   })
+
+  console.log(calendarEventsQuery);
 
   const calendarEvents = calendarEventsQuery.data;
 
