@@ -3,6 +3,9 @@ WORKDIR app
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
+COPY docker-entrypoint.sh ./
+RUN chmod +x /app/docker-entrypoint.sh
+
 COPY package.json yarn.lock ./
 RUN yarn install --prod
 
@@ -35,11 +38,8 @@ RUN chown -R pptruser:pptruser /home/pptruser \
 RUN mkdir /app/uploads && chown -R pptruser:pptruser /app/uploads
 
 RUN crontab /home/pptruser/crontabs/pptruser
-
 # Run everything after as non-privileged user.
 USER pptruser
-
-RUN crond -c /home/pptruser/crontabs
 
 COPY . .
 
