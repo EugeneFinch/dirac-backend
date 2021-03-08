@@ -60,20 +60,10 @@ puppeteer.use(StealthPlugin());
       }
     });
 
-
-    // Wait for search results page to load
-    try {
-      await page.waitForSelector('[data-loadingmessage]',{visible:true,timeout:30000});
-      await page.waitForSelector('[data-loadingmessage]',{hidden:true,timeout:30000});
-    } catch (error) {
-      console.log(error);
-    }
-
-    const rejectXpath = '//div[text()[contains(.,"Someone in the call denied your request to join")] ]';
-    const ele = await page.$x(rejectXpath);
-    if(ele && ele.length >0 ){
-      throw new Error('Reject to join meeting');
-    }
+    //Wait to allow join
+    await page.waitForSelector('[data-self-name="You"]',{visible:true,timeout:30000}).catch(()=>{
+      throw new Error('Not allow to join meeting');
+    });
 
     console.log('JOIN!', page.url());
 

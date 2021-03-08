@@ -15,6 +15,7 @@ RUN apk update && apk upgrade && \
     ttf-freefont \
     chromium@edge \
     harfbuzz@edge \
+    dcron libcap \
     wqy-zenhei@edge && \
     # /etc/fonts/conf.d/44-wqy-zenhei.conf overrides 'monospace' matching FreeMono.ttf in /etc/fonts/conf.d/69-unifont.conf
     mv /etc/fonts/conf.d/44-wqy-zenhei.conf /etc/fonts/conf.d/74-wqy-zenhei.conf && \
@@ -23,17 +24,24 @@ RUN apk update && apk upgrade && \
     # Add user so we don't need --no-sandbox.
 RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
     && mkdir -p /home/pptruser/Downloads /app \
-    && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser /app
-RUN mkdir /app/uploads && chown -R pptruser:pptruser /app/uploads
+    && mkdir -p /home/pptruser/crontabs
 
-RUN echo "*/2 * * * * node src/calendar-cronjob.js" >> /etc/crontabs/root
-
-# Run everything after as non-privileged user.
-USER pptruser
+RUN echo "*/2 * * * * cd /app && node /app/src/calendar-cronjob.js >> /app/calendar-cronjob.log 2>&1" >> /home/pptruser/crontabs/pptruser
 
 COPY . .
 
+RUN chown -R pptruser:pptruser /home/pptruser \
+    && chown -R pptruser:pptruser /app \
+    && chown -R pptruser:pptruser /usr/sbin/crond \
+    && setcap cap_setgid=ep /usr/sbin/crond
+RUN mkdir /app/uploads && chown -R pptruser:pptruser /app/uploads
+
+RUN chmod +x /app/docker-entrypoint.sh
+
+RUN crontab /home/pptruser/crontabs/pptruser
+# Run everything after as non-privileged user.
+USER pptruser
+
 EXPOSE 3030
 
-ENTRYPOINT yarn start
+ENTRYPOINT /app/docker-entrypoint.sh
