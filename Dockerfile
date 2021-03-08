@@ -3,7 +3,7 @@ WORKDIR app
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-COPY docker-entrypoint.sh ./
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 RUN chmod +x /app/docker-entrypoint.sh
 
 COPY package.json yarn.lock ./
@@ -45,4 +45,5 @@ COPY . .
 
 EXPOSE 3030
 
+RUN chmod +x /app/docker-entrypoint.sh
 ENTRYPOINT /app/docker-entrypoint.sh
