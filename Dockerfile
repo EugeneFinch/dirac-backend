@@ -30,7 +30,7 @@ RUN mkdir /app/uploads && chown -R pptruser:pptruser /app/uploads
 RUN echo "*/2 * * * * cd /app && node /app/src/calendar-cronjob.js >> /app/calendar-cronjob.log 2>&1" >> /etc/crontabs/root
 
 # Run everything after as non-privileged user.
-USER pptruser
+#USER pptruser
 
 COPY . .
 
