@@ -37,8 +37,10 @@ const calendarCronjob = async (app) => {
       joined: 0,
       status: 'confirmed',
       start: {
-        $gte: moment().utc().subtract(5, 'minutes').format('YYYY-MM-DD HH:mm:ss'),
         $lte: moment().utc().add(5, 'minutes').format('YYYY-MM-DD HH:mm:ss')
+      },
+      end: {
+        $gte: moment().utc().format('YYYY-MM-DD HH:mm:ss')
       }
     }
   })
