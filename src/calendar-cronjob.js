@@ -1,10 +1,8 @@
 const feathers = require('@feathersjs/feathers');
 const configuration = require('@feathersjs/configuration');
 const express = require('@feathersjs/express');
-const socketio = require('@feathersjs/socketio');
 
 const moment = require('moment');
-const middleware = require('./middleware');
 const services = require('./services');
 const appHooks = require('./app.hooks');
 const channels = require('./channels');
@@ -13,7 +11,6 @@ const sequelize = require('./sequelize');
 const authentication = require('./authentication');
 
 const app = express(feathers());
-app.configure(socketio(require('./socketio')));
 
 // Load app configuration
 app.configure(configuration());
@@ -37,15 +34,13 @@ const calendarCronjob = async (app) => {
       joined: 0,
       status: 'confirmed',
       start: {
-        $lte: moment().utc().add(5, 'minutes').format('YYYY-MM-DD HH:mm:ss')
+        $lte: moment().utc().add(3, 'minutes').format('YYYY-MM-DD HH:mm:ss')
       },
       end: {
         $gte: moment().utc().format('YYYY-MM-DD HH:mm:ss')
       }
     }
   })
-
-  console.log(calendarEventsQuery);
 
   const calendarEvents = calendarEventsQuery.data;
 

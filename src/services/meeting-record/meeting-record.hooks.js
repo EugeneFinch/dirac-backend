@@ -16,16 +16,14 @@ module.exports = {
     create: [
       async context=>{
         try{
-          let {joinFromCronjobCalendar, room_url, user_id, calendar_event_id} = context.data;
+          let {joinFromCronjobCalendar, room_url, user_id} = context.data;
           let roomURL;
 
           if (joinFromCronjobCalendar && user_id) {
-            await context.app.service('calendar-event').patch(calendar_event_id, { joined: 1 });
             roomURL = room_url
           } else {
             const mailHistoryService = context.app.service('mail-history');
             const history = await mailHistoryService.get(1);
-            const historyId = history.history_id;
             const auth = gmail.authorize(context.app);
 
             const data = context.data;
@@ -72,7 +70,6 @@ module.exports = {
             filename:getRecordingName(roomURL),
             url:'',
           });
-
 
           context.data.room_url = roomURL;
           context.data.record_id = record.id;

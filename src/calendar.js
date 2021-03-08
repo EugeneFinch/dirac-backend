@@ -1,6 +1,8 @@
 const axios = require('axios');
 const dayjs = require('dayjs');
 const { get, forEach } = require('lodash');
+const { v4: uuidv4 } = require('uuid');
+
 
 function watchCalendar({ token, email, id, resourceId }) {
   return axios(`https://www.googleapis.com/calendar/v3/calendars/${email}/events/watch`, {
@@ -10,7 +12,7 @@ function watchCalendar({ token, email, id, resourceId }) {
       'Content-Type': 'application/json',
     },
     data: {
-      id, // Your channel ID.
+      id: uuidv4(), // Your channel ID.
       type: 'web_hook',
       address: 'https://api.diracnlp.com/calendar-event', // Your receiving URL.
       token, // (Optional) Your channel token.

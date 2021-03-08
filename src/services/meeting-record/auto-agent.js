@@ -1,5 +1,18 @@
 /* eslint-disable no-undef */
+const feathers = require('@feathersjs/feathers');
 const puppeteer = require('puppeteer-extra');
+const express = require('@feathersjs/express');
+const configuration = require('@feathersjs/configuration');
+const services = require('../../services');
+const sequelize = require('../../sequelize');
+const appHooks = require('../../app.hooks');
+
+const app = express(feathers());
+
+app.configure(configuration());
+app.configure(sequelize);
+app.configure(services);
+app.hooks(appHooks);
 
 // add stealth plugin and use defaults (all evasion techniques)
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
@@ -11,6 +24,21 @@ puppeteer.use(StealthPlugin());
 
   const roomURL = process.argv[2].split('=')[1];
   const recordingId = process.argv[3].split('=')[1];
+  const calendarEventId = process.argv[4].split('=')[1];
+  let calendarEvent;
+
+  if (calendarEventId) {
+    calendarEvent = await app.service('cronjob-calendar-event').get(calendarEventId)
+    // 1 meaning joining, 2 meaning joined
+    // When joining or joined exit process
+    if (calendarEvent.joined === 1 || calendarEvent.joined === 2) {
+      return process.exit(1);
+    }
+
+    // meaning it's join first time -> set joined is 1 (1 meaning joining)
+    await app.service('cronjob-calendar-event').patch(calendarEventId, {joined: 1});
+  }
+
   const browser = await puppeteer.launch({
     headless:true,
     args: [ '--use-fake-ui-for-media-stream' ],
@@ -66,6 +94,11 @@ puppeteer.use(StealthPlugin());
     });
 
     console.log('JOIN!', page.url());
+    // meaning joined
+    if (calendarEventId) {
+      // set flag joined = 2
+      await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 2 });
+    }
 
     var jquery_ev_fn = await page.evaluate(function(){
       return window.fetch('https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js').then(function(res){
@@ -142,6 +175,9 @@ puppeteer.use(StealthPlugin());
     await browser.close();
     process.exit(1);
   }catch(err){
+    if (calendarEventId) {
+      await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 0 });
+    }
     console.log('err', err);
     await browser.close();
     process.exit(1);
