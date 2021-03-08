@@ -22,6 +22,7 @@ function watchCalendar({ token, email, id, resourceId }) {
       return data;
     })
     .catch(error => {
+      console.log('push watch calendar error');
       if (error.response) {
         // Request made and server responded
         console.log(error.response.data);
