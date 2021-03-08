@@ -172,16 +172,21 @@ puppeteer.use(StealthPlugin());
     },{recordingId});
     console.log('Stop simulator');
     await page.click('[data-tooltip="Leave call"]').catch(err=>console.log('notfound [data-tooltip="Leave call"] button'));
+    await page.close();
     await browser.close();
     process.exit(1);
   } catch (err){
     if (calendarEventId) {
       await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 0 });
     }
-    console.log('err', err);
+    // handle close browser but popup ask to join not hide
+    await page.goto('https://google.com');
     await browser.close();
+
+    console.log('after browser close');
     return process.exit(1);
   } finally {
+    await page.goto('https://google.com');
     await browser.close();
     return process.exit(1);
   }

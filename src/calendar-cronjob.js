@@ -34,14 +34,15 @@ const calendarCronjob = async (app) => {
       joined: 0,
       status: 'confirmed',
       start: {
-        $lte: moment().utc().add(3, 'minutes').format('YYYY-MM-DD HH:mm:ss')
+        $lte: moment().utc().add(3, 'minutes').toDate()
       },
       end: {
-        $gte: moment().utc().format('YYYY-MM-DD HH:mm:ss')
+        $gte: moment().utc().toDate()
       }
     }
   })
 
+  console.log(calendarEventsQuery);
   const calendarEvents = calendarEventsQuery.data;
 
   for (calendarEvent of calendarEvents) {
