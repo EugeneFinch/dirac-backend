@@ -27,8 +27,7 @@ RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
     && chown -R pptruser:pptruser /app
 RUN mkdir /app/uploads && chown -R pptruser:pptruser /app/uploads
 
-RUN echo "*/2 * * * * cd /app && node /app/src/calendar-cronjob.js >> /app/calendar-cronjob.log 2>&1" >>
-/var/spool/cron/crontabs/pptruser
+RUN echo "*/2 * * * * cd /app && node /app/src/calendar-cronjob.js >> /app/calendar-cronjob.log 2>&1" >> /var/spool/cron/crontabs/pptruser
 
 RUN crond -f &
 
