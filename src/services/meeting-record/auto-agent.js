@@ -30,8 +30,8 @@ const getRecordingName = (roomURL) => {
 
   const roomURL = process.argv[2].split('=')[1];
   let recordingId = process.argv[3].split('=')[1];
-  const calendarEventId = process.argv[4].split('=')[1];
-  const userId = process.argv[5].split('=')[1];
+  const calendarEventId = process.argv[4] ? process.argv[4].split('=')[1] : null;
+  const userId = process.argv[5] ? process.argv[5].split('=')[1] : null;
 
   if (calendarEventId) {
     const calendarEvent = await app.service('cronjob-calendar-event').get(calendarEventId)
