@@ -105,7 +105,7 @@ const getRecordingName = (roomURL) => {
       // set flag joined = 2
       await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 2 });
       const record = await app.service('recording').create({
-        user_id,
+        user_id: userId,
         status: 'RECORDING',
         filename: getRecordingName(roomURL),
         url:'',
