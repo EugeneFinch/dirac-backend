@@ -110,7 +110,7 @@ const getRecordingName = (roomURL) => {
         filename: getRecordingName(roomURL),
         url:'',
       });
-      recordingId = record;
+      recordingId = record.id;
     }
 
     var jquery_ev_fn = await page.evaluate(function(){
@@ -196,7 +196,7 @@ const getRecordingName = (roomURL) => {
     await page.goto('https://google.com');
     await browser.close();
 
-    console.log('after browser close');
+    console.log('after browser close', err);
     return process.exit(1);
   } finally {
     await page.goto('https://google.com');
