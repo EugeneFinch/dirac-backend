@@ -24,6 +24,7 @@ module.exports = {
           } else {
             const mailHistoryService = context.app.service('mail-history');
             const history = await mailHistoryService.get(1);
+            const historyId = history.history_id;
             const auth = gmail.authorize(context.app);
 
             const data = context.data;
