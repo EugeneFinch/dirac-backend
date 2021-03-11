@@ -6,6 +6,7 @@ const configuration = require('@feathersjs/configuration');
 const services = require('../../services');
 const sequelize = require('../../sequelize');
 const appHooks = require('../../app.hooks');
+const moment = require('moment');
 
 const app = express(feathers());
 
@@ -51,6 +52,7 @@ const getRecordingName = (roomURL) => {
   });
   const page = await browser.newPage();
   try{
+    console.log('start', moment().utc().toDate(), roomURL)
     await page.goto('https://accounts.google.com/signin/v2/identifier', { waitUntil: 'networkidle2' });
     // Wait for email input.
     await page.waitForSelector('#identifierId');
@@ -78,7 +80,7 @@ const getRecordingName = (roomURL) => {
     const [button] = await page.$x(joinBtn);
     await button.click();
     console.log('click join Button');
-
+    console.log(moment().utc().toDate(), roomURL)
     page.on('console', msg => {
       for (let i = 0; i < msg.args().length; ++i)
         console.log(`${i}: ${msg.args()[i]}`);

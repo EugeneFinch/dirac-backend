@@ -42,7 +42,7 @@ const calendarCronjob = async (app) => {
     }
   })
 
-  console.log(calendarEventsQuery);
+  console.log(moment().utc().toDate(), calendarEventsQuery);
   const calendarEvents = calendarEventsQuery.data;
 
   for (calendarEvent of calendarEvents) {
