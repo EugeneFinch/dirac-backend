@@ -16,11 +16,10 @@ module.exports = {
     create: [
       async context=>{
         try{
-          let {joinFromCronjobCalendar, room_url, user_id, calendar_event_id} = context.data;
+          let {joinFromCronjobCalendar, room_url, user_id} = context.data;
           let roomURL;
 
           if (joinFromCronjobCalendar && user_id) {
-            await context.app.service('calendar-event').patch(calendar_event_id, { joined: 1 });
             roomURL = room_url
           } else {
             const mailHistoryService = context.app.service('mail-history');
@@ -64,18 +63,18 @@ module.exports = {
             }
 
             user_id = get(user, '0.id')
+
+            const record = await context.app.service('recording').create({
+              user_id,
+              status: 'RECORDING',
+              filename:getRecordingName(roomURL),
+              url:'',
+            });
+
+            context.data.record_id = record.id;
           }
 
-          const record = await context.app.service('recording').create({
-            user_id,
-            status: 'RECORDING',
-            filename:getRecordingName(roomURL),
-            url:'',
-          });
-
-
           context.data.room_url = roomURL;
-          context.data.record_id = record.id;
         }catch(err){
           console.log('err', err);
         }

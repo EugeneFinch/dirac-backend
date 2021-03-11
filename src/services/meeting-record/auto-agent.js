@@ -1,22 +1,58 @@
 /* eslint-disable no-undef */
+const feathers = require('@feathersjs/feathers');
 const puppeteer = require('puppeteer-extra');
+const express = require('@feathersjs/express');
+const configuration = require('@feathersjs/configuration');
+const services = require('../../services');
+const sequelize = require('../../sequelize');
+const appHooks = require('../../app.hooks');
+const moment = require('moment');
+
+const app = express(feathers());
+
+app.configure(configuration());
+app.configure(sequelize);
+app.configure(services);
+app.hooks(appHooks);
 
 // add stealth plugin and use defaults (all evasion techniques)
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
+
+const getRecordingName = (roomURL) => {
+  if(roomURL.includes('meet.google.com')){
+    return 'Gmeet meeting';
+  }
+};
 
 (async() => {
   // const roomURL = 'https://meet.google.com/pcd-tpqw-drr?pli=1&authuser=1';
   // const recordingId = 43;
 
   const roomURL = process.argv[2].split('=')[1];
-  const recordingId = process.argv[3].split('=')[1];
+  let recordingId = process.argv[3].split('=')[1];
+  const calendarEventId = process.argv[4] ? process.argv[4].split('=')[1] : null;
+  const userId = process.argv[5] ? process.argv[5].split('=')[1] : null;
+
+  if (calendarEventId) {
+    const calendarEvent = await app.service('cronjob-calendar-event').get(calendarEventId)
+    // 1 meaning joining, 2 meaning joined
+    // When joining or joined exit process
+    if (calendarEvent.joined === 1 || calendarEvent.joined === 2) {
+      return process.exit(1);
+    }
+
+    // meaning it's join first time -> set joined is 1 (1 meaning joining)
+    await app.service('cronjob-calendar-event').patch(calendarEventId, {joined: 1});
+  }
+
   const browser = await puppeteer.launch({
     headless:true,
     args: [ '--use-fake-ui-for-media-stream' ],
   });
   const page = await browser.newPage();
   try{
+    console.log('start', moment().utc().toDate(), roomURL)
     await page.goto('https://accounts.google.com/signin/v2/identifier', { waitUntil: 'networkidle2' });
     // Wait for email input.
     await page.waitForSelector('#identifierId');
@@ -44,7 +80,7 @@ puppeteer.use(StealthPlugin());
     const [button] = await page.$x(joinBtn);
     await button.click();
     console.log('click join Button');
-
+    console.log(moment().utc().toDate(), roomURL)
     page.on('console', msg => {
       for (let i = 0; i < msg.args().length; ++i)
         console.log(`${i}: ${msg.args()[i]}`);
@@ -66,6 +102,18 @@ puppeteer.use(StealthPlugin());
     });
 
     console.log('JOIN!', page.url());
+    // meaning joined
+    if (calendarEventId) {
+      // set flag joined = 2
+      await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 2 });
+      const record = await app.service('recording').create({
+        user_id: userId,
+        status: 'RECORDING',
+        filename: getRecordingName(roomURL),
+        url:'',
+      });
+      recordingId = record.id;
+    }
 
     var jquery_ev_fn = await page.evaluate(function(){
       return window.fetch('https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js').then(function(res){
@@ -139,12 +187,23 @@ puppeteer.use(StealthPlugin());
     },{recordingId});
     console.log('Stop simulator');
     await page.click('[data-tooltip="Leave call"]').catch(err=>console.log('notfound [data-tooltip="Leave call"] button'));
+    await page.close();
     await browser.close();
     process.exit(1);
-  }catch(err){
-    console.log('err', err);
+  } catch (err){
+    if (calendarEventId) {
+      await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 0 });
+    }
+    // handle close browser but popup ask to join not hide
+    await page.goto('https://google.com');
     await browser.close();
-    process.exit(1);
+
+    console.log('after browser close', err);
+    return process.exit(1);
+  } finally {
+    await page.goto('https://google.com');
+    await browser.close();
+    return process.exit(1);
   }
 
 })();

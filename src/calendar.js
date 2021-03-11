@@ -2,6 +2,7 @@ const axios = require('axios');
 const dayjs = require('dayjs');
 const { get, forEach } = require('lodash');
 
+
 function watchCalendar({ token, email, id, resourceId }) {
   return axios(`https://www.googleapis.com/calendar/v3/calendars/${email}/events/watch`, {
     method: 'POST',
@@ -22,6 +23,7 @@ function watchCalendar({ token, email, id, resourceId }) {
       return data;
     })
     .catch(error => {
+      console.log('push watch calendar error');
       if (error.response) {
         // Request made and server responded
         console.log(error.response.data);
@@ -65,6 +67,7 @@ function getEventList({ token, email, key, syncToken }) {
 }
 
 async function handleUpdateCalendarEvent({ app, token, email, key, syncToken, user_id }) {
+  console.log('handle update calendar event', user_id);
   const db = app.get('sequelizeClient');
   try {
     const response = await getEventList({ token, email, key, syncToken });
