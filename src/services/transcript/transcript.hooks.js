@@ -1,16 +1,18 @@
 const { authenticate } = require('@feathersjs/authentication');
 
 const { discardQuery ,discard} = require('feathers-hooks-common');
-const { searchByKeyword, hightLightKeyword } = require('./utils');
+const { searchContent,searchByKeyword, hightLightKeyword } = require('./utils');
 
 
 module.exports = {
   before: {
     all: [],
     find: [
-      authenticate('jwt'),
+      // authenticate('jwt'),
+      (ctx)=> {ctx.query = ctx.params.query;},
       searchByKeyword,
-      discardQuery('predefined_keyword')
+      searchContent,
+      discardQuery('predefined_keyword','content')
     ],
     get: [],
     create: [],

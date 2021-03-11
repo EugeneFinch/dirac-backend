@@ -11,6 +11,23 @@ const getKeywordCriteria = async (ctx) => {
   }),{});
 };
 
+const searchContent = async (ctx) => {
+  const content = get(ctx,'params.query.content');
+  if(!content){
+    return ;
+  }
+
+  const kw = content.split(' ').map(v=>( {$like: `%${v}%`}));
+
+  ctx.params.query = {
+    ...ctx.params.query,
+    $and:[
+      ...get(ctx,'ctx.params.query.$and',[]),
+      {search_content:{$or:kw}}
+    ]
+  };
+};
+
 const searchByKeyword = async (ctx) => {
   const keywords = get(ctx,'params.query.predefined_keyword');
   if(!keywords){
@@ -24,12 +41,15 @@ const searchByKeyword = async (ctx) => {
     if(!Object.keys(kwCriteria).includes(keyword)){
       return;
     }
-    return kwCriteria[keyword].map(v=>( { search_content: {$like: `%${v}%`}}));
+    return kwCriteria[keyword].map(v=>({$like: `%${v}%`}));
   });
 
   ctx.params.query = {
     ...ctx.params.query,
-    $or: query
+    $and:[
+      ...get(ctx,'ctx.params.query.$and',[]),
+      {search_content:{$or:query}}
+    ]
   };
 
  
@@ -40,18 +60,19 @@ const hightLightKeyword = async (ctx) => {
     return;
   }
 
-  const keywords = get(ctx,'arguments.0.query.predefined_keyword');
-  if(!keywords){
-    return;
-  }
+  const keywords = get(ctx,'query.predefined_keyword','');
+  const content = get(ctx,'query.content','');
   const keywordArr = keywords.split(',');
+  const contentsArr = content.split(' ');
 
   const kwCriteria = await getKeywordCriteria(ctx);
   
   ctx.result = {
     ...ctx.result,
     data: ctx.result.data.map(v=>{
-      const founds = keywordArr.map(keyword=> {
+
+
+      const founds = keywordArr.filter(Boolean).map(keyword=> {
         const c = kwCriteria[keyword].find(k=>v.search_content.includes(k));
         return {
           criteria: c ,
@@ -66,6 +87,13 @@ const hightLightKeyword = async (ctx) => {
         const hightLightKeyword =  `<span class='${keyword}'>${v.content.substr(idx,criteria.length)}</span>`;
         v.content = v.content.replace(reg,hightLightKeyword);
       });
+
+      contentsArr.filter(Boolean).forEach((criteria)=>{
+        const reg = new RegExp(criteria,'i');
+        const idx = v.content.search(reg);
+        const hightLightKeyword =  `<span class='content'>${v.content.substr(idx,criteria.length)}</span>`;
+        v.content = v.content.replace(reg,hightLightKeyword);
+      });
      
       return v;
     })};
@@ -73,5 +101,6 @@ const hightLightKeyword = async (ctx) => {
 
 module.exports = { 
   searchByKeyword,
-  hightLightKeyword
+  hightLightKeyword,
+  searchContent
 };
