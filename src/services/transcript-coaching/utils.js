@@ -1,5 +1,6 @@
 const get = require('lodash/get');
 const maxBy = require('lodash/maxBy');
+const max = require('lodash/max');
 const minBy = require('lodash/minBy');
 const keyBy = require('lodash/keyBy');
 const uniq = require('lodash/uniq');
@@ -128,10 +129,46 @@ const getNextStep = async (ctx)=> {
 
 };
 
+const getLongestMonologue= async (ctx)=> {
+  const transcripts = get(ctx,'data.transcripts');
+  if(!transcripts){
+    return null;
+  }
+
+  const sequelize = ctx.app.get('sequelizeClient');
+  const {speaker } = sequelize.models;
+  const speakerIds = uniq(transcripts.map(v=>v.speaker_id));
+
+  const speakers = await speaker.findAll({
+    where: {
+      id : { [Op.in]: speakerIds}
+    }
+  });
+
+  const speakerObj  = keyBy(speakers,v=>v.get('id'));
+
+  const teamTalkTime = transcripts.reduce((cur,v)=>{
+    const speakerId = v.get('speaker_id');
+    if(get(speakerObj,[speakerId,'team_member']) == 1){
+      cur.push(v.end_time - v.start_time);
+    }
+
+    return cur;
+  },[]);
+
+  const longest = max(teamTalkTime);
+  ctx.data={
+    ...ctx.data,
+    longest_monologue:longest
+  };
+
+};
+
 
 module.exports = {
   fetchTranScript,
   getFillerWordPerMin,
   getTeamTalkTime,
   getNextStep,
+  getLongestMonologue,
 };
