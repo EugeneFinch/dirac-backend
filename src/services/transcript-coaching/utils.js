@@ -164,6 +164,48 @@ const getLongestMonologue= async (ctx)=> {
 
 };
 
+const getTotalCompetitorMention= async (ctx)=> {
+  const transcripts = get(ctx,'data.transcripts');
+  if(!transcripts){
+    return null;
+  }
+
+  const recordingId = get(ctx,'data.transcripts.0.recording_id');
+  if(!recordingId){
+    return null;
+  }
+
+
+  const sequelize = ctx.app.get('sequelizeClient');
+  const { 
+    team_user:teamUserModel ,
+    team_competitor:competitorModel ,
+    recording:recordingModel 
+  } = sequelize.models;
+  const record = await recordingModel.findOne({where:{id:recordingId}});
+  const userId = get(record,'user_id');
+  const teamUser = await teamUserModel.findOne({where:{user_id:userId}});
+  const teamCompetitor = await competitorModel.findAll({
+    where: {
+      team_id : get(teamUser,'team_id')
+    }
+  });
+
+  const keyword = teamCompetitor.map(v=>(get(v,'competitor_synonym','')));
+  const keywordReg = new RegExp(`${keyword.join('|')}\\b`);
+
+  const noMention = transcripts.reduce((cur,v)=>{
+    const valid = keywordReg.test(get(v,'content'));
+    return cur += valid ? 1: 0;
+  },0);
+
+  ctx.data={
+    ...ctx.data,
+    no_competitor_mention:noMention
+  };
+
+};
+
 
 module.exports = {
   fetchTranScript,
@@ -171,4 +213,5 @@ module.exports = {
   getTeamTalkTime,
   getNextStep,
   getLongestMonologue,
+  getTotalCompetitorMention,
 };

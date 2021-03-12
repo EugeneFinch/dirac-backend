@@ -9,6 +9,12 @@
   },
   "extends": "eslint:recommended",
   "rules": {
+    "max-len": [
+      "error",
+      {
+        "code": 80
+      }
+    ],
     "indent": [
       "error",
       2

@@ -13,6 +13,7 @@ const transcriptKeyword = require('./transcript-keyword/transcript-keyword.servi
 const transcriptKeywordRecapConfig = require('./transcript-keyword-recap-config/transcript-keyword-recap-config.service.js');
 const transcriptCoaching = require('./transcript-coaching/transcript-coaching.service.js');
 const cronjobCalendarEvent = require('./cronjob-calendar-event/cronjob-calendar-event.service.js');
+const teamCompetitor = require('./team-competitor/team-competitor.service.js');
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
   app.configure(upload);
@@ -30,4 +31,5 @@ module.exports = function (app) {
   app.configure(transcriptKeyword);
   app.configure(transcriptKeywordRecapConfig);
   app.configure(transcriptCoaching);
+  app.configure(teamCompetitor);
 };
