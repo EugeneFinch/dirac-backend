@@ -67,6 +67,42 @@ const getTeamTalkTime = async (ctx)=> {
   };
 
 };
+const getNoEngageQuestions = async (ctx)=> {
+  const transcripts = get(ctx,'data.transcripts');
+  if(!transcripts){
+    return null;
+  }
+
+  const sequelize = ctx.app.get('sequelizeClient');
+  const {speaker } = sequelize.models;
+  const speakerIds = uniq(transcripts.map(v=>v.speaker_id));
+
+  const speakers = await speaker.findAll({
+    where: {
+      id : { [Op.in]: speakerIds}
+    }
+  });
+
+  const speakerObj  = keyBy(speakers,v=>v.get('id'));
+  const engageReg = new RegExp('What|When|Who|Tell me|Why|How|What if','gi');
+
+  const res = transcripts.reduce((cur,v)=>{
+    const speakerId = v.get('speaker_id');
+    const isTeamMember = get(speakerObj,[speakerId,'team_member']) == 1;
+    const isEngage = engageReg.test(v.content);
+    if(isTeamMember && isEngage){
+      cur += 1;
+    }
+
+    return cur;
+  },0);
+
+  ctx.data={
+    ...ctx.data,
+    no_engage_question:res
+  };
+
+};
 
 const getFillerWordPerMin = async (ctx)=> {
   const transcripts = get(ctx,'data.transcripts');
@@ -192,7 +228,7 @@ const getTotalCompetitorMention= async (ctx)=> {
   });
 
   const keyword = teamCompetitor.map(v=>(get(v,'competitor_synonym','')));
-  const keywordReg = new RegExp(`${keyword.join('|')}\\b`);
+  const keywordReg = new RegExp(`${keyword.join('|')}\\b`,'gi');
 
   const noMention = transcripts.reduce((cur,v)=>{
     const valid = keywordReg.test(get(v,'content'));
@@ -214,4 +250,5 @@ module.exports = {
   getNextStep,
   getLongestMonologue,
   getTotalCompetitorMention,
+  getNoEngageQuestions,
 };

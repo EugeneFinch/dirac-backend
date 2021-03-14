@@ -1,4 +1,11 @@
-const {getTotalCompetitorMention,getLongestMonologue,fetchTranScript,getTeamTalkTime,getFillerWordPerMin,getNextStep } = require('./utils');
+const {
+  getNoEngageQuestions,
+  getTotalCompetitorMention,
+  getLongestMonologue,
+  fetchTranScript,
+  getTeamTalkTime,
+  getFillerWordPerMin,getNextStep 
+} = require('./utils');
 
 module.exports = {
   before: {
@@ -13,7 +20,8 @@ module.exports = {
       getFillerWordPerMin,
       getNextStep,
       getLongestMonologue,
-      getTotalCompetitorMention
+      getTotalCompetitorMention,
+      getNoEngageQuestions
     ],
     remove: []
   },
