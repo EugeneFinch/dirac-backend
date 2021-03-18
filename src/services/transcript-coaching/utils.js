@@ -84,14 +84,14 @@ const getNoEngageQuestions = async (ctx)=> {
   });
 
   const speakerObj  = keyBy(speakers,v=>v.get('id'));
-  const engageReg = new RegExp('What|When|Who|Tell me|Why|How|What if','gi');
+  const engageReg = new RegExp('((What|When|Who|Tell me|Why|How|What if)[^\\.\\!\\?]*[\\?])','gi');
 
   const res = transcripts.reduce((cur,v)=>{
     const speakerId = v.get('speaker_id');
     const isTeamMember = get(speakerObj,[speakerId,'team_member']) == 1;
-    const isEngage = engageReg.test(v.content);
-    if(isTeamMember && isEngage){
-      cur += 1;
+    const total = v.content.match(engageReg);
+    if(isTeamMember && total!=null){
+      cur += total.length;
     }
 
     return cur;
