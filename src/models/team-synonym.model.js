@@ -5,14 +5,14 @@ const DataTypes = Sequelize.DataTypes;
 
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
-  const teamCompetitor = sequelizeClient.define('team_competitor', {
+  const teamSynonym = sequelizeClient.define('team_synonym', {
     id: { type: DataTypes.INTEGER, autoIncrement: true,primaryKey:true },
     team_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    competitor_id: {
-      type: DataTypes.INTEGER,
+    synonym: {
+      type: DataTypes.STRING,
       allowNull: false
     },
   }, {
@@ -25,10 +25,10 @@ module.exports = function (app) {
   });
 
   // eslint-disable-next-line no-unused-vars
-  teamCompetitor.associate = function (models) {
+  teamSynonym.associate = function (models) {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
   };
 
-  return teamCompetitor;
+  return teamSynonym;
 };

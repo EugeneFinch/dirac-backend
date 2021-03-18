@@ -216,6 +216,7 @@ const getTotalCompetitorMention= async (ctx)=> {
   const { 
     team_user:teamUserModel ,
     team_competitor:competitorModel ,
+    team_synonym:teamSynonymModel ,
     recording:recordingModel 
   } = sequelize.models;
   const record = await recordingModel.findOne({where:{id:recordingId}});
@@ -227,7 +228,13 @@ const getTotalCompetitorMention= async (ctx)=> {
     }
   });
 
-  const keyword = teamCompetitor.map(v=>(get(v,'competitor_synonym','')));
+  const competitorId = teamCompetitor.map(v=>(get(v,'competitor_id','')));
+  const teamSynonym = await teamSynonymModel.findAll({
+    where: {
+      team_id : { [Op.in]: competitorId}
+    }
+  });
+  const keyword = teamSynonym.map(v=>get(v,'synonym'),'');
   const keywordReg = new RegExp(`${keyword.join('|')}\\b`,'gi');
 
   const noMention = transcripts.reduce((cur,v)=>{
