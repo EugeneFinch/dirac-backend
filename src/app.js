@@ -42,7 +42,8 @@ app.configure(sequelize);
 
 //Watch agent mail inbox
 watchInbox(app.get('MAIL_INBOX_TOPIC'),authorize(app));
-
+//Refresh daily
+setInterval(()=>watchInbox(app.get('MAIL_INBOX_TOPIC'),authorize(app)),24*60*60*1000);
 // Configure other middleware (see `middleware/index.js`)
 app.configure(middleware);
 
