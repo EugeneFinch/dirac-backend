@@ -1,14 +1,16 @@
 
-const queryByUserId = require('../../hooks/query-by-userId.hooks');
 const { authenticate } = require('@feathersjs/authentication');
-const { get } = require('lodash');
+const { get,set } = require('lodash');
 const calendar = require('../../calendar');
 
 
 module.exports = {
   before: {
     all: [],
-    find: [authenticate('jwt'), queryByUserId],
+    find: [authenticate('jwt'), async (ctx)=>{
+      const userId = get(ctx,'params.user.id',0);
+      set(ctx,'params.query.user_id',userId);
+    }],
     get: [],
     create: [
       async context => {
