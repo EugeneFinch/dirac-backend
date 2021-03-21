@@ -234,13 +234,18 @@ const getTotalCompetitorMention= async (ctx)=> {
       team_id : { [Op.in]: competitorId}
     }
   });
-  const keyword = teamSynonym.map(v=>get(v,'synonym'),'');
-  const keywordReg = new RegExp(`${keyword.join('|')}\\b`,'gi');
+  let noMention = 0;
 
-  const noMention = transcripts.reduce((cur,v)=>{
-    const valid = keywordReg.test(get(v,'content'));
-    return cur += valid ? 1: 0;
-  },0);
+  if(teamSynonym.length > 0 ){
+    const keyword = teamSynonym.map(v=>get(v,'synonym'),'');
+    const keywordReg = new RegExp(`(${keyword.join('|')})\\b`,'gi');
+
+    noMention = transcripts.reduce((cur,v)=>{
+      const competitors = get(v,'content').match(keywordReg);
+      return cur += get(competitors,'length',0);
+    },0);
+  }
+  
 
   ctx.data={
     ...ctx.data,
