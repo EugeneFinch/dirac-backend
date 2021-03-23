@@ -47,7 +47,7 @@ const getRecordingName = (roomURL) => {
   }
 
   const browser = await puppeteer.launch({
-    headless:false,
+    headless:true,
     args: [ '--use-fake-ui-for-media-stream' ],
   });
   const page = await browser.newPage();
