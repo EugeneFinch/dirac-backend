@@ -20,20 +20,19 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 
 const getRecordingName = (roomURL) => {
-  if(roomURL.includes('meet.google.com')){
+  if (roomURL.includes('meet.google.com')) {
     return 'Gmeet meeting';
   }
 };
 
-(async() => {
+(async () => {
   // const roomURL = 'https://meet.google.com/pcd-tpqw-drr?pli=1&authuser=1';
   // const recordingId = 43;
-
   const roomURL = process.argv[2].split('=')[1];
   let recordingId = process.argv[3].split('=')[1];
   const calendarEventId = process.argv[4] ? process.argv[4].split('=')[1] : null;
   const userId = process.argv[5] ? process.argv[5].split('=')[1] : null;
-
+  console.log(process.argv)
   if (calendarEventId) {
     const calendarEvent = await app.service('cronjob-calendar-event').get(calendarEventId)
     // 1 meaning joining, 2 meaning joined
@@ -43,39 +42,54 @@ const getRecordingName = (roomURL) => {
     }
 
     // meaning it's join first time -> set joined is 1 (1 meaning joining)
-    await app.service('cronjob-calendar-event').patch(calendarEventId, {joined: 1});
+    await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 1 });
   }
 
   const browser = await puppeteer.launch({
-    headless:true,
-    args: [ '--use-fake-ui-for-media-stream' ],
+    headless: true,
+    // executablePath: '/usr/bin/google-chrome',
+    args: ['--use-fake-ui-for-media-stream'],
   });
   const page = await browser.newPage();
-  try{
+  try {
     console.log('start', moment().utc().toDate(), roomURL)
-    await page.goto('https://accounts.google.com/signin/v2/identifier', { waitUntil: 'networkidle2' });
+    await new Promise((res) => setTimeout(() => res(1), 2000))
+    await page.goto('https://accounts.google.com/signin/v2/identifier');
+    await new Promise((res) => setTimeout(() => res(1), 3000))
     // Wait for email input.
     await page.waitForSelector('#identifierId');
-
     // Keep trying email until user inputs email correctly.
     // This will error due to captcha if too many incorrect inputs.
-    const email = 'ai@diracnlp.com';
+    const email = 'alex@diracnlp.com';
     await page.type('#identifierId', email);
     await page.keyboard.press('Enter');
-    await page.waitForSelector('#password input[type="password"]',{visible:true});
+    await new Promise((res) => setTimeout(() => res(1), 3000))
+    const noCapcha = await page.evaluate(() => document.getElementsByClassName('Wzzww eLNT1d').length);
+    console.log('capcha', noCapcha)
+    if (!noCapcha) {
+      console.log('Error! Capcha found.');
+      throw new Error('Capcha on page')
+    }
+
+    // const data1 = await page.evaluate(() => document.querySelector('*').outerHTML);
+
+    // console.log(data1);
+    await page.waitForSelector('#password input[type="password"]', { visible: true });
     console.log('Enter email');
-    const password = 'aidev2021!';
+    const password = 'alex2021!!';
+
     // Wait for password input
     await page.type('#password input[type="password"]', password);
     await page.keyboard.press('Enter');
     console.log('Enter password');
     await page.waitForNavigation();
     console.log('Logged in');
-
-    await page.goto(roomURL, {waitUntil: 'load'});
+    await new Promise((res) => setTimeout(() => res(1), 3000))
+    await page.goto(roomURL, { waitUntil: 'load' });
     console.log('Wait join Button');
+    await new Promise((res) => setTimeout(() => res(1), 3000))
     const joinBtn = '//span[contains(.,"Ask to join") or contains(.,"Join now")]//parent::div';
-    await page.waitForXPath(joinBtn,{visible:true,timeout:10000});
+    await page.waitForXPath(joinBtn, { visible: true, timeout: 10000 });
     await page.waitForTimeout(1000);
     const [button] = await page.$x(joinBtn);
     await button.click();
@@ -90,14 +104,14 @@ const getRecordingName = (roomURL) => {
         console.log(`Error: ${msg.args()[i]}`);
     });
     page.on('response', req => {
-      if(req.url()==='https://meet.google.com/$rpc/google.rtc.meetings.v1.MeetingDeviceService/CreateMeetingDevice'){
-        console.log('req',req.url());
-        console.log('status',req._status);
+      if (req.url() === 'https://meet.google.com/$rpc/google.rtc.meetings.v1.MeetingDeviceService/CreateMeetingDevice') {
+        console.log('req', req.url());
+        console.log('status', req._status);
       }
     });
 
     //Wait to allow join
-    await page.waitForSelector('[data-self-name="You"]',{visible:true,timeout:30000}).catch(()=>{
+    await page.waitForSelector('[data-self-name="You"]', { visible: true, timeout: 30000 }).catch(() => {
       throw new Error('Not allow to join meeting');
     });
 
@@ -110,49 +124,52 @@ const getRecordingName = (roomURL) => {
         user_id: userId,
         status: 'RECORDING',
         filename: getRecordingName(roomURL),
-        url:'',
+        url: '',
       });
       recordingId = record.id;
     }
 
-    var jquery_ev_fn = await page.evaluate(function(){
-      return window.fetch('https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js').then(function(res){
+    var jquery_ev_fn = await page.evaluate(function () {
+      return window.fetch('https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js').then(function (res) {
         return res.text();
       });
     });
     await page.evaluate(jquery_ev_fn);
-
-    await page.evaluate(({recordingId}) => {
-      return new Promise((resolve,reject)=>{
+    console.log('befo evaluate')
+    await page.evaluate(({ recordingId }) => {
+      console.log('11111111111111111')
+      return new Promise((resolve, reject) => {
         const TEN_SECOND = 10000;
         var socketio = io('http://localhost:3030');
         var d = new Date();
         const fileName = `${d.getMinutes()}-${d.getSeconds()}.weba`;
         const dataEvent = `data-${fileName}`;
         const endEvent = `end-${fileName}`;
-        socketio.on('connect', function() {
+        console.log('aaaaaaaaaa')
+        socketio.on('connect', function () {
+          console.log('connect')
           var interval = null;
           const ctx = new AudioContext();
           const dest = ctx.createMediaStreamDestination();
           var audios = document.querySelectorAll('audio');
           let streams = [];
-          audios.forEach(a=>{streams.push( a.captureStream() );});
+          audios.forEach(a => { streams.push(a.captureStream()); });
           streams.map(stream => {
+            console.log('create strem')
             ctx.createMediaStreamSource(stream).connect(dest);
           });
-
           const stream = new MediaStream(dest.stream.getTracks());
 
-          var rec = new MediaRecorder(stream,{mimeType:'audio/webm'});
+          var rec = new MediaRecorder(stream, { mimeType: 'audio/webm' });
           rec.start(TEN_SECOND);
 
           rec.ondataavailable = e => {
-            socketio.emit(dataEvent,e.data);
+            socketio.emit(dataEvent, e.data);
           };
 
           rec.onstop = e => {
             console.log('stop');
-            socketio.emit(endEvent,{file:fileName},()=>{
+            socketio.emit(endEvent, { file: fileName }, () => {
               console.log('clear');
               clearInterval(interval);
               socketio.disconnect(true);
@@ -162,35 +179,35 @@ const getRecordingName = (roomURL) => {
           };
 
           rec.onerror = e => {
-            console.log('e --->>',e);
+            console.log('e --->>', e);
             clearInterval(interval);
             socketio.disconnect(true);
             return reject(e);
           };
 
-          socketio.emit('start',{file:fileName,recordingId});
+          socketio.emit('start', { file: fileName, recordingId });
 
           document.querySelector('[data-tooltip="Show everyone"]').click();
-          interval = setInterval(()=>{
+          interval = setInterval(() => {
             const totalPeopleNode = document.querySelectorAll('[aria-label=Participants] [role=listitem]');
             console.log('totalPeopleNode', totalPeopleNode.length);
-            if(totalPeopleNode.length <=1){
+            if (totalPeopleNode.length <= 1) {
               rec.stop();
             }
 
-          },TEN_SECOND);
+          }, TEN_SECOND);
         });
 
 
 
       });
-    },{recordingId});
+    }, { recordingId });
     console.log('Stop simulator');
-    await page.click('[data-tooltip="Leave call"]').catch(err=>console.log('notfound [data-tooltip="Leave call"] button'));
+    await page.click('[data-tooltip="Leave call"]').catch(err => console.log('notfound [data-tooltip="Leave call"] button'));
     await page.close();
     await browser.close();
     process.exit(1);
-  } catch (err){
+  } catch (err) {
     if (calendarEventId) {
       await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 0 });
     }
