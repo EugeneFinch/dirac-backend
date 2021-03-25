@@ -18,6 +18,8 @@ module.exports = function (app) {
     googleId: { type: DataTypes.STRING, },
     nextSyncToken: { type: DataTypes.STRING, },
     resourceId: { type: DataTypes.STRING, },
+    gRefreshToken: { type: DataTypes.STRING, },
+    lastCheck: { type: DataTypes.DATE }
 
   }, {
     timestamps: true

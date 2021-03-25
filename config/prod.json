@@ -43,7 +43,8 @@
           "https://www.googleapis.com/auth/calendar.readonly"
         ],
         "redirect_uri": "https://api.diracnlp.com/oauth/google/callback",
-        "nonce": true
+        "nonce": true,
+        "custom_params": { "access_type": "offline" }
       }
     }
   },
