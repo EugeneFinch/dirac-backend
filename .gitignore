@@ -111,3 +111,6 @@ $RECYCLE.BIN/
 lib/
 data/
 uploads
+
+# env
+.env
