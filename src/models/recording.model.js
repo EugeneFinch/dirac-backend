@@ -30,9 +30,16 @@ module.exports = function (app) {
     updated_at: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.NOW
+    },
+    deleted_at: {
+      type: DataTypes.DATE
     }
   },{
-    timestamps: false
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    deletedAt: 'deleted_at',
+    timestamps: true,
+    paranoid: true,
   });
 
   recording.associate = function (models) {
