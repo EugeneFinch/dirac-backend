@@ -46,7 +46,7 @@ const getRecordingName = (roomURL) => {
   }
 
   const browser = await puppeteer.launch({
-    headless: true,
+    // headless: false,
     // executablePath: '/usr/bin/google-chrome',
     args: ['--use-fake-ui-for-media-stream'],
   });
@@ -120,9 +120,16 @@ const getRecordingName = (roomURL) => {
     if (calendarEventId) {
       // set flag joined = 2
       await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 2 });
+      const calendarEvent = await app.service('cronjob-calendar-event').get(calendarEventId)
       const record = await app.service('recording').create({
         user_id: userId,
         status: 'RECORDING',
+        account_name: JSON.parse(calendarEvent.attendees).map(res => {
+          if(res.organizer) return res.email;
+        }).filter(el => el).toString().split('.')[0].split('@')[1],
+        deal_status: 'ip',
+        subject: calendarEvent.summary,
+        calendar_event_id: calendarEvent.id,
         filename: getRecordingName(roomURL),
         url: '',
       });
@@ -159,7 +166,7 @@ const getRecordingName = (roomURL) => {
             ctx.createMediaStreamSource(stream).connect(dest);
           });
           const stream = new MediaStream(dest.stream.getTracks());
-
+          
           var rec = new MediaRecorder(stream, { mimeType: 'audio/webm' });
           rec.start(TEN_SECOND);
 

@@ -23,6 +23,20 @@ module.exports = function (app) {
       type: DataTypes.ENUM('RECORDING','QUEUED','IN_PROGRESS','FAILED','COMPLETED'),
       allowNull: false
     },
+    subject: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    deal_status: {
+      type: DataTypes.STRING,
+    },
+    account_name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    calendar_event_id: {
+      type: DataTypes.INTEGER,
+    },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.NOW

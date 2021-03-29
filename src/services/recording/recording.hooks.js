@@ -4,6 +4,7 @@ const startTranscribe = require('../../hooks/recordings/start-transcribe');
 const signUrl = require('../../hooks/recordings/sign-url');
 const queryByUserId = require('../../hooks/query-by-userId.hooks');
 const getUserInfo = require('../../hooks/get-user-info.hooks');
+const getCalendarInfo = require('../../hooks/get-meet-info.hook.js')
 
 module.exports = {
   before: {
@@ -18,7 +19,7 @@ module.exports = {
 
   after: {
     all: [],
-    find: [],
+    find: [getCalendarInfo],
     get: [signUrl],
     create: [startTranscribe],
     update: [],
