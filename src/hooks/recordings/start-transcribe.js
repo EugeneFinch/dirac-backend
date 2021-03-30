@@ -25,6 +25,7 @@ module.exports = function (context) {
     Settings: {
       MaxSpeakerLabels:2,
       ShowSpeakerLabels: true ,
+      VocabularyName: 'Competitors',
     }
   };
 
