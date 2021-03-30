@@ -49,7 +49,7 @@ module.exports = {
 
       if (recordingId === null) {
         await recordingSV.create({
-          account_name: context.params.user.email.split('.')[0].split('@')[1],
+          account_name: '',
           deal_status: 'ip',
           subject: context.params.file.originalname,
           filename,
