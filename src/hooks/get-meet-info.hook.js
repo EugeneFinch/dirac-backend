@@ -15,7 +15,7 @@ module.exports = async function (ctx) {
         if(res.organizer) return res.email;
       }).filter(el => el).toString();
       const data = {
-        users: JSON.parse(record.attendees).length,
+        users: record.attendees,
         org: organailer,
         accName: organailer.split('@')[0]
       }
