@@ -11,7 +11,7 @@ module.exports = {
   before: {
     all: [],
     find: [authenticate('jwt'), queryByUserId, getUserInfo],
-    get: [],
+    get: [getUserInfo],
     create: [],
     update: [async (ctx) => {
       const data = ctx.data;
@@ -27,7 +27,7 @@ module.exports = {
   after: {
     all: [],
     find: [getCalendarInfo],
-    get: [signUrl],
+    get: [getCalendarInfo, signUrl],
     create: [startTranscribe],
     update: [],
     patch: [startTranscribe],
