@@ -68,6 +68,9 @@ module.exports = {
               user_id,
               status: 'RECORDING',
               filename:getRecordingName(roomURL),
+              account_name: '',
+              subject: getRecordingName(roomURL),
+              deal_status: 'ip',
               url:'',
             });
 
