@@ -9,9 +9,9 @@ module.exports = async function (ctx) {
         console.log(i);
         ctx.result.data[i].record = {}
         const record = (await calendar_event.findOne({ where: { id: ctx.result.data[i].calendar_event_id } })).dataValues;
-        const organailer = JSON.parse(record.attendees).map(res => {
+        const organailer = record.attendees ? JSON.parse(record.attendees).map(res => {
           if (res.organizer) return res.email;
-        }).filter(el => el).toString();
+        }).filter(el => el).toString() : '';
         const data = {
           users: record.attendees,
           org: organailer,
@@ -24,9 +24,9 @@ module.exports = async function (ctx) {
     if (ctx.result.calendar_event_id) {
       ctx.result.record = {}
       const record = (await calendar_event.findOne({ where: { id: ctx.result.calendar_event_id } })).dataValues;
-      const organailer = JSON.parse(record.attendees).map(res => {
+      const organailer = record.attendees ? JSON.parse(record.attendees).map(res => {
         if (res.organizer) return res.email;
-      }).filter(el => el).toString();
+      }).filter(el => el).toString() : '';
       const data = {
         users: record.attendees,
         org: organailer,
