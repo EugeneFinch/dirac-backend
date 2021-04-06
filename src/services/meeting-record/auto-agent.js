@@ -125,7 +125,7 @@ const getRecordingName = (roomURL) => {
       const record = await app.service('recording').create({
         user_id: userId,
         status: 'RECORDING',
-        account_name: attendees.length > 1 ? attendees.map(res => {
+        account_name: attendees && attendees.length > 1 ? attendees.map(res => {
           if(!res.organizer) return res.email;
         }).filter(el => el)[0].toString().split('@')[1].split('.')[0] : '',
         deal_status: 'ip',
