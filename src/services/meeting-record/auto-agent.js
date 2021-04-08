@@ -150,7 +150,7 @@ const getRecordingName = (roomURL) => {
         const TEN_SECOND = 10000;
         var socketio = io('http://localhost:3030');
         var d = new Date();
-        const fileName = `${d.getMinutes()}-${d.getSeconds()}.weba`;
+        const fileName = `${d.getMinutes()}-${d.getSeconds()}-${recordingId || 'from-gmail'}.weba`;
         const dataEvent = `data-${fileName}`;
         const endEvent = `end-${fileName}`;
         console.log('aaaaaaaaaa')
