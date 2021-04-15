@@ -34,6 +34,11 @@ module.exports = function (app) {
       foreignKey: {
         name: 'user_id'
       }});
+
+    teamUser.belongsTo(models.team,{
+      foreignKey: {
+        name: 'team_id'
+      }});
   };
   return teamUser;
 };

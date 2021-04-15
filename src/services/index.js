@@ -17,6 +17,9 @@ const teamCompetitor = require('./team-competitor/team-competitor.service.js');
 const transcriptExport = require('./transcript-export/transcript-export.service.js');
 const teamSynonym = require('./team-synonym/team-synonym.service.js');
 const speakersData = require('./speakers-data/speakers-data.service.js');
+const analyticsTalkToListen = require('./analytics-talk-to-listen/analytics-talk-to-listen.service');
+const analyticsTalkToListenExport = require('./analytics-talk-to-listen/analytics-talk-to-listen-export.service');
+
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
   app.configure(upload);
@@ -38,4 +41,6 @@ module.exports = function (app) {
   app.configure(transcriptExport);
   app.configure(teamSynonym);
   app.configure(speakersData);
+  app.configure(analyticsTalkToListen);
+  app.configure(analyticsTalkToListenExport);
 };
