@@ -15,49 +15,6 @@ function calculateTalkToListenPercentage(data) {
   });
 }
 
-function fetch(query, sequelize) {
-  return sequelize.query(query, { type: sequelize.QueryTypes.SELECT});
-}
-
-async function getUserInTeam(userId, sequelize) {
-  if(!userId) {
-    return null;
-  }
-
-  // eslint-disable-next-line max-len
-  const query = 'SELECT tu2.user_id FROM team_user AS tu1, team_user AS tu2 WHERE tu1.user_id = ' + userId + ' AND tu1.team_id = tu2.team_id';
-  const result = await fetch(query, sequelize);
-  return _.map(result, v => v.user_id);
-}
-
-async function getRecordingByUserIds(userIds, sequelize) {
-  if(!userIds || userIds.length == 0) {
-    return null;
-  }
-
-  const query =
-    'SELECT id FROM recording WHERE recording.user_id IN (' + userIds +') AND status="COMPLETED"';
-  const result = await fetch(query, sequelize);
-  return _.map(result, v => v.id);
-}
-
-async function getTalkToListenByRecordingIds(recordingIds, sequelize) {
-  if(!recordingIds || recordingIds.length == 0) {
-    return null;
-  }
-
-  // eslint-disable-next-line max-len
-  const query = 'SELECT s.name AS speakerName, SUM(ts.end_time - ts.start_time) AS talkingTime, max_recording.max_time AS conversationTime ' +
-    'FROM transcript AS ts, speaker AS s,' +
-    // eslint-disable-next-line max-len
-    '(SELECT ts.recording_id, max(ts.end_time) AS max_time FROM transcript AS ts GROUP BY ts.recording_id) AS max_recording ' +
-    // eslint-disable-next-line max-len
-    'WHERE ts.speaker_id = s.id AND ts.recording_id IN (' + recordingIds +')  AND ts.recording_id = max_recording.recording_id AND s.team_member = TRUE ' +
-    'GROUP BY s.name';
-
-  return fetch(query, sequelize);
-}
-
 class Service {
   constructor (options, app) {
     this.options = options || {};
