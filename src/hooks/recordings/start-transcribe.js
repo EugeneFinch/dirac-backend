@@ -17,21 +17,21 @@ module.exports = function (context) {
     Media: { /* required */
       MediaFileUri: `s3://transcripts-dirac/${context.data.url}`
     },
-    ContentRedaction: {
-      RedactionOutput: 'redacted' ,
-      RedactionType: 'PII' 
-    },
-    LanguageCode: 'en-US',
+    // ContentRedaction: {
+    //   RedactionOutput: 'redacted' ,
+    //   RedactionType: 'PII' 
+    // },
+    LanguageCode: 'ru-RU', //en-US
     Settings: {
       MaxSpeakerLabels:2,
       ShowSpeakerLabels: true ,
-      VocabularyName: 'Competitors',
+      // VocabularyName: 'Competitors',
     }
   };
 
   transcribeservice.startTranscriptionJob(params, function (err, data) {
     if (err) console.log(err, err.stack); // an error occurred
-    else     console.log(data);           // successful response
+    else     console.log('data', data);           // successful response
   });
     
 };
