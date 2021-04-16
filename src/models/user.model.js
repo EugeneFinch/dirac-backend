@@ -19,8 +19,10 @@ module.exports = function (app) {
     nextSyncToken: { type: DataTypes.STRING, },
     resourceId: { type: DataTypes.STRING, },
     gRefreshToken: { type: DataTypes.STRING, },
-    lastCheck: { type: DataTypes.DATE }
-
+    lastCheck: { type: DataTypes.DATE },
+    gDisplayName: {
+      type: DataTypes.STRING
+    }
   }, {
     timestamps: true
   });

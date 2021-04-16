@@ -81,18 +81,36 @@ class Service {
 
       const users = await client.query(`select start.user_name as user_name, start.count+end.count as entries_match FROM 
       (select user_name, count(*) as count from speakers_data where recordingId = ${id} and
-      (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.5} and ${parseFloat(res.startTime) + 0.5}`)
+      (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.startTime) + 0.6}`)
           .toString().replace(/,/gim, ' or ')})
       group by user_name order by count(*) DESC limit 1) as start,
 
       (select user_name, count(*) as count from speakers_data where recordingId = ${id} and
-      (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.5} and ${parseFloat(res.endTime) + 0.5}`)
+      (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.3} and ${parseFloat(res.endTime) + 0.6}`)
           .toString().replace(/,/gim, ' or ')}) group by user_name order by count(*) DESC limit 1) as end
           WHERE start.user_name = end.user_name`)
       speakTime[i].speaker = users[0] && users[0].user_name ? users[0].user_name : null;
+      speakTime[i].team_member = 0;
+      if (speakTime[i].speaker) {
+        console.log('speakTime[i].speaker', speakTime[i].speaker)
+        console.log('team_id  ', `select team_id from team_user where user_id = (select user_id from recording where id = ${id})`)
+        const team_id = await client.query(`select team_id from team_user where user_id = (select user_id from recording where id = ${id})`);
+        if (team_id[0]) {
+          const id = await client.query(`select id from user where id in (select user_id
+            from team_user
+            where team_id = ${team_id[0].team_id}) and gDisplayName = '${speakTime[i].speaker}';`)
+          console.log('user_id   ', `select id from user where id in (select user_id
+              from team_user
+              where team_id = ${team_id[0].team_id}) and gDisplayName = '${speakTime[i].speaker}';`, 'id', id, '\n\n\n')
+          if (id[0]) speakTime[i].team_member = 1;
+        } else {
+          const id = await client.query(`select id from user where id = (select user_id from recording where id = {id}) and gDisplayName = '${speakTime[i].speaker}';`)
+          if (id[0]) speakTime[i].team_member = 1;
+        }
+      }
     }
     // return true
-    const speakerIds = await this.options.app.service('speaker').create(speakers.map(v => ({ name: speakTime[v].speaker || v })));
+    const speakerIds = await this.options.app.service('speaker').create(speakers.map(v => ({ name: speakTime[v].speaker || v, team_member: speakTime[v].team_member })));
     const insertData = lines.map(l => {
       const speakerIdx = speakers.findIndex(v => v === l.speaker);
       return {
