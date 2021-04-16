@@ -101,8 +101,10 @@ class Service {
           (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.3} and ${parseFloat(res.endTime) + 0.3}`)
               .toString().replace(/,/gim, ' or ')}) group by user_name order by count(*) DESC limit 1`);
 
-          
-          speakTime[i].speaker = startEntries[0].count > endEntries[0].count ? startEntries[0].user_name : endEntries[0].user_name;
+          if (startEntries[0] && endEntries[0]) speakTime[i].speaker = startEntries[0].count > endEntries[0].count ? startEntries[0].user_name : endEntries[0].user_name;
+          else if (startEntries[0]) speakTime[i].speaker = startEntries[0].user_name;
+          else if (endEntries[0]) speakTime[i].speaker = endEntries[0].user_name;
+          else speakTime[i].speaker = null;
           console.log('else branch ', startEntries, endEntries)
       }
       
