@@ -66,39 +66,39 @@ class Service {
     const { lines, speakers, speakTime } = await transform(s3File, jobName);
     console.log('\n\n', "speakTime\n", JSON.stringify(speakTime), '\n\n')
     for (const i in speakTime) {
-      console.log(`select start.user_name as user_name, start.count+end.count as entries_match FROM 
-      (select user_name, count(*) as count from speakers_data where recordingId = ${id} and
-      (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.startTime) + 0.6}`)
+      console.log('select', `select start.user_name as user_name, start.count+end.count as entries_match FROM 
+      (select user_name, count(*) as count from speakers_data where end-start > 0.5 and recordingId = ${id} and
+      (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.2} and ${parseFloat(res.startTime) + 0.3}`)
           .toString().replace(/,/gim, ' or ')})
       group by user_name order by count(*) DESC limit 1) as start,
 
-      (select user_name, count(*) as count from speakers_data where recordingId = ${id} and
-      (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.3} and ${parseFloat(res.endTime) + 0.6}`)
+      (select user_name, count(*) as count from speakers_data where end-start > 0.5 and recordingId = ${id} and
+      (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.2} and ${parseFloat(res.endTime) + 0.3}`)
           .toString().replace(/,/gim, ' or ')}) group by user_name order by count(*) DESC limit 1) as end
-          WHERE start.user_name = end.user_name`)
+          WHERE start.user_name = end.user_name`, '\n\n\n')
 
 
 
       const users = await client.query(`select start.user_name as user_name, start.count+end.count as entries_match FROM 
-      (select user_name, count(*) as count from speakers_data where recordingId = ${id} and
-      (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.2} and ${parseFloat(res.startTime) + 0.6}`)
+      (select user_name, count(*) as count from speakers_data where end-start > 0.5 and recordingId = ${id} and
+      (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.2} and ${parseFloat(res.startTime) + 0.3}`)
           .toString().replace(/,/gim, ' or ')})
       group by user_name order by count(*) DESC limit 1) as start,
 
-      (select user_name, count(*) as count from speakers_data where recordingId = ${id} and
-      (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.2} and ${parseFloat(res.endTime) + 0.6}`)
+      (select user_name, count(*) as count from speakers_data where end-start > 0.5 and recordingId = ${id} and
+      (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.2} and ${parseFloat(res.endTime) + 0.3}`)
           .toString().replace(/,/gim, ' or ')}) group by user_name order by count(*) DESC limit 1) as end
           WHERE start.user_name = end.user_name`)
       console.log('users[0] , ', users[0])
       if (users[0]){
         speakTime[i].speaker = users[0].user_name ? users[0].user_name : null;
       } else {
-          const startEntries = await client.query(`select user_name, count(*) as count from speakers_data where recordingId = ${id} and
-          (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.startTime) + 0.6}`)
+          const startEntries = await client.query(`select user_name, count(*) as count from speakers_data where end-start > 0.1 and recordingId = ${id} and
+          (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.startTime) + 0.3}`)
               .toString().replace(/,/gim, ' or ')})
           group by user_name order by count(*) DESC limit 1`);
-          const endEntries = await client.query(`select user_name, count(*) as count from speakers_data where recordingId = ${id} and
-          (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.3} and ${parseFloat(res.endTime) + 0.6}`)
+          const endEntries = await client.query(`select user_name, count(*) as count from speakers_data where end-start > 0.5 and recordingId = ${id} and
+          (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.3} and ${parseFloat(res.endTime) + 0.3}`)
               .toString().replace(/,/gim, ' or ')}) group by user_name order by count(*) DESC limit 1`);
 
           
