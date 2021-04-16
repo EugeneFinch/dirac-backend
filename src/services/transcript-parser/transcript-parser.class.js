@@ -68,19 +68,6 @@ class Service {
     for (const i in speakTime) {
       console.log(`select start.user_name as user_name, start.count+end.count as entries_match FROM 
       (select user_name, count(*) as count from speakers_data where recordingId = ${id} and
-      (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.5} and ${parseFloat(res.startTime) + 0.5}`)
-          .toString().replace(/,/gim, ' or ')})
-      group by user_name order by count(*) DESC limit 1) as start,
-
-      (select user_name, count(*) as count from speakers_data where recordingId = ${id} and
-      (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.5} and ${parseFloat(res.endTime) + 0.5}`)
-          .toString().replace(/,/gim, ' or ')}) group by user_name order by count(*) DESC limit 1) as end
-          WHERE start.user_name = end.user_name`)
-
-
-
-      const users = await client.query(`select start.user_name as user_name, start.count+end.count as entries_match FROM 
-      (select user_name, count(*) as count from speakers_data where recordingId = ${id} and
       (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.startTime) + 0.6}`)
           .toString().replace(/,/gim, ' or ')})
       group by user_name order by count(*) DESC limit 1) as start,
@@ -89,7 +76,36 @@ class Service {
       (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.3} and ${parseFloat(res.endTime) + 0.6}`)
           .toString().replace(/,/gim, ' or ')}) group by user_name order by count(*) DESC limit 1) as end
           WHERE start.user_name = end.user_name`)
-      speakTime[i].speaker = users[0] && users[0].user_name ? users[0].user_name : null;
+
+
+
+      const users = await client.query(`select start.user_name as user_name, start.count+end.count as entries_match FROM 
+      (select user_name, count(*) as count from speakers_data where recordingId = ${id} and
+      (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.2} and ${parseFloat(res.startTime) + 0.6}`)
+          .toString().replace(/,/gim, ' or ')})
+      group by user_name order by count(*) DESC limit 1) as start,
+
+      (select user_name, count(*) as count from speakers_data where recordingId = ${id} and
+      (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.2} and ${parseFloat(res.endTime) + 0.6}`)
+          .toString().replace(/,/gim, ' or ')}) group by user_name order by count(*) DESC limit 1) as end
+          WHERE start.user_name = end.user_name`)
+      console.log('users[0] , ', users[0])
+      if (users[0]){
+        speakTime[i].speaker = users[0].user_name ? users[0].user_name : null;
+      } else {
+          const startEntries = await client.query(`select user_name, count(*) as count from speakers_data where recordingId = ${id} and
+          (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.startTime) + 0.6}`)
+              .toString().replace(/,/gim, ' or ')})
+          group by user_name order by count(*) DESC limit 1`);
+          const endEntries = await client.query(`select user_name, count(*) as count from speakers_data where recordingId = ${id} and
+          (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.3} and ${parseFloat(res.endTime) + 0.6}`)
+              .toString().replace(/,/gim, ' or ')}) group by user_name order by count(*) DESC limit 1`);
+
+          
+          speakTime[i].speaker = startEntries[0].count > endEntries[0].count ? startEntries[0].user_name : endEntries[0].user_name;
+          console.log('else branch ', startEntries, endEntries)
+      }
+      
       speakTime[i].team_member = 0;
       if (speakTime[i].speaker) {
         console.log('speakTime[i].speaker', speakTime[i].speaker)
