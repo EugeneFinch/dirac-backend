@@ -17,15 +17,15 @@ module.exports = function (context) {
     Media: { /* required */
       MediaFileUri: `s3://transcripts-dirac/${context.data.url}`
     },
-    // ContentRedaction: {
-    //   RedactionOutput: 'redacted' ,
-    //   RedactionType: 'PII' 
-    // },
-    LanguageCode: 'ru-RU', //en-US
+    ContentRedaction: {
+      RedactionOutput: 'redacted' ,
+      RedactionType: 'PII' 
+    },
+    LanguageCode: 'en-US', //ru-RU
     Settings: {
       MaxSpeakerLabels:2,
       ShowSpeakerLabels: true ,
-      // VocabularyName: 'Competitors',
+      VocabularyName: 'Competitors',
     }
   };
 
