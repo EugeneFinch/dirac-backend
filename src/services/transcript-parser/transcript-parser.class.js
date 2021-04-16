@@ -68,12 +68,12 @@ class Service {
     for (const i in speakTime) {
       console.log(`select start.user_name as user_name, start.count+end.count as entries_match FROM 
       (select user_name, count(*) as count from speakers_data where recordingId = ${id} and
-      (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.startTime) + 0.3}`)
+      (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.5} and ${parseFloat(res.startTime) + 0.5}`)
           .toString().replace(/,/gim, ' or ')})
       group by user_name order by count(*) DESC limit 1) as start,
 
       (select user_name, count(*) as count from speakers_data where recordingId = ${id} and
-      (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.3} and ${parseFloat(res.endTime) + 0.3}`)
+      (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.5} and ${parseFloat(res.endTime) + 0.5}`)
           .toString().replace(/,/gim, ' or ')}) group by user_name order by count(*) DESC limit 1) as end
           WHERE start.user_name = end.user_name`)
 
@@ -81,18 +81,18 @@ class Service {
 
       const users = await client.query(`select start.user_name as user_name, start.count+end.count as entries_match FROM 
       (select user_name, count(*) as count from speakers_data where recordingId = ${id} and
-      (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.startTime) + 0.3}`)
+      (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.5} and ${parseFloat(res.startTime) + 0.5}`)
           .toString().replace(/,/gim, ' or ')})
       group by user_name order by count(*) DESC limit 1) as start,
 
       (select user_name, count(*) as count from speakers_data where recordingId = ${id} and
-      (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.3} and ${parseFloat(res.endTime) + 0.3}`)
+      (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.5} and ${parseFloat(res.endTime) + 0.5}`)
           .toString().replace(/,/gim, ' or ')}) group by user_name order by count(*) DESC limit 1) as end
           WHERE start.user_name = end.user_name`)
-      speakTime[i].speaker = users[0].user_name;
+      speakTime[i].speaker = users[0] && users[0].user_name ? users[0].user_name : null;
     }
     // return true
-    const speakerIds = await this.options.app.service('speaker').create(speakers.map(v => ({ name: speakTime[v].speaker })));
+    const speakerIds = await this.options.app.service('speaker').create(speakers.map(v => ({ name: speakTime[v].speaker || v })));
     const insertData = lines.map(l => {
       const speakerIdx = speakers.findIndex(v => v === l.speaker);
       return {
