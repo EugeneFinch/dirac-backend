@@ -93,12 +93,12 @@ class Service {
       if (users[0]){
         speakTime[i].speaker = users[0].user_name ? users[0].user_name : null;
       } else {
-          const startEntries = await client.query(`select user_name, count(*) as count from speakers_data where end-start > 0.1 and recordingId = ${id} and
-          (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.startTime) + 0.3}`)
+          const startEntries = await client.query(`select user_name, count(*) as count from speakers_data where end-start > 0.5 and recordingId = ${id} and
+          (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime)} and ${parseFloat(res.startTime) + 0.7}`)
               .toString().replace(/,/gim, ' or ')})
           group by user_name order by count(*) DESC limit 1`);
           const endEntries = await client.query(`select user_name, count(*) as count from speakers_data where end-start > 0.5 and recordingId = ${id} and
-          (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.3} and ${parseFloat(res.endTime) + 0.3}`)
+          (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime)} and ${parseFloat(res.endTime) + 0.7}`)
               .toString().replace(/,/gim, ' or ')}) group by user_name order by count(*) DESC limit 1`);
 
           if (startEntries[0] && endEntries[0]) speakTime[i].speaker = startEntries[0].count > endEntries[0].count ? startEntries[0].user_name : endEntries[0].user_name;
