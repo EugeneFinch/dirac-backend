@@ -1,8 +1,9 @@
 const mysql = require('mysql');
 let connection;
-
+let connectionString;
 const connect = async (app) => {
-  connection = mysql.createConnection(app.get('mysql'));
+  if(app) connectionString = app.get('mysql');
+  connection = mysql.createConnection(connectionString);
   connection.connect(async function (err) {
     if (err) {
       console.error('error connecting: ' + err.stack);
@@ -10,6 +11,15 @@ const connect = async (app) => {
     }
     console.log('connected as id ' + connection.threadId);
   });
+
+  connection.on('error', function(err) {
+    console.log('db error', err);
+    if(err.code === 'PROTOCOL_CONNECTION_LOST') {
+      connect();
+    } else {
+      throw err;
+    }
+  })
 }
 const client = {
   query: async (query, values) => {
