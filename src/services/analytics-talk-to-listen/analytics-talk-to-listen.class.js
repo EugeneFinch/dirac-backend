@@ -3,16 +3,36 @@ const _ = require('lodash');
 const { NotFound } = require('@feathersjs/errors');
 
 function calculateTalkToListenPercentage(data) {
-  return _.map(data, ({ speakerName, talkingTime, conversationTime }) => {
-    const talk_ratio = (talkingTime/conversationTime * 100).toFixed(2) * 1;
-    const listen_ratio = (100 - talk_ratio).toFixed(2) * 1;
+  const mapping = {};
 
-    return {
-      name: speakerName,
+  for(const { speakerName, talkRatio } of data) {
+    if(!mapping[speakerName]) {
+      mapping[speakerName] = {
+        talkRatio,
+        count: 1,
+        speakerName
+      };
+    } else {
+      mapping[speakerName].talkRatio += talkRatio;
+      mapping[speakerName].count++;
+    }
+  }
+
+  const result = [];
+  for (const [key, value] of Object.entries(mapping)) {
+    const { talkRatio, count, speakerName } = value;
+    const talk_ratio = (talkRatio / count * 100).toFixed(2);
+    const listen_ratio = (100 - talk_ratio).toFixed(2);
+
+    result.push({
+      listen_ratio,
       talk_ratio,
-      listen_ratio
-    };
-  });
+      name: speakerName
+    });
+  }
+
+
+  return result;
 }
 
 class Service {
@@ -99,7 +119,7 @@ class Service {
     }
 
     const query =
-      'SELECT id FROM recording WHERE recording.user_id IN (' + userIds +') AND status="COMPLETED"';
+      `SELECT id FROM recording WHERE recording.user_id IN (${userIds}) AND status="COMPLETED"`;
     const result = await this.fetch(query);
     return _.map(result, v => v.id);
   }
@@ -110,13 +130,13 @@ class Service {
     }
 
     // eslint-disable-next-line max-len
-    const query = 'SELECT s.name AS speakerName, SUM(ts.end_time - ts.start_time) AS talkingTime, max_recording.max_time AS conversationTime ' +
+    const query = 'SELECT s.name AS speakerName, SUM(ts.end_time - ts.start_time) / max_recording.max_time AS talkRatio, SUM(ts.end_time - ts.start_time) AS talkingTime, max_recording.max_time AS conversationTime ' +
       'FROM transcript AS ts, speaker AS s,' +
       // eslint-disable-next-line max-len
       '(SELECT ts.recording_id, max(ts.end_time) AS max_time FROM transcript AS ts GROUP BY ts.recording_id) AS max_recording ' +
       // eslint-disable-next-line max-len
-      'WHERE ts.speaker_id = s.id AND ts.recording_id IN (' + recordingIds +')  AND ts.recording_id = max_recording.recording_id AND s.team_member = TRUE ' +
-      'GROUP BY s.name';
+      `WHERE ts.speaker_id = s.id AND ts.recording_id IN (${recordingIds})  AND ts.recording_id = max_recording.recording_id AND s.team_member = TRUE ` +
+      'GROUP BY s.name, ts.recording_id';
 
     return this.fetch(query);
   }
