@@ -17,6 +17,7 @@ const appHooks = require('./app.hooks');
 const channels = require('./channels');
 
 const sequelize = require('./sequelize');
+const { connect } = require('./sqlClient');
 const {watchInbox,authorize} = require('./gmail');
 const authentication = require('./authentication');
 const checkCalendar = require('./checkCalendar');
@@ -40,6 +41,7 @@ app.configure(express.rest());
 
 
 app.configure(sequelize);
+app.configure(connect);
 
 //Watch agent mail inbox
 watchInbox(app.get('MAIL_INBOX_TOPIC'),authorize(app));

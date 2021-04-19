@@ -122,12 +122,18 @@ const getRecordingName = (roomURL) => {
       await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 2 });
       const calendarEvent = await app.service('cronjob-calendar-event').get(calendarEventId)
       const attendees = JSON.parse(calendarEvent.attendees)
+      let orgDomain;
+      if(attendees && attendees.length > 1) {
+        orgDomain = attendees.map(res => {
+          if (res.organizer) return res.email;
+        }).filter(el => el)[0].toString().split('@')[1];
+      }
       const record = await app.service('recording').create({
         user_id: userId,
         status: 'RECORDING',
         account_name: attendees && attendees.length > 1 ? attendees.map(res => {
-          if(!res.organizer) return res.email;
-        }).filter(el => el)[0].toString().split('@')[1].split('.')[0] : '',
+          if (!res.organizer && res.email.split('@')[1] !== orgDomain) return res.email;
+        }).filter(el => el)[0].toString().split('@')[1] : '',
         deal_status: 'ip',
         subject: calendarEvent.summary,
         calendar_event_id: calendarEvent.id,
@@ -144,7 +150,8 @@ const getRecordingName = (roomURL) => {
     });
     await page.evaluate(jquery_ev_fn);
     console.log('befo evaluate')
-    await page.evaluate(({ recordingId }) => {
+
+    const users = await page.evaluate(({ recordingId }) => {
       console.log('11111111111111111')
       return new Promise((resolve, reject) => {
         const TEN_SECOND = 10000;
@@ -154,9 +161,60 @@ const getRecordingName = (roomURL) => {
         const dataEvent = `data-${fileName}`;
         const endEvent = `end-${fileName}`;
         console.log('aaaaaaaaaa')
+        let check;
+        let interval;
+        const users = {};
+        const startTalkTime = +new Date();
         socketio.on('connect', function () {
           console.log('connect')
-          var interval = null;
+          clearInterval(check)
+          clearInterval(interval)
+          check = setInterval(() => {
+            const time = +new Date;
+            // console.time(time)
+            // console.log('----------------------------------')
+            Array.from(document.querySelectorAll('[aria-label=Participants] [role=listitem]')).map(elem => {
+              const userName = elem.getElementsByClassName('ZjFb7c')[0].innerText;
+              if (userName === 'Dirac Notetaker') return;
+              const speakClassList = Array.from(elem.getElementsByClassName('IisKdb u5mc1b BbJhmb YE1TS')[0].classList);
+
+
+              if (!users[`${userName}`]) {
+                console.log(`${userName}, ${speakClassList}`)
+                users[`${userName}`] = {
+                  name: userName,
+                  silent: speakClassList.includes('gjg47c'),
+                  speakTime: speakClassList.includes('gjg47c') ? [] : [{ start: +new Date - startTalkTime, end: 0 }],
+                  // lastStatuses: []
+                }
+              }
+
+              if (users[`${userName}`].silent !== speakClassList.includes('gjg47c')) {
+
+
+
+                users[`${userName}`].silent = speakClassList.includes('gjg47c');
+                console.log('users[`${userName}`].silent', users[`${userName}`].silent)
+                if (users[`${userName}`].silent) {
+                  const last = users[`${userName}`].speakTime.length;
+                  if (last) users[`${userName}`].speakTime[last - 1].end = +new Date - startTalkTime;
+                  console.timeEnd(time)
+                  // stop
+                } else {
+                  users[`${userName}`].speakTime.push({ start: +new Date - startTalkTime, end: 0 })
+                  console.timeEnd(time)
+                  // start
+                }
+                // console.log(`${userName} ${users[`${userName}`].exists ? 'stop        talk' : 'start        talk'}`)
+              }
+              // } else {
+              //   users[`${userName}`].lastStatuses.push(speakClassList.includes('gjg47c'))
+              //   users[`${userName}`].lastStatuses = users[`${userName}`].lastStatuses.slice(Math.max(users[`${userName}`].lastStatuses.length - 20, 0))
+              // }
+              // console.timeEnd(time)
+            })
+          }, 300)
+          setInterval(() => { console.log(users) }, 5000)
           const ctx = new AudioContext();
           const dest = ctx.createMediaStreamDestination();
           var audios = document.querySelectorAll('audio');
@@ -167,7 +225,7 @@ const getRecordingName = (roomURL) => {
             ctx.createMediaStreamSource(stream).connect(dest);
           });
           const stream = new MediaStream(dest.stream.getTracks());
-          
+
           var rec = new MediaRecorder(stream, { mimeType: 'audio/webm' });
           rec.start(TEN_SECOND);
 
@@ -180,8 +238,9 @@ const getRecordingName = (roomURL) => {
             socketio.emit(endEvent, { file: fileName }, () => {
               console.log('clear');
               clearInterval(interval);
+              clearInterval(check);
               socketio.disconnect(true);
-              resolve('stop');
+              resolve(users);
               return;
             });
           };
@@ -189,6 +248,7 @@ const getRecordingName = (roomURL) => {
           rec.onerror = e => {
             console.log('e --->>', e);
             clearInterval(interval);
+            clearInterval(check);
             socketio.disconnect(true);
             return reject(e);
           };
@@ -211,6 +271,20 @@ const getRecordingName = (roomURL) => {
       });
     }, { recordingId });
     console.log('Stop simulator');
+    console.log(users)
+    for (let name in users) {
+      for(let time of users[name].speakTime){
+        await app.service('speakers-data').create({
+          user_name: users[name].name,
+          recordingId,
+          start: time.start / 1000,
+          end: time.end / 1000
+        });
+      }
+    }
+    // users.map(res => {
+    //   console.log('user: ', res);
+    // })
     await page.click('[data-tooltip="Leave call"]').catch(err => console.log('notfound [data-tooltip="Leave call"] button'));
     await page.close();
     await browser.close();
