@@ -122,11 +122,17 @@ const getRecordingName = (roomURL) => {
       await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 2 });
       const calendarEvent = await app.service('cronjob-calendar-event').get(calendarEventId)
       const attendees = JSON.parse(calendarEvent.attendees)
+      let orgDomain;
+      if(attendees && attendees.length > 1) {
+        orgDomain = attendees.map(res => {
+          if (res.organizer) return res.email;
+        }).filter(el => el)[0].toString().split('@')[1].split('.')[0];
+      }
       const record = await app.service('recording').create({
         user_id: userId,
         status: 'RECORDING',
         account_name: attendees && attendees.length > 1 ? attendees.map(res => {
-          if (!res.organizer) return res.email;
+          if (!res.organizer && res.email.split('@')[1].split('.')[0] !== orgDomain) return res.email;
         }).filter(el => el)[0].toString().split('@')[1].split('.')[0] : '',
         deal_status: 'ip',
         subject: calendarEvent.summary,
