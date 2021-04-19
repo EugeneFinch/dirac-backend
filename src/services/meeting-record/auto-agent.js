@@ -126,14 +126,14 @@ const getRecordingName = (roomURL) => {
       if(attendees && attendees.length > 1) {
         orgDomain = attendees.map(res => {
           if (res.organizer) return res.email;
-        }).filter(el => el)[0].toString().split('@')[1].split('.')[0];
+        }).filter(el => el)[0].toString().split('@')[1];
       }
       const record = await app.service('recording').create({
         user_id: userId,
         status: 'RECORDING',
         account_name: attendees && attendees.length > 1 ? attendees.map(res => {
-          if (!res.organizer && res.email.split('@')[1].split('.')[0] !== orgDomain) return res.email;
-        }).filter(el => el)[0].toString().split('@')[1].split('.')[0] : '',
+          if (!res.organizer && res.email.split('@')[1] !== orgDomain) return res.email;
+        }).filter(el => el)[0].toString().split('@')[1] : '',
         deal_status: 'ip',
         subject: calendarEvent.summary,
         calendar_event_id: calendarEvent.id,
