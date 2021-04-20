@@ -271,7 +271,8 @@ const getRecordingName = (roomURL) => {
       });
     }, { recordingId });
     console.log('Stop simulator');
-    console.log(users)
+    console.log(users);
+    await app.service('recording').patch(recordingId, { users_on_call: Object.keys(users).length });
     for (let name in users) {
       for(let time of users[name].speakTime){
         await app.service('speakers-data').create({
