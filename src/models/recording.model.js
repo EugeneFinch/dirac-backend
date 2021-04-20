@@ -37,6 +37,9 @@ module.exports = function (app) {
     calendar_event_id: {
       type: DataTypes.INTEGER,
     },
+    users_on_call: {
+      type: DataTypes.INTEGER
+    },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.NOW

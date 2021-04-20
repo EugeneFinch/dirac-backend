@@ -12,8 +12,8 @@ module.exports = async function (context) {
   if(context.result==='COMPLETED' || !context.data.url){
     return;
   }
-  const users = await client.query(`Select user_name from speakers_data where recordingId = ${context.result.id} group by user_name`);
-  console.log('users.length', users.length);
+  const users = await client.query(`Select users_on_call from recording where id = ${context.result.id}`);
+  console.log('users ', users);
   var params = {
     TranscriptionJobName: `dirac-${env}-${context.result.id}`, //required
     Media: { /* required */
@@ -25,7 +25,7 @@ module.exports = async function (context) {
     },
     LanguageCode: 'en-US', //ru-RU
     Settings: {
-      MaxSpeakerLabels: users.length > 1 ? users.length : 2,
+      MaxSpeakerLabels: +users[0].users_on_call > 1 ? +users[0].users_on_call : 2,
       ShowSpeakerLabels: true ,
       VocabularyName: 'Competitors',
     }
