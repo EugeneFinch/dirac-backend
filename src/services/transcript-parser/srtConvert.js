@@ -16,8 +16,10 @@ const convert = data => {
   // Now we iterate through items and build the transcript
   const items = data.results.items;
   const lines = [];
+  const questions = []
   const speakTime = {};
   let line = '';
+  let questionStartTime = '';
   let startTime = 0;
   let endTime = 0;
   let speaker = null;
@@ -31,7 +33,22 @@ const convert = data => {
     if (item['start_time']) {
       current_speaker = speaker_start_times[item.start_time];
     } else if (item.type == 'punctuation') {
+
       line += content;
+      if (content === '.') questionStartTime = endTime;
+      if (content === '?') {
+        const question = line.split('.')[line.split('.').length - 1].split('?')[line.split('.')[line.split('.').length - 1].split('?').length - 2] + '?';
+
+        if (question.split(' ').length > 3) questions.push({
+          'speaker': speaker,
+          'question': question,
+          'start_time': questionStartTime,
+          'end_time': endTime,
+        });
+        questionStartTime = endTime;
+      }
+
+
     }
 
     if (current_speaker != speaker) {
@@ -39,7 +56,7 @@ const convert = data => {
         speakTime[current_speaker] = { speaker: current_speaker, times: [] }
       }
       if (speaker) {
-        speakTime[speaker].times.push({ startTime, endTime })
+        speakTime[speaker].times.push({ startTime, endTime });
         lines.push({
           'speaker': speaker,
           'line': line,
@@ -51,6 +68,7 @@ const convert = data => {
       line = content;
       speaker = current_speaker;
       startTime = item.start_time;
+      questionStartTime = item.start_time;
     } else if (item.type != 'punctuation') {
       line += ' ' + content;
       endTime = item.end_time;
@@ -67,7 +85,7 @@ const convert = data => {
       'end_time': endTime,
     });
   }
-  return { lines, speakers, speakTime };
+  return { lines, speakers, speakTime, questions };
 
 };
 

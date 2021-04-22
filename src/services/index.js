@@ -19,6 +19,7 @@ const teamSynonym = require('./team-synonym/team-synonym.service.js');
 const speakersData = require('./speakers-data/speakers-data.service.js');
 const analyticsTalkToListen = require('./analytics-talk-to-listen/analytics-talk-to-listen.service');
 const analyticsTalkToListenExport = require('./analytics-talk-to-listen/analytics-talk-to-listen-export.service');
+const question = require('./question/question.service.js');
 
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
@@ -43,4 +44,5 @@ module.exports = function (app) {
   app.configure(speakersData);
   app.configure(analyticsTalkToListen);
   app.configure(analyticsTalkToListenExport);
+  app.configure(question);
 };
