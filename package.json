@@ -44,6 +44,7 @@
     "@feathersjs/express": "^1.2.7",
     "@feathersjs/feathers": "^3.2.3",
     "@feathersjs/socketio": "^4.5.10",
+    "@google-cloud/dialogflow": "^3.5.0",
     "aws-sdk": "^2.783.0",
     "axios": "^0.21.0",
     "compression": "^1.7.3",
