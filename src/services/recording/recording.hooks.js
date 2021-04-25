@@ -9,7 +9,10 @@ const _ = require('lodash');
 const { NotFound } = require('@feathersjs/errors');
 
 async function accessByMember(ctx) {
-  const userId = _.get(ctx, 'params.query.user_id', 0);
+  const userId = _.get(ctx, 'params.query.user_id', []);
+  const currentUserId = _.get(ctx, 'params.user.id', 0);
+  const listUserIds = userId.push(currentUserId);
+
   const recordingId = _.get(ctx, 'id', 0);
 
   const sequelize = ctx.app.get('sequelizeClient');
@@ -17,7 +20,7 @@ async function accessByMember(ctx) {
 
   const result = await recording.findOne({
     where :{
-      user_id: userId,
+      user_id: listUserIds,
       id: recordingId
     },
     raw: true
