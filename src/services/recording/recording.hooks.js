@@ -4,14 +4,40 @@ const startTranscribe = require('../../hooks/recordings/start-transcribe');
 const signUrl = require('../../hooks/recordings/sign-url');
 const queryByUserId = require('../../hooks/query-by-userId.hooks');
 const getUserInfo = require('../../hooks/get-user-info.hooks');
-const getCalendarInfo = require('../../hooks/get-meet-info.hook.js')
-const set = require('lodash/set');
+const getCalendarInfo = require('../../hooks/get-meet-info.hook.js');
+const _ = require('lodash');
+const { NotFound } = require('@feathersjs/errors');
+
+async function accessByMember(ctx) {
+  const userId = _.get(ctx, 'params.query.user_id', []);
+  const currentUserId = _.get(ctx, 'params.user.id', 0);
+  const listUserIds = userId.push(currentUserId);
+
+  const recordingId = _.get(ctx, 'id', 0);
+
+  const sequelize = ctx.app.get('sequelizeClient');
+  const { recording } = sequelize.models;
+
+  const result = await recording.findOne({
+    where :{
+      user_id: listUserIds,
+      id: recordingId
+    },
+    raw: true
+  });
+
+  if(!result) {
+    const newError = new NotFound('Recording does not exist');
+    ctx.error = newError;
+    return ctx;
+  }
+}
 
 module.exports = {
   before: {
     all: [],
     find: [authenticate('jwt'), queryByUserId, getUserInfo],
-    get: [getUserInfo],
+    get: [authenticate('jwt'), queryByUserId, accessByMember, getUserInfo],
     create: [],
     update: [async (ctx) => {
       const data = ctx.data;
