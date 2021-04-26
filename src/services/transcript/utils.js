@@ -52,7 +52,7 @@ const searchByKeyword = async (ctx) => {
     ]
   };
 
- 
+
 };
 
 const hightLightKeyword = async (ctx) => {
@@ -66,7 +66,7 @@ const hightLightKeyword = async (ctx) => {
   const contentsArr = content.split(' ');
 
   const kwCriteria = await getKeywordCriteria(ctx);
-  
+
   ctx.result = {
     ...ctx.result,
     data: ctx.result.data.map(v=>{
@@ -84,7 +84,7 @@ const hightLightKeyword = async (ctx) => {
       founds.forEach(({criteria,keyword})=>{
         const reg = new RegExp(criteria,'i');
         const idx = v.content.search(reg);
-        const hightLightKeyword =  `<span class='${keyword}'>${v.content.substr(idx,criteria.length)}</span>`;
+        const hightLightKeyword =  `<span class='${keyword} word-chosen'>${v.content.substr(idx,criteria.length)}</span>`;
         v.content = v.content.replace(reg,hightLightKeyword);
       });
 
@@ -94,12 +94,12 @@ const hightLightKeyword = async (ctx) => {
         const hightLightKeyword =  `<span class='content'>${v.content.substr(idx,criteria.length)}</span>`;
         v.content = v.content.replace(reg,hightLightKeyword);
       });
-     
+
       return v;
     })};
 };
 
-module.exports = { 
+module.exports = {
   searchByKeyword,
   hightLightKeyword,
   searchContent
