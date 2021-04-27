@@ -40,6 +40,7 @@
         "scope": [
           "email",
           "openid",
+          "profile",
           "https://www.googleapis.com/auth/calendar.readonly"
         ],
         "redirect_uri": "https://api.diracnlp.com/oauth/google/callback",

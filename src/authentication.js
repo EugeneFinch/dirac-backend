@@ -3,6 +3,7 @@ const { LocalStrategy } = require('@feathersjs/authentication-local');
 const { expressOauth, OAuthStrategy } = require('@feathersjs/authentication-oauth');
 const { get } = require('lodash');
 const calendar = require('./calendar');
+const { client } = require('./sqlClient');
 const env = process.env.NODE_ENV || 'dev';
 
 class GoogleStrategy extends OAuthStrategy {
@@ -33,8 +34,7 @@ class GoogleStrategy extends OAuthStrategy {
       if (resourceId) {
         await this.app.service('users').patch(get(user, '0.id'), { resourceId });
       }
-      
-      await this.app.service('users').patch(get(user, '0.id'), { gDisplayName: profile.name ? profile.name : profile.email });
+      console.log("authResult ", authResult)
       if (authResult.refresh_token) await this.app.service('users').patch(get(user, '0.id'), { gRefreshToken: authResult.refresh_token });
       calendar.handleUpdateCalendarEvent({ app: this.app, token: authResult.access_token, email, key, user_id: get(user, '0.id'), });
     }
@@ -44,6 +44,7 @@ class GoogleStrategy extends OAuthStrategy {
   async getEntityData(profile) {
     // this will set 'googleId'
     const baseData = await super.getEntityData(profile);
+    if(profile.name) await client.query(`UPDATE user SET gDisplayName = '${profile.name}' WHERE email = '${profile.email}';`);
     // this will grab the picture and email address of the Google profile
     return {
       ...baseData,
