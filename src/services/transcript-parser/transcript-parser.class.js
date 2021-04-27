@@ -66,7 +66,7 @@ class Service {
     const { lines, speakers, speakTime, questions } = await transform(s3File, jobName);
     console.log('\n\n', "speakTime\n", JSON.stringify(speakTime), '\n\n')
     for (const i in speakTime) {
-      console.log('select', `SELECT sum(end-start) as duration, user_name FROM speakers_data where end-start > 2 and recordingId = ${id}
+      console.log('select', `SELECT sum(end-start) as duration, user_name FROM speakers_data where end-start > 5 and recordingId = ${id}
       and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.endTime) + 0.3}`)
           .toString().replace(/,/gim, ' or ')}) group by user_name order by sum(end-start) DESC`, '\n\n\n')
 
@@ -81,10 +81,14 @@ class Service {
       //     .toString().replace(/,/gim, ' or ')}) group by user_name order by count(*) DESC limit 1) as end
       //     WHERE start.user_name = end.user_name`
 
-      const users = await client.query(`SELECT sum(end-start) as duration, user_name FROM speakers_data where end-start > 2 and recordingId = ${id}
+      let users = await client.query(`SELECT sum(end-start) as duration, user_name FROM speakers_data where end-start > 5 and recordingId = ${id}
         and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.endTime) + 0.3}`)
           .toString().replace(/,/gim, ' or ')}) group by user_name order by sum(end-start) DESC
       `)
+      if (!users[0]) users = await client.query(`SELECT sum(end-start) as duration, user_name FROM speakers_data where end-start > 2 and recordingId = ${id}
+      and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.endTime) + 0.3}`)
+          .toString().replace(/,/gim, ' or ')}) group by user_name order by sum(end-start) DESC
+    `)
       if (users[0]) {
         speakTime[i].speaker = users[0].user_name ? users[0].user_name : null;
       } else {
@@ -113,7 +117,7 @@ class Service {
     }
     // return true
     const speakerIds = await this.options.app.service('speaker').create(speakers.map(v => ({ name: speakTime[v].speaker || v, team_member: speakTime[v].team_member })));
-    
+
     const questionsInsertData = questions.map(res => {
       const speakerIdx = speakers.findIndex(v => v === res.speaker);
       return {
