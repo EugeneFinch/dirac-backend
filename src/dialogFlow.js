@@ -26,7 +26,7 @@ module.exports = async function init(question) {
     const result = responses[0].queryResult;
     if (result.intent) {
       console.log(`  Intent: ${result.intent.displayName}, question: ${question}`);
-      return result.intent.displayName;
+      return result;
     } else {
       console.log(`  No intent matched.`);
       return;

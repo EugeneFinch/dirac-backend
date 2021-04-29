@@ -11,6 +11,7 @@ module.exports = function (app) {
     speaker_id: { type: DataTypes.INTEGER },
     question: { type: DataTypes.STRING },
     intent: { type: DataTypes.STRING },
+    intent_info: { type: DataTypes.JSON },
     start_time: { type: DataTypes.STRING },
     end_time: { type: DataTypes.STRING },
   }, {
