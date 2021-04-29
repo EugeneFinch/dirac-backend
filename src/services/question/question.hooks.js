@@ -9,8 +9,8 @@ module.exports = {
     create: [async (ctx) => {
       for (let res in ctx.data) {
         const intent = await dialogFlow(ctx.data[res].question);
-        ctx.data[res].intent = intent.intent.displayName;
-        ctx.data[res].intent_info = intent;
+        ctx.data[res].intent = intent ? intent.intent.displayName : '';
+        ctx.data[res].intent_info = intent ? intent : {};
       }
     }],
     update: [],
