@@ -7,8 +7,11 @@ module.exports = {
     find: [],
     get: [],
     create: [async (ctx) => {
-      for (let res in ctx.data)
-        ctx.data[res].intent = await dialogFlow(ctx.data[res].question);
+      for (let res in ctx.data) {
+        const intent = await dialogFlow(ctx.data[res].question);
+        ctx.data[res].intent = intent.intent.displayName;
+        ctx.data[res].intent_info = intent;
+      }
     }],
     update: [],
     patch: [],
