@@ -110,8 +110,8 @@ class Service {
               where team_id = ${team_id[0].team_id}) and gDisplayName = '${speakTime[i].speaker}';`, 'id', id, '\n\n\n')
           if (id[0]) speakTime[i].team_member = 1;
         } else {
-          const id = await client.query(`select id from user where id = (select user_id from recording where id = ${id}) and gDisplayName = '${speakTime[i].speaker}';`)
-          if (id[0]) speakTime[i].team_member = 1;
+          const team = await client.query(`select id from user where id = (select user_id from recording where id = ${id}) and gDisplayName = '${speakTime[i].speaker}';`)
+          if (team[0]) speakTime[i].team_member = 1;
         }
       }
     }
