@@ -25,7 +25,7 @@ module.exports = async function (context) {
     },
     LanguageCode: 'en-US', //ru-RU
     Settings: {
-      MaxSpeakerLabels: +users[0].users_on_call > 1 ? +users[0].users_on_call : 2,
+      MaxSpeakerLabels: +users[0].users_on_call > 1 ? +users[0].users_on_call + 1 : 2,
       ShowSpeakerLabels: true ,
       VocabularyName: 'Competitors',
     }

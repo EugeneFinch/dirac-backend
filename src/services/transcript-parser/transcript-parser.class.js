@@ -56,7 +56,7 @@ class Service {
     });
     const job = { TranscriptionJobName: `dirac-${env}-${id}` };
     const rep = await transcribeservice.getTranscriptionJob(job).promise();
-    const s3File = rep.TranscriptionJob.Transcript.RedactedTranscriptFileUri; // поменяй  !!! TranscriptFileUri -> RedactedTranscriptFileUri
+    const s3File = rep.TranscriptionJob.Transcript.RedactedTranscriptFileUri || rep.TranscriptionJob.Transcript.TranscriptFileUri; // поменяй  !!! TranscriptFileUri -> RedactedTranscriptFileUri
     const status = rep.TranscriptionJob.TranscriptionJobStatus;
     const jobName = rep.TranscriptionJob.TranscriptionJobName;
     await this.options.app.service('recording').patch(id, { status });
