@@ -60,7 +60,7 @@ const getRecordingName = (roomURL) => {
     await page.waitForSelector('#identifierId');
     // Keep trying email until user inputs email correctly.
     // This will error due to captcha if too many incorrect inputs.
-    const email = 'alex@diracnlp.com';
+    const email = 'dirac@diracnlp.com';
     await page.type('#identifierId', email);
     await page.keyboard.press('Enter');
     await new Promise((res) => setTimeout(() => res(1), 3000))
@@ -76,7 +76,7 @@ const getRecordingName = (roomURL) => {
     // console.log(data1);
     await page.waitForSelector('#password input[type="password"]', { visible: true });
     console.log('Enter email');
-    const password = 'alex2021!!';
+    const password = 'dirac2021!';
 
     // Wait for password input
     await page.type('#password input[type="password"]', password);
