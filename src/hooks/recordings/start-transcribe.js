@@ -19,14 +19,12 @@ module.exports = async function (context) {
     Media: { /* required */
       MediaFileUri: `s3://transcripts-dirac/${context.data.url}`
     },
-    ContentRedaction: {
-      RedactionOutput: 'redacted' ,
-      RedactionType: 'PII' 
-    },
     LanguageCode: 'en-US', //ru-RU
     Settings: {
       MaxSpeakerLabels: +users[0].users_on_call > 1 ? +users[0].users_on_call + 1 : 2,
       ShowSpeakerLabels: true ,
+      VocabularyFilterName: 'filter-1',
+      VocabularyFilterMethod: 'mask',
       VocabularyName: 'Competitors',
     }
   };
