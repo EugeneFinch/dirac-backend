@@ -3,6 +3,7 @@ const AWS = require('aws-sdk');
 const fs = require('fs');
 const https = require('https');
 const { client } = require('../../sqlClient')
+const dialogFlowLogic = require('./dialogFlowLogic');
 const SrtConvert = require('./srtConvert');
 const get = require('lodash/get');
 const path = require('path');
@@ -115,25 +116,24 @@ class Service {
         }
       }
     }
+    // await dialogFlowLogic(lines);
     // return true
     const speakerIds = await this.options.app.service('speaker').create(speakers.map(v => ({ name: speakTime[v].speaker || v, team_member: speakTime[v].team_member })));
-
-    const questionsInsertData = questions.map(res => {
-      const speakerIdx = speakers.findIndex(v => v === res.speaker);
-      return {
-        speaker_id: get(speakerIds, `${speakerIdx}.id`),
-        recording_id: id,
-        question: res.question,
-        start_time: res.start_time,
-        end_time: res.end_time,
-      };
-    })
+    
     await this.options.app.service('question')._remove(null, {
       query: {
         recording_id: id
       }
+    
     });
-    await this.options.app.service('question').create(questionsInsertData);
+    await this.options.app.service('answer')._remove(null, {
+      query: {
+        recording_id: id
+      }
+    
+    });
+    await dialogFlowLogic(this.options.app, lines, speakers, speakerIds, id);
+
     const insertData = lines.map(l => {
       const speakerIdx = speakers.findIndex(v => v === l.speaker);
       return {
