@@ -20,6 +20,7 @@ const speakersData = require('./speakers-data/speakers-data.service.js');
 const analyticsTalkToListen = require('./analytics-talk-to-listen/analytics-talk-to-listen.service');
 const analyticsTalkToListenExport = require('./analytics-talk-to-listen/analytics-talk-to-listen-export.service');
 const question = require('./question/question.service.js');
+const answer = require('./answer/answer.service.js');
 
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
@@ -45,4 +46,5 @@ module.exports = function (app) {
   app.configure(analyticsTalkToListen);
   app.configure(analyticsTalkToListenExport);
   app.configure(question);
+  app.configure(answer);
 };
