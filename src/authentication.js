@@ -18,6 +18,7 @@ class GoogleStrategy extends OAuthStrategy {
         $limit: 1,
       }
     });
+    
 
     if (user.length > 0) {
       console.log("user", user);
