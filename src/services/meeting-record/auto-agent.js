@@ -32,10 +32,11 @@ const getRecordingName = (roomURL) => {
   let recordingId = process.argv[3].split('=')[1];
   const calendarEventId = process.argv[4] ? process.argv[4].split('=')[1] : null;
   const userId = process.argv[5] ? process.argv[5].split('=')[1] : null;
-  console.log(process.argv)
+  console.log(process.argv);
   if (calendarEventId) {
-    const calendarEvent = await app.service('cronjob-calendar-event').get(calendarEventId)
-    // 1 meaning joining, 2 meaning joined, 3 meaning denied
+    const calendarEvent = await app.service('cronjob-calendar-event').get(calendarEventId);
+    // 1 meaning joining, 2 meaning joined
+
     // When joining or joined exit process
     if (calendarEvent.joined === 1 || calendarEvent.joined === 2 || calendarEvent.joined === 3) {
       return process.exit(1);
@@ -52,10 +53,10 @@ const getRecordingName = (roomURL) => {
   });
   const page = await browser.newPage();
   try {
-    console.log('start', moment().utc().toDate(), roomURL)
-    await new Promise((res) => setTimeout(() => res(1), 2000))
+    console.log('start', moment().utc().toDate(), roomURL);
+    await new Promise((res) => setTimeout(() => res(1), 2000));
     await page.goto('https://accounts.google.com/signin/v2/identifier');
-    await new Promise((res) => setTimeout(() => res(1), 3000))
+    await new Promise((res) => setTimeout(() => res(1), 3000));
     // Wait for email input.
     await page.waitForSelector('#identifierId');
     // Keep trying email until user inputs email correctly.
@@ -63,12 +64,12 @@ const getRecordingName = (roomURL) => {
     const email = 'dirac@diracnlp.com';
     await page.type('#identifierId', email);
     await page.keyboard.press('Enter');
-    await new Promise((res) => setTimeout(() => res(1), 3000))
+    await new Promise((res) => setTimeout(() => res(1), 3000));
     const noCapcha = await page.evaluate(() => document.getElementsByClassName('Wzzww eLNT1d').length);
-    console.log('capcha', noCapcha)
+    console.log('capcha', noCapcha);
     if (!noCapcha) {
       console.log('Error! Capcha found.');
-      throw new Error('Capcha on page')
+      throw new Error('Capcha on page');
     }
 
     // const data1 = await page.evaluate(() => document.querySelector('*').outerHTML);
@@ -84,17 +85,17 @@ const getRecordingName = (roomURL) => {
     console.log('Enter password');
     await page.waitForNavigation();
     console.log('Logged in');
-    await new Promise((res) => setTimeout(() => res(1), 3000))
+    await new Promise((res) => setTimeout(() => res(1), 3000));
     await page.goto(roomURL, { waitUntil: 'load' });
     console.log('Wait join Button');
-    await new Promise((res) => setTimeout(() => res(1), 3000))
+    await new Promise((res) => setTimeout(() => res(1), 3000));
     const joinBtn = '//span[contains(.,"Ask to join") or contains(.,"Join now")]//parent::div';
     await page.waitForXPath(joinBtn, { visible: true, timeout: 10000 });
     await page.waitForTimeout(1000);
     const [button] = await page.$x(joinBtn);
     await button.click();
     console.log('click join Button');
-    console.log(moment().utc().toDate(), roomURL)
+    console.log(moment().utc().toDate(), roomURL);
     page.on('console', msg => {
       for (let i = 0; i < msg.args().length; ++i)
         console.log(`${i}: ${msg.args()[i]}`);
@@ -120,8 +121,8 @@ const getRecordingName = (roomURL) => {
     if (calendarEventId) {
       // set flag joined = 2
       await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 2 });
-      const calendarEvent = await app.service('cronjob-calendar-event').get(calendarEventId)
-      const attendees = JSON.parse(calendarEvent.attendees)
+      const calendarEvent = await app.service('cronjob-calendar-event').get(calendarEventId);
+      const attendees = JSON.parse(calendarEvent.attendees);
       let orgDomain;
       let accountName;
       if(attendees && attendees.length > 1) {
@@ -135,7 +136,7 @@ const getRecordingName = (roomURL) => {
         } catch (e) {
           accountName = '';
         }
-        
+
       }
       const record = await app.service('recording').create({
         user_id: userId,
@@ -156,10 +157,10 @@ const getRecordingName = (roomURL) => {
       });
     });
     await page.evaluate(jquery_ev_fn);
-    console.log('befo evaluate')
+    console.log('befo evaluate');
 
     const users = await page.evaluate(({ recordingId }) => {
-      console.log('11111111111111111')
+      console.log('11111111111111111');
       return new Promise((resolve, reject) => {
         const TEN_SECOND = 10000;
         var socketio = io('http://localhost:3030');
@@ -167,68 +168,70 @@ const getRecordingName = (roomURL) => {
         const fileName = `${d.getMinutes()}-${d.getSeconds()}-${recordingId || 'from-gmail'}.weba`;
         const dataEvent = `data-${fileName}`;
         const endEvent = `end-${fileName}`;
-        console.log('aaaaaaaaaa')
+        console.log('aaaaaaaaaa');
         let check;
         let interval;
         const users = {};
         const startTalkTime = +new Date();
         socketio.on('connect', function () {
-          console.log('connect')
-          clearInterval(check)
-          clearInterval(interval)
+          console.log('connect');
+          clearInterval(check);
+          clearInterval(interval);
           check = setInterval(() => {
             const time = +new Date;
-            // console.time(time)
+            console.time('timee:' + time);
             // console.log('----------------------------------')
-            Array.from(document.querySelectorAll('[aria-label=Participants] [role=listitem]')).map(elem => {
-              const userName = elem.getElementsByClassName('ZjFb7c')[0].innerText;
-              if (userName === 'Dirac Notetaker') return;
-              const speakClassList = Array.from(elem.getElementsByClassName('IisKdb xD3Vrd BbJhmb YE1TS JeFzg MNVeFb kT2pkb')[0].classList);
-
-
-              if (!users[`${userName}`]) {
-                console.log(`${userName}, ${speakClassList}`)
-                users[`${userName}`] = {
-                  name: userName,
-                  silent: speakClassList.includes('gjg47c'),
-                  speakTime: speakClassList.includes('gjg47c') ? [] : [{ start: +new Date - startTalkTime, end: 0 }],
-                  // lastStatuses: []
-                }
-              }
-
-              if (users[`${userName}`].silent !== speakClassList.includes('gjg47c')) {
-
-
-
-                users[`${userName}`].silent = speakClassList.includes('gjg47c');
-                console.log('users[`${userName}`].silent', users[`${userName}`].silent)
-                if (users[`${userName}`].silent) {
-                  const last = users[`${userName}`].speakTime.length;
-                  if (last) users[`${userName}`].speakTime[last - 1].end = +new Date - startTalkTime;
-                  console.timeEnd(time)
-                  // stop
-                } else {
-                  users[`${userName}`].speakTime.push({ start: +new Date - startTalkTime, end: 0 })
-                  console.timeEnd(time)
-                  // start
-                }
-                // console.log(`${userName} ${users[`${userName}`].exists ? 'stop        talk' : 'start        talk'}`)
-              }
-              // } else {
-              //   users[`${userName}`].lastStatuses.push(speakClassList.includes('gjg47c'))
-              //   users[`${userName}`].lastStatuses = users[`${userName}`].lastStatuses.slice(Math.max(users[`${userName}`].lastStatuses.length - 20, 0))
-              // }
-              // console.timeEnd(time)
-            })
-          }, 300)
-          setInterval(() => { console.log(users) }, 5000)
+            // Array.from(document.querySelectorAll('[aria-label=Participants] [role=listitem]')).map(elem => {
+            //   const userName = elem.getElementsByClassName('ZjFb7c')[0].innerText;
+            //   console.log('userName: ' + userName);
+            //
+            //   if (userName === 'Dirac Notetaker') return;
+            //   const speakClassList = Array.from(elem.getElementsByClassName('IisKdb xD3Vrd BbJhmb YE1TS JeFzg MNVeFb kT2pkb')[0].classList);
+            //
+            //
+            //   if (!users[`${userName}`]) {
+            //     console.log(`${userName}, ${speakClassList}`);
+            //     users[`${userName}`] = {
+            //       name: userName,
+            //       silent: speakClassList.includes('gjg47c'),
+            //       speakTime: speakClassList.includes('gjg47c') ? [] : [{ start: +new Date - startTalkTime, end: 0 }],
+            //       // lastStatuses: []
+            //     };
+            //   }
+            //
+            //   if (users[`${userName}`].silent !== speakClassList.includes('gjg47c')) {
+            //
+            //
+            //
+            //     users[`${userName}`].silent = speakClassList.includes('gjg47c');
+            //     console.log('users[`${userName}`].silent', users[`${userName}`].silent);
+            //     if (users[`${userName}`].silent) {
+            //       const last = users[`${userName}`].speakTime.length;
+            //       if (last) users[`${userName}`].speakTime[last - 1].end = +new Date - startTalkTime;
+            //       console.timeEnd(time);
+            //       // stop
+            //     } else {
+            //       users[`${userName}`].speakTime.push({ start: +new Date - startTalkTime, end: 0 });
+            //       console.timeEnd(time);
+            //       // start
+            //     }
+            //     // console.log(`${userName} ${users[`${userName}`].exists ? 'stop        talk' : 'start        talk'}`)
+            //   }
+            //   // } else {
+            //   //   users[`${userName}`].lastStatuses.push(speakClassList.includes('gjg47c'))
+            //   //   users[`${userName}`].lastStatuses = users[`${userName}`].lastStatuses.slice(Math.max(users[`${userName}`].lastStatuses.length - 20, 0))
+            //   // }
+            //   // console.timeEnd(time)
+            // });
+          }, 300);
+          setInterval(() => { console.log('users: ' + users); }, 5000);
           const ctx = new AudioContext();
           const dest = ctx.createMediaStreamDestination();
           var audios = document.querySelectorAll('audio');
           let streams = [];
           audios.forEach(a => { streams.push(a.captureStream()); });
           streams.map(stream => {
-            console.log('create strem')
+            console.log('create strem');
             ctx.createMediaStreamSource(stream).connect(dest);
           });
           const stream = new MediaStream(dest.stream.getTracks());
