@@ -36,8 +36,9 @@ const getRecordingName = (roomURL) => {
   if (calendarEventId) {
     const calendarEvent = await app.service('cronjob-calendar-event').get(calendarEventId);
     // 1 meaning joining, 2 meaning joined
+
     // When joining or joined exit process
-    if (calendarEvent.joined === 1 || calendarEvent.joined === 2) {
+    if (calendarEvent.joined === 1 || calendarEvent.joined === 2 || calendarEvent.joined === 3) {
       return process.exit(1);
     }
 
@@ -301,7 +302,15 @@ const getRecordingName = (roomURL) => {
     process.exit(1);
   } catch (err) {
     if (calendarEventId) {
-      await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 0 });
+      const deniedText = '//div[contains(.,"denied your request to join")]';
+      await page.waitForXPath(deniedText,{visible:true,timeout:5000}).then(async () => {
+        console.log('denied by user');
+        await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 3 });
+      }).catch(async () => {
+        console.log('user on call not response your bot request');
+        await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 0 });
+        console.log(calendarEventId);
+      });
     }
     // handle close browser but popup ask to join not hide
     await page.goto('https://google.com');

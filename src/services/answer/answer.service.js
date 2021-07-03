@@ -3,6 +3,7 @@ const createService = require('feathers-sequelize');
 const createModel = require('../../models/answer.model');
 const hooks = require('./answer.hooks');
 
+
 module.exports = function (app) {
   const Model = createModel(app);
   const paginate = app.get('paginate');
