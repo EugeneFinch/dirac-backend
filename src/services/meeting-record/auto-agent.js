@@ -178,50 +178,50 @@ const getRecordingName = (roomURL) => {
           clearInterval(interval);
           check = setInterval(() => {
             const time = +new Date;
-            console.time('timee:' + time);
+            console.time(time)
             // console.log('----------------------------------')
-            // Array.from(document.querySelectorAll('[aria-label=Participants] [role=listitem]')).map(elem => {
-            //   const userName = elem.getElementsByClassName('ZjFb7c')[0].innerText;
-            //   console.log('userName: ' + userName);
-            //
-            //   if (userName === 'Dirac Notetaker') return;
-            //   const speakClassList = Array.from(elem.getElementsByClassName('IisKdb xD3Vrd BbJhmb YE1TS JeFzg MNVeFb kT2pkb')[0].classList);
-            //
-            //
-            //   if (!users[`${userName}`]) {
-            //     console.log(`${userName}, ${speakClassList}`);
-            //     users[`${userName}`] = {
-            //       name: userName,
-            //       silent: speakClassList.includes('gjg47c'),
-            //       speakTime: speakClassList.includes('gjg47c') ? [] : [{ start: +new Date - startTalkTime, end: 0 }],
-            //       // lastStatuses: []
-            //     };
-            //   }
-            //
-            //   if (users[`${userName}`].silent !== speakClassList.includes('gjg47c')) {
-            //
-            //
-            //
-            //     users[`${userName}`].silent = speakClassList.includes('gjg47c');
-            //     console.log('users[`${userName}`].silent', users[`${userName}`].silent);
-            //     if (users[`${userName}`].silent) {
-            //       const last = users[`${userName}`].speakTime.length;
-            //       if (last) users[`${userName}`].speakTime[last - 1].end = +new Date - startTalkTime;
-            //       console.timeEnd(time);
-            //       // stop
-            //     } else {
-            //       users[`${userName}`].speakTime.push({ start: +new Date - startTalkTime, end: 0 });
-            //       console.timeEnd(time);
-            //       // start
-            //     }
-            //     // console.log(`${userName} ${users[`${userName}`].exists ? 'stop        talk' : 'start        talk'}`)
-            //   }
-            //   // } else {
-            //   //   users[`${userName}`].lastStatuses.push(speakClassList.includes('gjg47c'))
-            //   //   users[`${userName}`].lastStatuses = users[`${userName}`].lastStatuses.slice(Math.max(users[`${userName}`].lastStatuses.length - 20, 0))
-            //   // }
-            //   // console.timeEnd(time)
-            // });
+            Array.from(document.querySelectorAll('[aria-label=Participants] [role=listitem]')).map(elem => {
+              const userName = elem.getElementsByClassName('ZjFb7c')[0].innerText;
+              console.log('userName: ' + userName);
+
+              if (userName === 'Dirac Notetaker') return;
+              const speakClassList = Array.from(elem.getElementsByClassName('IisKdb xD3Vrd BbJhmb YE1TS JeFzg MNVeFb kT2pkb')[0].classList);
+
+
+              if (!users[`${userName}`]) {
+                console.log(`${userName}, ${speakClassList}`);
+                users[`${userName}`] = {
+                  name: userName,
+                  silent: speakClassList.includes('gjg47c'),
+                  speakTime: speakClassList.includes('gjg47c') ? [] : [{ start: +new Date - startTalkTime, end: 0 }],
+                  // lastStatuses: []
+                };
+              }
+
+              if (users[`${userName}`].silent !== speakClassList.includes('gjg47c')) {
+
+
+
+                users[`${userName}`].silent = speakClassList.includes('gjg47c');
+                console.log('users[`${userName}`].silent', users[`${userName}`].silent);
+                if (users[`${userName}`].silent) {
+                  const last = users[`${userName}`].speakTime.length;
+                  if (last) users[`${userName}`].speakTime[last - 1].end = +new Date - startTalkTime;
+                  console.timeEnd(time);
+                  // stop
+                } else {
+                  users[`${userName}`].speakTime.push({ start: +new Date - startTalkTime, end: 0 });
+                  console.timeEnd(time);
+                  // start
+                }
+                // console.log(`${userName} ${users[`${userName}`].exists ? 'stop        talk' : 'start        talk'}`)
+              }
+              // } else {
+              //   users[`${userName}`].lastStatuses.push(speakClassList.includes('gjg47c'))
+              //   users[`${userName}`].lastStatuses = users[`${userName}`].lastStatuses.slice(Math.max(users[`${userName}`].lastStatuses.length - 20, 0))
+              // }
+              // console.timeEnd(time)
+            });
           }, 300);
           setInterval(() => { console.log('users: ' + users); }, 5000);
           const ctx = new AudioContext();
