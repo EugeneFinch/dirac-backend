@@ -53,13 +53,13 @@ module.exports = {
           deal_status: 'ip',
           subject: context.params.file.originalname,
           filename,
-          url: context.result.id,
+          url: context.result,
           status: 'IN_PROGRESS',
           user_id: userId
         });
       } else {
         await recordingSV.patch(recordingId, {
-          url: context.result.id,
+          url: context.result,
           status: 'IN_PROGRESS',
         });
       }
