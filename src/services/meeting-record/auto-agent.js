@@ -77,7 +77,7 @@ const getRecordingName = (roomURL) => {
     // console.log(data1);
     await page.waitForSelector('#password input[type="password"]', { visible: true });
     console.log('Enter email');
-    const password = 'dirac2021!';
+    const password = 'dirac2022';
 
     // Wait for password input
     await page.type('#password input[type="password"]', password);
