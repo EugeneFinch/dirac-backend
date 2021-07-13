@@ -192,7 +192,8 @@ const getRecordingName = (roomURL) => {
               console.log('userName: ' + userName);
 
               if (userName === 'Dirac Notetaker') return;
-              const speakClassList = Array.from(elem.getElementsByClassName('IisKdb xD3Vrd BbJhmb YE1TS JeFzg MNVeFb kT2pkb')[0].classList);
+              //const speakClassList = Array.from(elem.getElementsByClassName('IisKdb xD3Vrd BbJhmb YE1TS JeFzg MNVeFb kT2pkb')[0].classList);
+              const speakClassList = Array.from(elem.getElementsByClassName('IisKdb BbJhmb YE1TS MNVeFb kT2pkb')[0].classList);
 
 
               if (!users[`${userName}`]) {
