@@ -112,6 +112,7 @@ const getRecordingName = (roomURL) => {
     });
 
     //Wait to allow join
+    //
     await page.waitForSelector('[data-self-name="You"]', { visible: true, timeout: 30000 }).catch(() => {
       throw new Error('Not allow to join meeting');
     });
@@ -301,22 +302,19 @@ const getRecordingName = (roomURL) => {
     await browser.close();
     process.exit(1);
   } catch (err) {
-    console.log(err);
-    if (calendarEventId) {
+    await page.screenshot({path: `error-${Math.random()}.png`})
+    if (calendarEventId && err && err.message === 'Not allow to join meeting') {
       const deniedText = '//div[contains(.,"denied your request to join")]';
       await page.waitForXPath(deniedText,{visible:true,timeout:5000}).then(async () => {
-        console.log('denied by user');
         await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 3 });
       }).catch(async () => {
         console.log('user on call not response your bot request');
         await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 0 });
-        console.log(calendarEventId);
       });
     }
     // handle close browser but popup ask to join not hide
     await page.goto('https://google.com');
     await browser.close();
-
     console.log('after browser close');
     return process.exit(1);
   } finally {
