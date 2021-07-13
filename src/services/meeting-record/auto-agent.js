@@ -89,6 +89,7 @@ const getRecordingName = (roomURL) => {
     await page.goto(roomURL, { waitUntil: 'load' });
     console.log('Wait join Button');
     await new Promise((res) => setTimeout(() => res(1), 3000));
+    await page.screenshot({path: `after-login-${Math.random()}.png`});
     const joinBtn = '//span[contains(.,"Ask to join") or contains(.,"Join now")]//parent::div';
     await page.waitForXPath(joinBtn, { visible: true, timeout: 10000 });
     await page.waitForTimeout(1000);
