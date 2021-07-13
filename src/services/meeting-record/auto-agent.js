@@ -303,7 +303,8 @@ const getRecordingName = (roomURL) => {
     // users.map(res => {
     //   console.log('user: ', res);
     // })
-    await page.click('[data-tooltip="Leave call"]').catch(err => console.log('notfound [data-tooltip="Leave call"] button'));
+    //await page.click('[data-tooltip="Leave call"]').catch(err => console.log('notfound [data-tooltip="Leave call"] button'));
+    await page.click('[data-label="Leave call"]').catch(err => console.log('notfound [data-label="Leave call"] button'));
     await page.close();
     await browser.close();
     process.exit(1);
