@@ -183,6 +183,7 @@ const getRecordingName = (roomURL) => {
           clearInterval(check);
           clearInterval(interval);
           check = setInterval(() => {
+            console.log('on check');
             const time = +new Date;
             console.time(time)
             // console.log('----------------------------------')
@@ -270,7 +271,8 @@ const getRecordingName = (roomURL) => {
 
           socketio.emit('start', { file: fileName, recordingId });
 
-          document.querySelector('[data-tooltip="Show everyone"]').click();
+          //document.querySelector('[data-tooltip="Show everyone"]').click();
+          document.querySelector('[aria-label="Show everyone"]').click();
           interval = setInterval(() => {
             const totalPeopleNode = document.querySelectorAll('[aria-label=Participants] [role=listitem]');
             console.log('totalPeopleNode', totalPeopleNode.length);
