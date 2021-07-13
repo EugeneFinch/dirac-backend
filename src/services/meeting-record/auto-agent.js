@@ -86,13 +86,13 @@ const getRecordingName = (roomURL) => {
     await page.waitForNavigation();
     console.log('Logged in');
 
-    await page.screenshot({path: `after-nav-${Math.random()}.png`})
-
     await new Promise((res) => setTimeout(() => res(1), 3000));
+    await page.screenshot({path: `after-nav-${Math.random()}.png`})
     await page.goto(roomURL, { waitUntil: 'load' });
+    await page.screenshot({path: `after-goto-meet-${Math.random()}.png`});
     console.log('Wait join Button');
     await new Promise((res) => setTimeout(() => res(1), 3000));
-    await page.screenshot({path: `after-login-${Math.random()}.png`});
+    await page.screenshot({path: `after-timeout-meet-${Math.random()}.png`});
     const joinBtn = '//span[contains(.,"Ask to join") or contains(.,"Join now")]//parent::div';
     await page.waitForXPath(joinBtn, { visible: true, timeout: 10000 });
     await page.waitForTimeout(1000);
