@@ -114,7 +114,8 @@ const getRecordingName = (roomURL) => {
 
     //Wait to allow join
     //
-    await page.waitForSelector('[data-self-name="You"]', { visible: true, timeout: 30000 }).catch(() => {
+    await page.waitForSelector('[aria-label="Leave call"]', { visible: true, timeout: 30000 }).catch(() => {
+      console.log('Not allow to join meeting');
       throw new Error('Not allow to join meeting');
     });
 
