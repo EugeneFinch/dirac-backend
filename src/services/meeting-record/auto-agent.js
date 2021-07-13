@@ -87,12 +87,9 @@ const getRecordingName = (roomURL) => {
     console.log('Logged in');
 
     await new Promise((res) => setTimeout(() => res(1), 3000));
-    await page.screenshot({path: `after-nav-${Math.random()}.png`})
     await page.goto(roomURL, { waitUntil: 'load' });
-    await page.screenshot({path: `after-goto-meet-${Math.random()}.png`});
     console.log('Wait join Button');
     await new Promise((res) => setTimeout(() => res(1), 3000));
-    await page.screenshot({path: `after-timeout-meet-${Math.random()}.png`});
     const joinBtn = '//span[contains(.,"Ask to join") or contains(.,"Join now")]//parent::div';
     await page.waitForXPath(joinBtn, { visible: true, timeout: 10000 });
     await page.waitForTimeout(1000);
@@ -310,7 +307,6 @@ const getRecordingName = (roomURL) => {
     await browser.close();
     process.exit(1);
   } catch (err) {
-    await page.screenshot({path: `error-${Math.random()}.png`})
     if (calendarEventId && err && err.message === 'Not allow to join meeting') {
       const deniedText = '//div[contains(.,"denied your request to join")]';
       await page.waitForXPath(deniedText,{visible:true,timeout:5000}).then(async () => {
