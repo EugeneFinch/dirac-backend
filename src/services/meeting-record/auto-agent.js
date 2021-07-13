@@ -85,6 +85,9 @@ const getRecordingName = (roomURL) => {
     console.log('Enter password');
     await page.waitForNavigation();
     console.log('Logged in');
+
+    await page.screenshot({path: `after-nav-${Math.random()}.png`})
+
     await new Promise((res) => setTimeout(() => res(1), 3000));
     await page.goto(roomURL, { waitUntil: 'load' });
     console.log('Wait join Button');
