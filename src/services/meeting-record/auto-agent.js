@@ -301,6 +301,7 @@ const getRecordingName = (roomURL) => {
     await browser.close();
     process.exit(1);
   } catch (err) {
+    console.log(err);
     if (calendarEventId) {
       const deniedText = '//div[contains(.,"denied your request to join")]';
       await page.waitForXPath(deniedText,{visible:true,timeout:5000}).then(async () => {
@@ -316,7 +317,7 @@ const getRecordingName = (roomURL) => {
     await page.goto('https://google.com');
     await browser.close();
 
-    console.log('after browser close', err);
+    console.log('after browser close');
     return process.exit(1);
   } finally {
     await page.goto('https://google.com');
