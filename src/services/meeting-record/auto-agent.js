@@ -314,6 +314,9 @@ const getRecordingName = (roomURL) => {
       }).catch(async () => {
         console.log('user on call not response your bot request');
         await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 0 });
+        await page.goto('https://google.com');
+        await browser.close();
+        return process.exit(1);
       });
     }
     // handle close browser but popup ask to join not hide
