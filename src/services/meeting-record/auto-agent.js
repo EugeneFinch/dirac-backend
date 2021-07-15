@@ -326,7 +326,7 @@ const getRecordingName = (roomURL) => {
     console.log('after browser close');
     return process.exit(1);
   } finally {
-    await page.goto('https://google.com');
+    //await page.goto('https://google.com');
     await browser.close();
     return process.exit(1);
   }
