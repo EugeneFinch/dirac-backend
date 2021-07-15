@@ -146,7 +146,7 @@ const getRecordingName = (roomURL) => {
         status: 'RECORDING',
         account_name: accountName ? accountName : '',
         deal_status: 'ip',
-        subject: calendarEvent.summary,
+        subject: calendarEvent.summary ? calendarEvent.summary : 'Meeting Call',
         calendar_event_id: calendarEvent.id,
         filename: getRecordingName(roomURL),
         url: '',
@@ -229,7 +229,7 @@ const getRecordingName = (roomURL) => {
               // console.timeEnd(time)
             });
           }, 300);
-          setInterval(() => { console.log('users: ' + users); }, 5000);
+          setInterval(() => { console.log('users: ', users); }, 5000);
           const ctx = new AudioContext();
           const dest = ctx.createMediaStreamDestination();
           var audios = document.querySelectorAll('audio');
