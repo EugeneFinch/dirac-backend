@@ -107,7 +107,7 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
           str.shift();
         }
 
-        const response = await dialogFlow(str.trim());
+        const response = await dialogFlow(str && str.trim() || '');
         // console.log('question without ? ', str.trim())
         // console.log('response ', response) // Последний предложение без вопросов
         if (response && response.queryText) {
@@ -115,7 +115,7 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
           const qId = await app.service('question').create({
             speaker_id: get(speakerIds, `${speakerIdx}.id`),
             recording_id: id,
-            question: str.trim(),
+            question: str && str.trim() || '',
             intent: response.intent.displayName,
             intent_info: response,
             start_time: data[i].start_time,
