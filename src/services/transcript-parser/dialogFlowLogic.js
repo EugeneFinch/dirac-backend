@@ -1,5 +1,6 @@
 const get = require('lodash/get');
 const dialogFlow = require('./../../dialogFlow');
+const logger = require('./../../../src/logger');
 
 
 const answer = async (app, data, context, speakers, speakerIds, id, qId) => {
@@ -43,8 +44,8 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
           str.shift();
         }
 
-        console.log('dona here')
-        console.log(str.toString())
+        logger.info('dona here');
+        logger.info(str.toString());
 
         return str.toString().trim();
       });
@@ -94,11 +95,11 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
         if (processed[i].split(' ').length > 3) idx = i
       }
 
-      console.log('dona 2222')
-      console.log('idx: ' + idx)
+      logger.info('dona 2222');
+      logger.info('idx: ' + idx);
 
       if (idx !== undefined) {
-        console.log('processed.idx: ' + processed[idx].trim());
+        logger.info('processed.idx: ' + processed[idx].trim());
 
         let str = processed[idx].trim() + '?';
         while (str.toString().length > 250) {
