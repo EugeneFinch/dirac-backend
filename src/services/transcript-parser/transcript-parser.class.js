@@ -71,7 +71,7 @@ class Service {
       and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.endTime) + 0.3}`)
           .toString().replace(/,/gim, ' or ')}) group by user_name order by sum(end-start) DESC`, '\n\n\n')
 
-      //     `select start.user_name as user_name, start.count+end.count as entries_match FROM 
+      //     `select start.user_name as user_name, start.count+end.count as entries_match FROM
       // (select user_name, count(*) as count from speakers_data where end-start > 0.1 and recordingId = ${id} and
       // (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.2} and ${parseFloat(res.endTime) + 0.3}`)
       //     .toString().replace(/,/gim, ' or ')})
@@ -119,20 +119,20 @@ class Service {
     // await dialogFlowLogic(lines);
     // return true
     const speakerIds = await this.options.app.service('speaker').create(speakers.map(v => ({ name: speakTime[v].speaker || v, team_member: speakTime[v].team_member })));
-    
+
     await this.options.app.service('question')._remove(null, {
       query: {
         recording_id: id
       }
-    
+
     });
     await this.options.app.service('answer')._remove(null, {
       query: {
         recording_id: id
       }
-    
+
     });
-    await dialogFlowLogic(this.options.app, lines, speakers, speakerIds, id);
+    // await dialogFlowLogic(this.options.app, lines, speakers, speakerIds, id);
 
     const insertData = lines.map(l => {
       const speakerIdx = speakers.findIndex(v => v === l.speaker);
