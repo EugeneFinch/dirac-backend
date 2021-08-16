@@ -95,6 +95,10 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
           str = str.toString().split(',');
           str.shift();
         }
+
+        console.log('dona here')
+        console.log(str)
+
         const response = await dialogFlow(str.trim());
         // console.log('question without ? ', str.trim())
         // console.log('response ', response) // Последний предложение без вопросов
