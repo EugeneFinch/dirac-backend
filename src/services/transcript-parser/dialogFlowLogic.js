@@ -42,6 +42,10 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
           str = str.toString().split(',');
           str.shift();
         }
+
+        console.log('dona here')
+        console.log(str.toString())
+
         return str.toString().trim();
       });
 
@@ -96,10 +100,7 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
           str.shift();
         }
 
-        console.log('dona here')
-        console.log(str)
-
-        const response = await dialogFlow(str.trim());
+        const response = await dialogFlow(str.toString().trim());
         // console.log('question without ? ', str.trim())
         // console.log('response ', response) // Последний предложение без вопросов
         if (response && response.queryText) {
@@ -107,7 +108,7 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
           const qId = await app.service('question').create({
             speaker_id: get(speakerIds, `${speakerIdx}.id`),
             recording_id: id,
-            question: str.trim(),
+            question: str.toString().trim(),
             intent: response.intent.displayName,
             intent_info: response,
             start_time: data[i].start_time,
