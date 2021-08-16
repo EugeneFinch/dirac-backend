@@ -44,9 +44,6 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
           str.shift();
         }
 
-        logger.info('dona here');
-        logger.info(str.toString());
-
         return str.toString().trim();
       });
 
@@ -94,9 +91,6 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
       for (let i = processed.length - 1; i >= 0 && !idx; i--) {
         if (processed[i].split(' ').length > 3) idx = i
       }
-
-      logger.info('dona 2222');
-      logger.info('idx: ' + idx);
 
       if (idx !== undefined) {
         logger.info('processed.idx: ' + processed[idx].trim());
