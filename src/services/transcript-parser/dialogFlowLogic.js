@@ -93,15 +93,13 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
       }
 
       if (idx !== undefined) {
-        logger.info('processed.idx: ' + processed[idx].trim());
-
         let str = processed[idx].trim() + '?';
         while (str.toString().length > 250) {
           str = str.toString().split(',');
           str.shift();
         }
 
-        const response = await dialogFlow(str && str.trim() || '');
+        const response = await dialogFlow(str.trim());
         // console.log('question without ? ', str.trim())
         // console.log('response ', response) // Последний предложение без вопросов
         if (response && response.queryText) {
@@ -109,7 +107,7 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
           const qId = await app.service('question').create({
             speaker_id: get(speakerIds, `${speakerIdx}.id`),
             recording_id: id,
-            question: str && str.trim() || '',
+            question: str.trim(),
             intent: response.intent.displayName,
             intent_info: response,
             start_time: data[i].start_time,
