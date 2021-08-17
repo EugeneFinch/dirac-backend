@@ -15,18 +15,18 @@ module.exports = {
     create: [
       async context => {
         try {
+          const BLACK_LIST_USER_ID = [0, 124, 130, 127];
           console.log('before create calendar');
-          console.log('after receive user ' + JSON.stringify(context.params.body));
 
           const key = context.app.get('GOOGLE_API_KEY');
-
           const user_id = get(context, 'params.body.user_id', 0);
           const access_token = get(context, 'params.body.access_token');
-          const userInfo = await context.app.service('users').get(user_id);
 
-          if(!userInfo) {
-            context.result = { message: 'not found user id: ' + user_id };
+          if(BLACK_LIST_USER_ID.includes(user_id)) {
+            context.result = { message: 'blacklist user id: ' + user_id };
           } else {
+            const userInfo = await context.app.service('users').get(user_id);
+
             const email = get(userInfo, 'email');
             const syncToken = get(userInfo, 'nextSyncToken');
 
