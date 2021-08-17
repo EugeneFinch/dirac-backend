@@ -103,7 +103,7 @@ async function handleUpdateCalendarEvent({ app, token, email, key, syncToken, us
     });
     await app.service('users').patch(user_id, { lastCheck: dayjs().toISOString() });
   } catch (error) {
-    console.log('asdjkfhnsda', error);
+    console.log('asdjkfhnsda', error.message);
   }
 }
 
