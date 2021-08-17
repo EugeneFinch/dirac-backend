@@ -1,6 +1,5 @@
 const get = require('lodash/get');
 const dialogFlow = require('./../../dialogFlow');
-const logger = require('./../../../src/logger');
 
 
 const answer = async (app, data, context, speakers, speakerIds, id, qId) => {
