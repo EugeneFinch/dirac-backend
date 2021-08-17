@@ -15,7 +15,7 @@ const updateToken = async (appCreds, user) => {
     return data.data.access_token;
   }
   catch (e) {
-    console.log('Failed update user token: ',e)
+    console.log('Failed update user token: ',e.message)
   }
 }
 
