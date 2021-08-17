@@ -70,41 +70,44 @@ async function handleUpdateCalendarEvent({ app, token, email, key, syncToken, us
   console.log('handle update calendar event', user_id);
   const db = app.get('sequelizeClient');
   try {
-    const response = await getEventList({ token, email, key, syncToken });
+    const BLACK_LIST_USER_ID = [0, 124, 130, 127];
 
-    let items = get(response, 'data.items');
-    const nextSyncToken = get(response, 'data.nextSyncToken');
+    if(!BLACK_LIST_USER_ID.includes(user_id)) {
+      const response = await getEventList({ token, email, key, syncToken });
 
-    await app.service('users').patch(user_id, { nextSyncToken });
+      let items = get(response, 'data.items');
+      const nextSyncToken = get(response, 'data.nextSyncToken');
 
-    forEach(items, item => {
-      const params = {
-        id: item.id,
-        kind: item.kind,
-        etag: item.etag,
-        status: item.status,
-        htmlLink: item.htmlLink,
-        created: item.created,
-        creator: get(item, 'creator.email', ''),
-        updated: item.updated,
-        summary: item.summary,
-        location: item.location,
-        time_zone: get(item, 'start.timeZone', ''),
-        user_id,
-        attendees: JSON.stringify(item.attendees),
-        start: get(item, 'start.dateTime', ''),
-        end: get(item, 'end.dateTime', ''),
-        description: item.description,
-        hangoutLink: item.hangoutLink,
-      };
-      db.models.calendar_event.upsert(params)
-        .then(o => console.log('upsert success'))
-        .catch(e => console.log('upsert error'));
-        //.catch(e => console.log('upsert error', e));
-    });
-    await app.service('users').patch(user_id, { lastCheck: dayjs().toISOString() });
+      await app.service('users').patch(user_id, { nextSyncToken });
+
+      forEach(items, item => {
+        const params = {
+          id: item.id,
+          kind: item.kind,
+          etag: item.etag,
+          status: item.status,
+          htmlLink: item.htmlLink,
+          created: item.created,
+          creator: get(item, 'creator.email', ''),
+          updated: item.updated,
+          summary: item.summary,
+          location: item.location,
+          time_zone: get(item, 'start.timeZone', ''),
+          user_id,
+          attendees: JSON.stringify(item.attendees),
+          start: get(item, 'start.dateTime', ''),
+          end: get(item, 'end.dateTime', ''),
+          description: item.description,
+          hangoutLink: item.hangoutLink,
+        };
+        db.models.calendar_event.upsert(params)
+          .then(o => console.log('upsert success'))
+          .catch(e => console.log('upsert error', e));
+      });
+      await app.service('users').patch(user_id, { lastCheck: dayjs().toISOString() });
+    }
   } catch (error) {
-    //console.log('asdjkfhnsda', error);
+    console.log('asdjkfhnsda', error);
   }
 }
 

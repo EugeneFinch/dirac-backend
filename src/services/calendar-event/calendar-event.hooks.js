@@ -22,10 +22,6 @@ module.exports = {
           const user_id = get(context, 'params.body.user_id', 0);
           const access_token = get(context, 'params.body.access_token');
 
-          console.log(BLACK_LIST_USER_ID)
-          console.log(user_id)
-          console.log(BLACK_LIST_USER_ID.includes(user_id))
-
           if(BLACK_LIST_USER_ID.includes(user_id)) {
             context.result = { message: 'blacklist user id' };
           } else {
