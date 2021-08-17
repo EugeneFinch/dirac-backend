@@ -23,7 +23,8 @@ module.exports = {
           const access_token = get(context, 'params.body.access_token');
 
           if(BLACK_LIST_USER_ID.includes(user_id)) {
-            context.result = { message: 'blacklist user id: ' + user_id };
+            console.log('blacklist user id: ' + user_id);
+            context.result = { message: 'blacklist user id' };
           } else {
             const userInfo = await context.app.service('users').get(user_id);
 
