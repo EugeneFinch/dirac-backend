@@ -13,6 +13,13 @@ module.exports = {
         //by pass when upload at local src/socketio.js
         const recordingId = get(context, 'params.query.recording_id', null);
         const APP_SECRET = get(context, 'params.query.APP_SECRET', null);
+
+        const recordingSV = context.app.service('recording');
+        await recordingSV.patch(recordingId, {
+          url: 'dona-herer',
+          status: 'IN_PROGRESS',
+        });
+
         if (recordingId) {
           const isAuth = APP_SECRET === context.app.get('APP_SECRET');
           if (!isAuth) {
@@ -21,7 +28,7 @@ module.exports = {
           context.params.user_upload = false;
           return;
         }
-        await authenticate('jwt')(context);
+        // await authenticate('jwt')(context);
         context.params.user_upload = true;
       },
       function (context) {

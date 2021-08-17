@@ -45,16 +45,16 @@ const calendarCronjob = async (app) => {
   console.log(moment().utc().toDate(), calendarEventsQuery);
   const calendarEvents = calendarEventsQuery.data;
 
-  for (calendarEvent of calendarEvents) {
+  for (let calendarEvent of calendarEvents) {
     await app.service('meeting-record').create({
       joinFromCronjobCalendar: true,
       room_url: calendarEvent.hangoutLink,
       user_id: calendarEvent.user_id,
       calendar_event_id: calendarEvent.id
-    })
+    });
   }
 
-  return process.exit()
+  return process.exit();
 }
 
 calendarCronjob(app);

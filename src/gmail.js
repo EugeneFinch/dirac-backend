@@ -20,10 +20,10 @@ function authorize(app) {
   try{
     const token = fs.readFileSync(TOKEN_PATH);
     oAuth2Client.setCredentials(JSON.parse(token));
-    console.log('token auth', JSON.parse(token));
+    //console.log('token auth', JSON.parse(token));
     return oAuth2Client;
   }catch(err) {
-    console.log('New Token');
+    //console.log('New Token');
     return getNewToken(oAuth2Client);
   }
 }
@@ -73,12 +73,12 @@ function watchInbox(topic,auth) {
     }
   }, (err, res) => {
     if (err) {
-      console.log('err', err);
-      console.log('res', res);
-      return console.log('The API returned an error: ' + err);
+      //console.log('err', err);
+      //console.log('res', res);
+      return console.log('The API returned an error');
     }
     console.log('Watch sucess');
-   
+
   });
 }
 async function getInviteInfo (auth,startHistoryId) {
@@ -87,7 +87,7 @@ async function getInviteInfo (auth,startHistoryId) {
     host:'',
     roomURL:''
   };
-  console.log('RESULT', result);
+  //console.log('RESULT', result);
   try{
     const history = await gmail.users.history.list({
       userId:'me',
@@ -96,7 +96,7 @@ async function getInviteInfo (auth,startHistoryId) {
       historyTypes:'MESSAGE_ADDED',
       maxResults:1
     });
-    console.log('HISTORY', history);
+    //console.log('HISTORY', history);
     if(!history.data.history){
       console.log('NO HISTORY');
       return;
@@ -107,15 +107,15 @@ async function getInviteInfo (auth,startHistoryId) {
       userId:'me',
       id:messageId
     });
-    console.log('message', message);
+    //console.log('message', message);
     const roomRegex = /meet.google.com\/(\w|-)+/g;
     const roomURL = roomRegex.exec(message.data.snippet);
     const hostRegex = /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/g;
     const host = hostRegex.exec(message.data.snippet);
-    console.log('roomRegex', roomRegex);
-    console.log('roomUrl', roomURL);
-    console.log('hostRegex', hostRegex);
-    console.log('host', host);
+    //console.log('roomRegex', roomRegex);
+    //console.log('roomUrl', roomURL);
+    //console.log('hostRegex', hostRegex);
+    //console.log('host', host);
     if(!roomURL || !host){
       return result;
     }
@@ -124,10 +124,10 @@ async function getInviteInfo (auth,startHistoryId) {
     result.host = host[0];
     return result;
   }catch(err) {
-    console.log('err', err);
+    //console.log('err', err);
     throw err;
   }
- 
+
 }
 
 module.exports = {
