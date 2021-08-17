@@ -1,5 +1,6 @@
 const get = require('lodash/get');
 const dialogFlow = require('./../../dialogFlow');
+const logger = require('./../../../src/logger');
 
 
 const answer = async (app, data, context, speakers, speakerIds, id, qId) => {
@@ -42,6 +43,7 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
           str = str.toString().split(',');
           str.shift();
         }
+
         return str.toString().trim();
       });
 
@@ -89,13 +91,17 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
       for (let i = processed.length - 1; i >= 0 && !idx; i--) {
         if (processed[i].split(' ').length > 3) idx = i
       }
+
       if (idx !== undefined) {
+        logger.info('processed.idx: ' + processed[idx].trim());
+
         let str = processed[idx].trim() + '?';
         while (str.toString().length > 250) {
           str = str.toString().split(',');
           str.shift();
         }
-        const response = await dialogFlow(str.trim());
+
+        const response = await dialogFlow(str && str.trim() || '');
         // console.log('question without ? ', str.trim())
         // console.log('response ', response) // Последний предложение без вопросов
         if (response && response.queryText) {
@@ -103,7 +109,7 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
           const qId = await app.service('question').create({
             speaker_id: get(speakerIds, `${speakerIdx}.id`),
             recording_id: id,
-            question: str.trim(),
+            question: str && str.trim() || '',
             intent: response.intent.displayName,
             intent_info: response,
             start_time: data[i].start_time,
