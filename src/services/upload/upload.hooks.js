@@ -28,7 +28,7 @@ module.exports = {
           context.params.user_upload = false;
           return;
         }
-        await authenticate('jwt')(context);
+        // await authenticate('jwt')(context);
         context.params.user_upload = true;
       },
       function (context) {
