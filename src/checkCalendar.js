@@ -32,6 +32,8 @@ const checkJob = async (app) => {
       }
     });
     for (let res of user) {
+      console.log('dona debug')
+      console.log(JSON.stringify(res))
       console.log('Before. user id: ', get(res, 'id'))
       if(res.gRefreshToken) {
         console.log('Process user id: ', get(res, 'id'))
