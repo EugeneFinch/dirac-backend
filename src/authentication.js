@@ -21,7 +21,8 @@ class GoogleStrategy extends OAuthStrategy {
 
 
     if (user.length > 0) {
-      const response = await calendar.watchCalendar({
+      const response = await calendar.
+      watchCalendar({
         token: authResult.access_token,
         email,
         id: `${env}-${get(user, '0.id')}-${new Date().valueOf()}`,
