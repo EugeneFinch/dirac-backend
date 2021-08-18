@@ -27,7 +27,7 @@ RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
     && mkdir -p /home/pptruser/Downloads /app \
     && mkdir -p /home/pptruser/crontabs
 
-RUN echo "*/2 * * * * cd /app && node NODE_ENV=dev /app/src/calendar-cronjob.js >> NODE_ENV=dev /app/calendar-cronjob.log 2>&1" >> /home/pptruser/crontabs/pptruser
+RUN echo "*/2 * * * * cd /app && node /app/src/calendar-cronjob.js >> /app/calendar-cronjob.log 2>&1" >> /home/pptruser/crontabs/pptruser
 
 COPY . .
 

@@ -2,4 +2,4 @@
 
 crond -c /home/pptruser/crontabs
 
-yarn start
+yarn start:dev
