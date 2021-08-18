@@ -35,7 +35,7 @@ jobs:
         ECR_REPOSITORY: dirac
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        docker build -e NODE_ENV=dev -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
