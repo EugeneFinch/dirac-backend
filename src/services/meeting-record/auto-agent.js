@@ -45,6 +45,7 @@ const getRecordingName = (roomURL) => {
 
     // meaning it's join first time -> set joined is 1 (1 meaning joining)
     await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 1 });
+    console.log('dona set joined 1')
   }
 
   const browser = await puppeteer.launch({
