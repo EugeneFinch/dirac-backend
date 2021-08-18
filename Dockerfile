@@ -1,10 +1,11 @@
 FROM node:14-alpine
 WORKDIR app
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
+    NODE_ENV=dev
 
 COPY package.json yarn.lock ./
-RUN yarn install --prod
+RUN yarn install
 
 RUN apk update && apk upgrade && \
     echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
