@@ -37,7 +37,7 @@ class GoogleStrategy extends OAuthStrategy {
       }
       //console.log("authResult ", authResult)
       if (authResult.raw.refresh_token) await this.app.service('users').patch(get(user, '0.id'), { gRefreshToken: authResult.raw.refresh_token });
-      calendar.handleUpdateCalendarEvent({ app: this.app, token: authResult.access_token, email, key, user_id: get(user, '0.id'), });
+     await calendar.handleUpdateCalendarEvent({ app: this.app, token: authResult.access_token, email, key, user_id: get(user, '0.id'), });
     }
 
     return profile;

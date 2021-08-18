@@ -18,6 +18,8 @@ module.exports = {
           console.log('before create calendar');
 
           const key = context.app.get('GOOGLE_API_KEY');
+
+          console.log('dona google key: ' + key);
           const user_id = get(context, 'params.body.user_id', 0);
           const access_token = get(context, 'params.body.access_token');
 

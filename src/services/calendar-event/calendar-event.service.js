@@ -21,6 +21,8 @@ module.exports = function (app) {
         const access_token = get(req, 'headers.x-goog-channel-token');
         const user_id = get(req, 'headers.x-goog-channel-id','').split(`${env}-`)[1];
         req.feathers.body = { user_id, access_token };
+
+        console.log('dona before /calendar-event: ' + JSON.stringify({ user_id, access_token }));
       }
       next();
     },
