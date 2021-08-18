@@ -20,11 +20,11 @@ function watchCalendar({ token, email, id, resourceId, userId }) {
     }
   })
     .then(data => {
-      console.log('push watch calendar success');
+      console.log('push watch calendar success: ' + id + ' ' + userId);
       return data;
     })
     .catch(error => {
-      console.log('push watch calendar error');
+      console.log('push watch calendar error: ' + id + ' ' + userId);
       if (error.response) {
         // Request made and server responded
         console.log(error.response.data);
