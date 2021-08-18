@@ -21,13 +21,12 @@ class GoogleStrategy extends OAuthStrategy {
 
 
     if (user.length > 0) {
-      console.log("user", user);
-      console.log("id", `${env}-${get(user, "0.id")}`);
       const response = await calendar.watchCalendar({
         token: authResult.access_token,
         email,
-        id: `${env}-${get(user, '0.id')}`,
-        resourceId: `${env}-${get(user, '0.resourceId')}`
+        id: `${env}-${get(user, '0.id')}-${new Date().valueOf()}`,
+        resourceId: `${env}-${get(user, '0.resourceId')}`,
+        userId: get(user, '0.id')
       });
 
       const resourceId = get(response, 'data.resourceId');

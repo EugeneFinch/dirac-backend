@@ -3,7 +3,7 @@ const dayjs = require('dayjs');
 const { get, forEach } = require('lodash');
 const env = process.env.NODE_ENV || 'dev';
 
-function watchCalendar({ token, email, id, resourceId }) {
+function watchCalendar({ token, email, id, resourceId, userId }) {
   return axios(`https://www.googleapis.com/calendar/v3/calendars/${email}/events/watch`, {
     method: 'POST',
     headers: {
@@ -15,6 +15,7 @@ function watchCalendar({ token, email, id, resourceId }) {
       type: 'web_hook',
       address: env === 'dev' ? 'https://api-dev.diracnlp.com/calendar-event' : 'https://api.diracnlp.com/calendar-event', // Your receiving URL.
       token, // (Optional) Your channel token.
+      userId
       // "expiration": 1426325213000 // (Optional) Your requested channel expiration time.
     }
   })
