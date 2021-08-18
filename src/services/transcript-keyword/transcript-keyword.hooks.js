@@ -6,9 +6,9 @@ module.exports = {
   before: {
     all: [],
     find: [
-      // authenticate('jwt'),
+      authenticate('jwt'),
       ctx=>{
-        if(!get(ctx,'params.query.recording_id')){
+        if (!get(ctx, 'params.query.recording_id')) {
           throw new BadRequest('Missing params recording_id');
         }
       }
