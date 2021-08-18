@@ -7,6 +7,7 @@ const services = require('../../services');
 const sequelize = require('../../sequelize');
 const appHooks = require('../../app.hooks');
 const moment = require('moment');
+const env = process.env.NODE_ENV || 'dev';
 
 const app = express(feathers());
 
@@ -61,7 +62,9 @@ const getRecordingName = (roomURL) => {
     await page.waitForSelector('#identifierId');
     // Keep trying email until user inputs email correctly.
     // This will error due to captcha if too many incorrect inputs.
-    const email = 'dirac@diracnlp.com';
+    const email = env === 'dev' ? 'lex@diracnlp.com' : 'bot@diracnlp.com';
+    const password = env === 'dev' ? 'dev2021!' : 'dirac2022';
+
     await page.type('#identifierId', email);
     await page.keyboard.press('Enter');
     await new Promise((res) => setTimeout(() => res(1), 3000));
@@ -77,7 +80,6 @@ const getRecordingName = (roomURL) => {
     // console.log(data1);
     await page.waitForSelector('#password input[type="password"]', { visible: true });
     console.log('Enter email');
-    const password = 'dirac2021!';
 
     // Wait for password input
     await page.type('#password input[type="password"]', password);
@@ -85,6 +87,7 @@ const getRecordingName = (roomURL) => {
     console.log('Enter password');
     await page.waitForNavigation();
     console.log('Logged in');
+
     await new Promise((res) => setTimeout(() => res(1), 3000));
     await page.goto(roomURL, { waitUntil: 'load' });
     console.log('Wait join Button');
@@ -112,7 +115,9 @@ const getRecordingName = (roomURL) => {
     });
 
     //Wait to allow join
-    await page.waitForSelector('[data-self-name="You"]', { visible: true, timeout: 30000 }).catch(() => {
+    //
+    await page.waitForSelector('[aria-label="Leave call"]', { visible: true, timeout: 30000 }).catch(() => {
+      console.log('Not allow to join meeting');
       throw new Error('Not allow to join meeting');
     });
 
@@ -143,7 +148,7 @@ const getRecordingName = (roomURL) => {
         status: 'RECORDING',
         account_name: accountName ? accountName : '',
         deal_status: 'ip',
-        subject: calendarEvent.summary,
+        subject: calendarEvent.summary ? calendarEvent.summary : 'Meeting Call',
         calendar_event_id: calendarEvent.id,
         filename: getRecordingName(roomURL),
         url: '',
@@ -178,6 +183,7 @@ const getRecordingName = (roomURL) => {
           clearInterval(check);
           clearInterval(interval);
           check = setInterval(() => {
+            console.log('on check');
             const time = +new Date;
             console.time(time)
             // console.log('----------------------------------')
@@ -186,7 +192,8 @@ const getRecordingName = (roomURL) => {
               console.log('userName: ' + userName);
 
               if (userName === 'Dirac Notetaker') return;
-              const speakClassList = Array.from(elem.getElementsByClassName('IisKdb xD3Vrd BbJhmb YE1TS JeFzg MNVeFb kT2pkb')[0].classList);
+              //const speakClassList = Array.from(elem.getElementsByClassName('IisKdb xD3Vrd BbJhmb YE1TS JeFzg MNVeFb kT2pkb')[0].classList);
+              const speakClassList = Array.from(elem.getElementsByClassName('IisKdb BbJhmb YE1TS')[0].classList);
 
 
               if (!users[`${userName}`]) {
@@ -224,7 +231,7 @@ const getRecordingName = (roomURL) => {
               // console.timeEnd(time)
             });
           }, 300);
-          setInterval(() => { console.log('users: ' + users); }, 5000);
+          setInterval(() => { console.log('users: ', users); }, 5000);
           const ctx = new AudioContext();
           const dest = ctx.createMediaStreamDestination();
           var audios = document.querySelectorAll('audio');
@@ -265,7 +272,8 @@ const getRecordingName = (roomURL) => {
 
           socketio.emit('start', { file: fileName, recordingId });
 
-          document.querySelector('[data-tooltip="Show everyone"]').click();
+          //document.querySelector('[data-tooltip="Show everyone"]').click();
+          document.querySelector('[aria-label="Show everyone"]').click();
           interval = setInterval(() => {
             const totalPeopleNode = document.querySelectorAll('[aria-label=Participants] [role=listitem]');
             console.log('totalPeopleNode', totalPeopleNode.length);
@@ -296,30 +304,31 @@ const getRecordingName = (roomURL) => {
     // users.map(res => {
     //   console.log('user: ', res);
     // })
-    await page.click('[data-tooltip="Leave call"]').catch(err => console.log('notfound [data-tooltip="Leave call"] button'));
+    //await page.click('[data-tooltip="Leave call"]').catch(err => console.log('notfound [data-tooltip="Leave call"] button'));
+    await page.click('[data-label="Leave call"]').catch(err => console.log('notfound [data-label="Leave call"] button'));
     await page.close();
     await browser.close();
     process.exit(1);
   } catch (err) {
-    if (calendarEventId) {
+    if (calendarEventId && err && err.message === 'Not allow to join meeting') {
       const deniedText = '//div[contains(.,"denied your request to join")]';
       await page.waitForXPath(deniedText,{visible:true,timeout:5000}).then(async () => {
-        console.log('denied by user');
         await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 3 });
       }).catch(async () => {
         console.log('user on call not response your bot request');
         await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 0 });
-        console.log(calendarEventId);
+        await page.goto('https://google.com');
+        await browser.close();
+        return process.exit(1);
       });
     }
     // handle close browser but popup ask to join not hide
     await page.goto('https://google.com');
     await browser.close();
-
-    console.log('after browser close', err);
+    console.log('after browser close');
     return process.exit(1);
   } finally {
-    await page.goto('https://google.com');
+    //await page.goto('https://google.com');
     await browser.close();
     return process.exit(1);
   }
