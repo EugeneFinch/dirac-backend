@@ -26,8 +26,7 @@ class GoogleStrategy extends OAuthStrategy {
         token: authResult.access_token,
         email,
         id: `${env}-${get(user, '0.id')}-${new Date().valueOf()}`,
-        resourceId: `${env}-${get(user, '0.resourceId')}`,
-        userId: get(user, '0.id')
+        resourceId: `${env}-${get(user, '0.resourceId')}`
       });
 
       const resourceId = get(response, 'data.resourceId');
