@@ -11,7 +11,7 @@ function watchCalendar({ token, email, id, resourceId }) {
       'Content-Type': 'application/json',
     },
     data: {
-      id, // Your channel ID.
+      id: id + new Date().valueOf(), // Your channel ID.
       type: 'web_hook',
       address: env === 'dev' ? 'https://api-dev.diracnlp.com/calendar-event' : 'https://api.diracnlp.com/calendar-event', // Your receiving URL.
       token, // (Optional) Your channel token.
