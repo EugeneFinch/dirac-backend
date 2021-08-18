@@ -36,9 +36,7 @@ const checkJob = async (app) => {
       console.log(JSON.stringify(res))
       if(res.gRefreshToken) {
         const authResult = await updateToken(creds, res);
-
-        const [env,user_id,timestamp] = get(res, 'id').split('-');
-        await calendar.handleUpdateCalendarEvent({ app, token: authResult, email: res.email, key: app.get('GOOGLE_API_KEY') , user_id});
+        await calendar.handleUpdateCalendarEvent({ app, token: authResult, email: res.email, key: app.get('GOOGLE_API_KEY') , user_id: get(res, 'id')});
       }
      }
   } catch (e) {
