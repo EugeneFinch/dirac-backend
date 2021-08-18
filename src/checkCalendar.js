@@ -34,12 +34,11 @@ const checkJob = async (app) => {
     for (let res of user) {
       console.log('dona debug')
       console.log(JSON.stringify(res))
-      console.log('Before. user id: ', get(res, 'userId'))
       if(res.gRefreshToken) {
-        console.log('Process user id: ', get(res, 'userId'))
         const authResult = await updateToken(creds, res);
-        console.log('before send id: ', get(res, 'userId'));
-        await calendar.handleUpdateCalendarEvent({ app, token: authResult, email: res.email, key: app.get('GOOGLE_API_KEY') , user_id: get(res, 'userId')});
+
+        const [env,user_id,timestamp] = get(res, 'id').split('-');
+        await calendar.handleUpdateCalendarEvent({ app, token: authResult, email: res.email, key: app.get('GOOGLE_API_KEY') , user_id});
       }
      }
   } catch (e) {
