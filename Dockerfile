@@ -3,7 +3,7 @@ WORKDIR app
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-COPY package.json yarn.lock ./
+COPY package.json yarn.lock .//usr/lib/chromium/chrome
 RUN yarn install --prod
 
 RUN apk update && apk upgrade && \
@@ -13,7 +13,7 @@ RUN apk update && apk upgrade && \
     apk add --no-cache \
     ca-certificates \
     ttf-freefont \
-    chromium@edge \
+    chromium@edge=72.0.3626.121-r0 \
     harfbuzz@edge \
     dcron libcap \
     wqy-zenhei@edge && \

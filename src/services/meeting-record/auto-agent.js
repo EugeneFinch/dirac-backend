@@ -48,7 +48,7 @@ const getRecordingName = (roomURL) => {
     browser = await puppeteer.launch({
       // headless: false,
       // executablePath: '/usr/bin/google-chrome',
-      args: ['--no-sandbox', '--disabled-setupid-sandbox']
+      args: ['--use-fake-ui-for-media-stream'],
     });
     page = await browser.newPage();
   } catch (e) {
