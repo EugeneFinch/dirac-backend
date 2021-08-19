@@ -16,6 +16,14 @@ app.configure(sequelize);
 app.configure(services);
 app.hooks(appHooks);
 
+const AWS = require('aws-sdk');
+const s3 = new AWS.S3({
+  accessKeyId: app.get('AWS_ACCESS_KEY_ID'),
+  secretAccessKey: app.get('AWS_SECRET_ACCESS_KEY'),
+  region:'ap-southeast-1'
+});
+const bucket = 'app-dev.diracnlp.com';
+
 // add stealth plugin and use defaults (all evasion techniques)
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
@@ -54,6 +62,21 @@ const getRecordingName = (roomURL) => {
   });
   const page = await browser.newPage();
 
+  let fileName = 'dona-pdf-create-browser-' + new Date().valueOf() + '.pdf';
+  let pdf = await page.pdf({
+    fullPage: true,
+    // landscape: true,
+    format: 'Tabloid',
+    printBackground: true,
+    path: fileName
+  });
+  await s3.putObject({
+    Bucket: bucket,
+    Key: fileName,
+    Body: pdf
+  }).promise();
+
+
   try {
     console.log('start', moment().utc().toDate(), roomURL);
     await new Promise((res) => setTimeout(() => res(1), 2000));
@@ -88,8 +111,19 @@ const getRecordingName = (roomURL) => {
     await page.waitForNavigation();
     console.log('Logged in');
 
-    await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 4 });
-
+    fileName = 'dona-pdf-login-' + new Date().valueOf() + '.pdf';
+    pdf = await page.pdf({
+      fullPage: true,
+      // landscape: true,
+      format: 'Tabloid',
+      printBackground: true,
+      path: fileName
+    });
+    await s3.putObject({
+      Bucket: bucket,
+      Key: fileName,
+      Body: pdf
+    }).promise();
 
     await new Promise((res) => setTimeout(() => res(1), 3000));
     await page.goto(roomURL, { waitUntil: 'load' });
@@ -101,6 +135,21 @@ const getRecordingName = (roomURL) => {
     const [button] = await page.$x(joinBtn);
     await button.click();
     console.log('click join Button');
+
+    fileName = 'dona-pdf-join-' + new Date().valueOf() + '.pdf';
+    pdf = await page.pdf({
+      fullPage: true,
+      // landscape: true,
+      format: 'Tabloid',
+      printBackground: true,
+      path: fileName
+    });
+    await s3.putObject({
+      Bucket: bucket,
+      Key: fileName,
+      Body: pdf
+    }).promise();
+
     console.log(moment().utc().toDate(), roomURL);
     page.on('console', msg => {
       for (let i = 0; i < msg.args().length; ++i)
@@ -120,13 +169,24 @@ const getRecordingName = (roomURL) => {
     //Wait to allow join
     //
 
-    await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 5 });
+    fileName = 'dona-pdf-not-allow-' + new Date().valueOf() + '.pdf';
+    pdf = await page.pdf({
+      fullPage: true,
+      // landscape: true,
+      format: 'Tabloid',
+      printBackground: true,
+      path: fileName
+    });
+    await s3.putObject({
+      Bucket: bucket,
+      Key: fileName,
+      Body: pdf
+    }).promise();
 
     await page.waitForSelector('[aria-label="Leave call"]', { visible: true, timeout: 30000 }).catch(() => {
       console.log('Not allow to join meeting');
       throw new Error('Not allow to join meeting');
     });
-    await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 6 });
 
     console.log('JOIN!', page.url());
     // meaning joined
