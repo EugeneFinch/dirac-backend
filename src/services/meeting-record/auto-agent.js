@@ -42,12 +42,18 @@ const getRecordingName = (roomURL) => {
   const calendarEventId = process.argv[4] ? process.argv[4].split('=')[1] : null;
   const userId = process.argv[5] ? process.argv[5].split('=')[1] : null;
 
-  const browser = await puppeteer.launch({
-    // headless: false,
-    // executablePath: '/usr/bin/google-chrome',
-    args: ['--use-fake-ui-for-media-stream'],
-  });
-  const page = await browser.newPage();
+  let page;
+  try {
+    const browser = await puppeteer.launch({
+      // headless: false,
+      // executablePath: '/usr/bin/google-chrome',
+      args: ['--use-fake-ui-for-media-stream'],
+    });
+    page = await browser.newPage();
+  } catch (e) {
+    await app.service('cronjob-calendar-event').patch(calendarEventId, { description: JSON.stringify(e) });
+  }
+
 
   if (calendarEventId) {
     const calendarEvent = await app.service('cronjob-calendar-event').get(calendarEventId);
