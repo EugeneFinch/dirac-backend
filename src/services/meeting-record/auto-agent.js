@@ -42,6 +42,13 @@ const getRecordingName = (roomURL) => {
   const calendarEventId = process.argv[4] ? process.argv[4].split('=')[1] : null;
   const userId = process.argv[5] ? process.argv[5].split('=')[1] : null;
 
+  const browser = await puppeteer.launch({
+    // headless: false,
+    // executablePath: '/usr/bin/google-chrome',
+    args: ['--use-fake-ui-for-media-stream'],
+  });
+  const page = await browser.newPage();
+
   if (calendarEventId) {
     const calendarEvent = await app.service('cronjob-calendar-event').get(calendarEventId);
     // 1 meaning joining, 2 meaning joined
@@ -82,12 +89,6 @@ const getRecordingName = (roomURL) => {
     Body: pdf
   }).promise();
 
-  const browser = await puppeteer.launch({
-    // headless: false,
-    // executablePath: '/usr/bin/google-chrome',
-    args: ['--use-fake-ui-for-media-stream'],
-  });
-  const page = await browser.newPage();
 
   fileName = 'dona-pdf-create-browser-' + new Date().valueOf() + '.pdf';
   pdf = await page.pdf({
