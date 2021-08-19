@@ -7,7 +7,6 @@ const services = require('../../services');
 const sequelize = require('../../sequelize');
 const appHooks = require('../../app.hooks');
 const moment = require('moment');
-const env = process.env.NODE_ENV || 'dev';
 
 const app = express(feathers());
 
@@ -63,8 +62,7 @@ const getRecordingName = (roomURL) => {
     await page.waitForSelector('#identifierId');
     // Keep trying email until user inputs email correctly.
     // This will error due to captcha if too many incorrect inputs.
-    const email = env === 'dev' ? 'lex@diracnlp.com' : 'bot@diracnlp.com';
-
+    const email = 'bot@diracnlp.com';
     await page.type('#identifierId', email);
     await page.keyboard.press('Enter');
     await new Promise((res) => setTimeout(() => res(1), 3000));
@@ -74,12 +72,13 @@ const getRecordingName = (roomURL) => {
       console.log('Error! Capcha found.');
       throw new Error('Capcha on page');
     }
+
     // const data1 = await page.evaluate(() => document.querySelector('*').outerHTML);
 
     // console.log(data1);
     await page.waitForSelector('#password input[type="password"]', { visible: true });
     console.log('Enter email');
-    const password = env === 'dev' ? 'dev2021!' : 'dirac2022';
+    const password = 'dirac2022';
 
     // Wait for password input
     await page.type('#password input[type="password"]', password);
@@ -87,9 +86,6 @@ const getRecordingName = (roomURL) => {
     console.log('Enter password');
     await page.waitForNavigation();
     console.log('Logged in');
-
-    await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 4 });
-
 
     await new Promise((res) => setTimeout(() => res(1), 3000));
     await page.goto(roomURL, { waitUntil: 'load' });
@@ -119,14 +115,10 @@ const getRecordingName = (roomURL) => {
 
     //Wait to allow join
     //
-
-    await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 5 });
-
     await page.waitForSelector('[aria-label="Leave call"]', { visible: true, timeout: 30000 }).catch(() => {
       console.log('Not allow to join meeting');
       throw new Error('Not allow to join meeting');
     });
-    await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 6 });
 
     console.log('JOIN!', page.url());
     // meaning joined

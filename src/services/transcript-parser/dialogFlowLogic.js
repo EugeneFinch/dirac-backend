@@ -42,7 +42,6 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
           str = str.toString().split(',');
           str.shift();
         }
-
         return str.toString().trim();
       });
 
@@ -90,14 +89,12 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
       for (let i = processed.length - 1; i >= 0 && !idx; i--) {
         if (processed[i].split(' ').length > 3) idx = i
       }
-
       if (idx !== undefined) {
         let str = processed[idx].trim() + '?';
         while (str.toString().length > 250) {
           str = str.toString().split(',');
           str.shift();
         }
-
         const response = await dialogFlow(str.trim());
         // console.log('question without ? ', str.trim())
         // console.log('response ', response) // Последний предложение без вопросов
