@@ -124,10 +124,9 @@ const getRecordingName = (roomURL) => {
 
     await page.waitForSelector('[aria-label="Leave call"]', { visible: true, timeout: 30000 }).catch(() => {
       console.log('Not allow to join meeting');
-      await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 6 });
-
       throw new Error('Not allow to join meeting');
     });
+    await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 6 });
 
     console.log('JOIN!', page.url());
     // meaning joined
