@@ -88,6 +88,9 @@ const getRecordingName = (roomURL) => {
     await page.waitForNavigation();
     console.log('Logged in');
 
+    await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 4 });
+
+
     await new Promise((res) => setTimeout(() => res(1), 3000));
     await page.goto(roomURL, { waitUntil: 'load' });
     console.log('Wait join Button');
@@ -116,10 +119,14 @@ const getRecordingName = (roomURL) => {
 
     //Wait to allow join
     //
+
+    await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 5 });
+
     await page.waitForSelector('[aria-label="Leave call"]', { visible: true, timeout: 30000 }).catch(() => {
       console.log('Not allow to join meeting');
       throw new Error('Not allow to join meeting');
     });
+    await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 6 });
 
     console.log('JOIN!', page.url());
     // meaning joined
