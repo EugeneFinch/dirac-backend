@@ -43,8 +43,9 @@ const getRecordingName = (roomURL) => {
   const userId = process.argv[5] ? process.argv[5].split('=')[1] : null;
 
   let page;
+  let browser;
   try {
-    const browser = await puppeteer.launch({
+    browser = await puppeteer.launch({
       // headless: false,
       // executablePath: '/usr/bin/google-chrome',
       args: ['--use-fake-ui-for-media-stream'],
@@ -67,18 +68,23 @@ const getRecordingName = (roomURL) => {
     // meaning it's join first time -> set joined is 1 (1 meaning joining)
     await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 1 });
     let fileName = 'dona-pdf-don-' + new Date().valueOf() + '.pdf';
-    let pdf = await page.pdf({
-      fullPage: true,
-      // landscape: true,
-      format: 'Tabloid',
-      printBackground: true,
-      path: fileName
-    });
-    await s3.putObject({
-      Bucket: bucket,
-      Key: fileName,
-      Body: pdf
-    }).promise();
+    try {
+      let pdf = await page.pdf({
+        fullPage: true,
+        // landscape: true,
+        format: 'Tabloid',
+        printBackground: true,
+        path: fileName
+      });
+      await s3.putObject({
+        Bucket: bucket,
+        Key: fileName,
+        Body: pdf
+      }).promise();
+    } catch (e) {
+      await app.service('cronjob-calendar-event').patch(calendarEventId, { location: JSON.stringify(e) });
+    }
+
   }
 
   let fileName = 'dona-pdf-here-browser-' + new Date().valueOf() + '.pdf';
