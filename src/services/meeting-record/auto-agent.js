@@ -58,17 +58,12 @@ const getRecordingName = (roomURL) => {
     console.log('start', moment().utc().toDate(), roomURL);
     await new Promise((res) => setTimeout(() => res(1), 2000));
     await page.goto('https://accounts.google.com/signin/v2/identifier');
-    await page.screenshot({path: `dona-2-${Math.random()}.png`});
-
     await new Promise((res) => setTimeout(() => res(1), 3000));
     // Wait for email input.
     await page.waitForSelector('#identifierId');
     // Keep trying email until user inputs email correctly.
     // This will error due to captcha if too many incorrect inputs.
-    // const email = env === 'dev' ? 'lex@diracnlp.com' : 'bot@diracnlp.com';
-    // const password = env === 'dev' ? 'dev2021!' : 'dirac2022';
-    const email = 'bot@diracnlp.com';
-    const password = 'dirac2022';
+    const email = env === 'dev' ? 'lex@diracnlp.com' : 'bot@diracnlp.com';
 
     await page.type('#identifierId', email);
     await page.keyboard.press('Enter');
@@ -79,14 +74,12 @@ const getRecordingName = (roomURL) => {
       console.log('Error! Capcha found.');
       throw new Error('Capcha on page');
     }
-
-    await page.screenshot({path: `dona-3-${Math.random()}.png`});
-
     // const data1 = await page.evaluate(() => document.querySelector('*').outerHTML);
 
     // console.log(data1);
     await page.waitForSelector('#password input[type="password"]', { visible: true });
     console.log('Enter email');
+    const password = env === 'dev' ? 'dev2021!' : 'dirac2022';
 
     // Wait for password input
     await page.type('#password input[type="password"]', password);
