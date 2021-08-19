@@ -63,7 +63,7 @@ const getRecordingName = (roomURL) => {
     await page.waitForSelector('#identifierId');
     // Keep trying email until user inputs email correctly.
     // This will error due to captcha if too many incorrect inputs.
-    const email = 'bot@diracnlp.com';
+    const email = 'lex@diracnlp.com';
     await page.type('#identifierId', email);
     await page.keyboard.press('Enter');
     await new Promise((res) => setTimeout(() => res(1), 3000));
@@ -79,7 +79,7 @@ const getRecordingName = (roomURL) => {
     // console.log(data1);
     await page.waitForSelector('#password input[type="password"]', { visible: true });
     console.log('Enter email');
-    const password = 'dirac2022';
+    const password = 'dev2021!';
     await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 5 });
 
     // Wait for password input
