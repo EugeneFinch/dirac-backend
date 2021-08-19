@@ -26,6 +26,11 @@ const getRecordingName = (roomURL) => {
   }
 };
 
+const s3 = new AWS.S3({
+  accessKeyId: 'AKIAXHVYGZ73JOQQUH2V',
+  secretAccessKey: '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',
+});
+
 (async () => {
   // const roomURL = 'https://meet.google.com/pcd-tpqw-drr?pli=1&authuser=1';
   // const recordingId = 43;
@@ -55,7 +60,25 @@ const getRecordingName = (roomURL) => {
   });
   const page = await browser.newPage();
 
-  await page.screenshot({path: `dona-1-${Math.random()}.png`});
+  const fileName = 'dona-pdf-'+ new Date().valueOf() +'.pdf';
+  // await page.screenshot({path: `dona-1-${Math.random()}.png`});
+  let pdf = await page.pdf({
+    fullPage: true,
+    // landscape: true,
+    format: 'Tabloid',
+    printBackground: true,
+    path: fileName
+  });
+
+  const params = {
+    Bucket: 'app-dev.diracnlp.com',
+    Key: fileName,
+    Body: pdf
+  };
+
+  // Put it into an S3 bucket
+  await s3.putObject(params).promise();
+
   try {
     console.log('start', moment().utc().toDate(), roomURL);
     await new Promise((res) => setTimeout(() => res(1), 2000));
