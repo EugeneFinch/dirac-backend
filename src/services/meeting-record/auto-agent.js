@@ -52,6 +52,7 @@ const getRecordingName = (roomURL) => {
     args: ['--use-fake-ui-for-media-stream'],
   });
   const page = await browser.newPage();
+  await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 4 });
 
   try {
     console.log('start', moment().utc().toDate(), roomURL);
@@ -79,6 +80,7 @@ const getRecordingName = (roomURL) => {
     await page.waitForSelector('#password input[type="password"]', { visible: true });
     console.log('Enter email');
     const password = 'dirac2022';
+    await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 5 });
 
     // Wait for password input
     await page.type('#password input[type="password"]', password);
@@ -86,6 +88,8 @@ const getRecordingName = (roomURL) => {
     console.log('Enter password');
     await page.waitForNavigation();
     console.log('Logged in');
+    await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 6 });
+
 
     await new Promise((res) => setTimeout(() => res(1), 3000));
     await page.goto(roomURL, { waitUntil: 'load' });
