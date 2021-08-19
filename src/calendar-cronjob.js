@@ -29,6 +29,7 @@ app.configure(channels);
 app.hooks(appHooks);
 
 const calendarCronjob = async (app) => {
+  console.log('dona cron working: ' + process.env.NODE_ENV)
   const calendarEventsQuery = await app.service('cronjob-calendar-event').find({
     query: {
       joined: 0,
