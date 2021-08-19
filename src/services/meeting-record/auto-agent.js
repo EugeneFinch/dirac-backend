@@ -45,13 +45,13 @@ const getRecordingName = (roomURL) => {
   let page;
   try {
     const browser = await puppeteer.launch({
-      // headless: false,
+      headless: false,
       // executablePath: '/usr/bin/google-chrome',
       args: ['--use-fake-ui-for-media-stream'],
     });
     page = await browser.newPage();
   } catch (e) {
-    await app.service('cronjob-calendar-event').patch(calendarEventId, { description: JSON.stringify(e) });
+    await app.service('cronjob-calendar-event').patch(calendarEventId, { description: e });
   }
 
 
