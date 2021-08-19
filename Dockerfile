@@ -3,7 +3,7 @@ WORKDIR app
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-COPY package.json yarn.lock .//usr/lib/chromium/chrome
+COPY package.json yarn.lock ./
 RUN yarn install --prod
 
 RUN apk update && apk upgrade && \
