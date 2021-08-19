@@ -132,7 +132,7 @@ class Service {
       }
 
     });
-    // await dialogFlowLogic(this.options.app, lines, speakers, speakerIds, id);
+    await dialogFlowLogic(this.options.app, lines, speakers, speakerIds, id);
 
     const insertData = lines.map(l => {
       const speakerIdx = speakers.findIndex(v => v === l.speaker);

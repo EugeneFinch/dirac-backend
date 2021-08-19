@@ -33,8 +33,10 @@ jobs:
       env:
         ECR_REGISTRY: thiennhan
         ECR_REPOSITORY: dirac
-        IMAGE_TAG: 948051fd9511aae2f1656e7de4eb6952387fa52f
+        IMAGE_TAG: ${{ github.sha }}
       run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
     - name: deploy prod
@@ -59,4 +61,4 @@ jobs:
         script: |
           docker pull ${{ steps.build-image.outputs.image }}
           docker stop dirac-backend && docker rm dirac-backend
-          docker run -d --restart=always --name=dirac-backend --env NODE_ENV=dev  --cap-add=SYS_ADMIN -p 80:3030 ${{ steps.build-image.outputs.image }}
+          docker run -d --restart=always --name=dirac-backend --env NODE_ENV=dev  --cap-add=SYS_ADMIN -p 80:3030 --log-driver=awslogs --log-opt awslogs-region=ap-southeast-1 --log-opt awslogs-group=dirac-ec2-log-dev ${{ steps.build-image.outputs.image }}

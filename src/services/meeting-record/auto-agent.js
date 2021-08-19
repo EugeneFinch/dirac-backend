@@ -7,6 +7,7 @@ const services = require('../../services');
 const sequelize = require('../../sequelize');
 const appHooks = require('../../app.hooks');
 const moment = require('moment');
+const env = process.env.NODE_ENV || 'dev';
 
 const app = express(feathers());
 
@@ -32,7 +33,7 @@ const getRecordingName = (roomURL) => {
   let recordingId = process.argv[3].split('=')[1];
   const calendarEventId = process.argv[4] ? process.argv[4].split('=')[1] : null;
   const userId = process.argv[5] ? process.argv[5].split('=')[1] : null;
-  console.log(process.argv);
+
   if (calendarEventId) {
     const calendarEvent = await app.service('cronjob-calendar-event').get(calendarEventId);
     // 1 meaning joining, 2 meaning joined
@@ -52,6 +53,7 @@ const getRecordingName = (roomURL) => {
     args: ['--use-fake-ui-for-media-stream'],
   });
   const page = await browser.newPage();
+
   try {
     console.log('start', moment().utc().toDate(), roomURL);
     await new Promise((res) => setTimeout(() => res(1), 2000));
@@ -61,7 +63,8 @@ const getRecordingName = (roomURL) => {
     await page.waitForSelector('#identifierId');
     // Keep trying email until user inputs email correctly.
     // This will error due to captcha if too many incorrect inputs.
-    const email = 'bot@diracnlp.com';
+    const email = env === 'dev' ? 'lex@diracnlp.com' : 'bot@diracnlp.com';
+
     await page.type('#identifierId', email);
     await page.keyboard.press('Enter');
     await new Promise((res) => setTimeout(() => res(1), 3000));
@@ -71,13 +74,12 @@ const getRecordingName = (roomURL) => {
       console.log('Error! Capcha found.');
       throw new Error('Capcha on page');
     }
-
     // const data1 = await page.evaluate(() => document.querySelector('*').outerHTML);
 
     // console.log(data1);
     await page.waitForSelector('#password input[type="password"]', { visible: true });
     console.log('Enter email');
-    const password = 'dirac2022';
+    const password = env === 'dev' ? 'dev2021!' : 'dirac2022';
 
     // Wait for password input
     await page.type('#password input[type="password"]', password);

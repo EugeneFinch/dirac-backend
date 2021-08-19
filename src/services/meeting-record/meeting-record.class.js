@@ -27,15 +27,20 @@ class Service {
     const autoAgentPath = path.join(__dirname,'./auto-agent');
     const detached = data.joinFromCronjobCalendar ? true : false;
 
+    console.log('dona joinFromCronjobCalendar: ' +  data.joinFromCronjobCalendar)
     if (data.joinFromCronjobCalendar) {
       const stdoutStream = fs.openSync('./auto-agent.log', 'a');
       const stderrStream = fs.openSync('./auto-agent.log', 'a');
+      console.log('dona data: ' +  roomURL + ' ' + autoAgentPath + ' ' + calendarEventId + ' ' + userId)
+
       spawn('node', [autoAgentPath,`room_url=${roomURL}`,`record_id=0`, `calendar_event_id=${calendarEventId}`, `user_id=${userId}`],{
         PATH: process.env.PATH,
         detached,
         stdio: [ 'ignore', stdoutStream, stderrStream ]
       }).unref();
     } else {
+      console.log('dona data: ' +  roomURL + ' ' + autoAgentPath + ' ' + calendarEventId + ' ' + recordingId);
+
       const ls = spawn('node', [autoAgentPath,`room_url=${roomURL}`,`record_id=${recordingId}`],{
         PATH: process.env.PATH,
         detached
