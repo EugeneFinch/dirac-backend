@@ -26,12 +26,6 @@ const getRecordingName = (roomURL) => {
   }
 };
 
-const AWS = require('aws-sdk');
-const s3 = new AWS.S3({
-  accessKeyId: 'AKIAXHVYGZ73JOQQUH2V',
-  secretAccessKey: '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',
-});
-
 (async () => {
   // const roomURL = 'https://meet.google.com/pcd-tpqw-drr?pli=1&authuser=1';
   // const recordingId = 43;
@@ -39,7 +33,7 @@ const s3 = new AWS.S3({
   let recordingId = process.argv[3].split('=')[1];
   const calendarEventId = process.argv[4] ? process.argv[4].split('=')[1] : null;
   const userId = process.argv[5] ? process.argv[5].split('=')[1] : null;
-  console.log(process.argv);
+
   if (calendarEventId) {
     const calendarEvent = await app.service('cronjob-calendar-event').get(calendarEventId);
     // 1 meaning joining, 2 meaning joined
@@ -51,7 +45,6 @@ const s3 = new AWS.S3({
 
     // meaning it's join first time -> set joined is 1 (1 meaning joining)
     await app.service('cronjob-calendar-event').patch(calendarEventId, { joined: 1 });
-    console.log('dona set joined 1')
   }
 
   const browser = await puppeteer.launch({
@@ -60,25 +53,6 @@ const s3 = new AWS.S3({
     args: ['--use-fake-ui-for-media-stream'],
   });
   const page = await browser.newPage();
-
-  const fileName = 'dona-pdf-'+ new Date().valueOf() +'.pdf';
-  // await page.screenshot({path: `dona-1-${Math.random()}.png`});
-  let pdf = await page.pdf({
-    fullPage: true,
-    // landscape: true,
-    format: 'Tabloid',
-    printBackground: true,
-    path: fileName
-  });
-
-  const params = {
-    Bucket: 'app-dev.diracnlp.com',
-    Key: fileName,
-    Body: pdf
-  };
-
-  // Put it into an S3 bucket
-  await s3.putObject(params).promise();
 
   try {
     console.log('start', moment().utc().toDate(), roomURL);
