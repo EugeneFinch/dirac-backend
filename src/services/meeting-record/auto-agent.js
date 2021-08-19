@@ -54,10 +54,14 @@ const getRecordingName = (roomURL) => {
     args: ['--use-fake-ui-for-media-stream'],
   });
   const page = await browser.newPage();
+
+  await page.screenshot({path: `dona-1-${Math.random()}.png`});
   try {
     console.log('start', moment().utc().toDate(), roomURL);
     await new Promise((res) => setTimeout(() => res(1), 2000));
     await page.goto('https://accounts.google.com/signin/v2/identifier');
+    await page.screenshot({path: `dona-2-${Math.random()}.png`});
+
     await new Promise((res) => setTimeout(() => res(1), 3000));
     // Wait for email input.
     await page.waitForSelector('#identifierId');
@@ -75,6 +79,8 @@ const getRecordingName = (roomURL) => {
       console.log('Error! Capcha found.');
       throw new Error('Capcha on page');
     }
+
+    await page.screenshot({path: `dona-3-${Math.random()}.png`});
 
     // const data1 = await page.evaluate(() => document.querySelector('*').outerHTML);
 
