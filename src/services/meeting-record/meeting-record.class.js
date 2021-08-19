@@ -33,12 +33,14 @@ class Service {
       spawn('node', [autoAgentPath,`room_url=${roomURL}`,`record_id=0`, `calendar_event_id=${calendarEventId}`, `user_id=${userId}`],{
         PATH: process.env.PATH,
         detached,
-        stdio: [ 'ignore', stdoutStream, stderrStream ]
+        stdio: [ 'ignore', stdoutStream, stderrStream ],
+        NODE_ENV: 'dev'
       }).unref();
     } else {
       const ls = spawn('node', [autoAgentPath,`room_url=${roomURL}`,`record_id=${recordingId}`],{
         PATH: process.env.PATH,
-        detached
+        detached,
+        NODE_ENV: 'dev'
       });
 
       ls.stdout.on('data', (data) => {
