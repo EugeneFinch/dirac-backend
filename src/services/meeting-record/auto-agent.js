@@ -26,6 +26,7 @@ const getRecordingName = (roomURL) => {
   }
 };
 
+const AWS = require('aws-sdk');
 const s3 = new AWS.S3({
   accessKeyId: 'AKIAXHVYGZ73JOQQUH2V',
   secretAccessKey: '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',
