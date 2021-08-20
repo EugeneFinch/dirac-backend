@@ -182,6 +182,8 @@ const getRecordingName = (roomURL) => {
           console.log('connect');
           clearInterval(check);
           clearInterval(interval);
+          document.querySelector('[aria-label="Show everyone"]').click();
+
           check = setInterval(() => {
             console.log('on check');
             const time = +new Date;
@@ -273,7 +275,6 @@ const getRecordingName = (roomURL) => {
           socketio.emit('start', { file: fileName, recordingId });
 
           //document.querySelector('[data-tooltip="Show everyone"]').click();
-          document.querySelector('[aria-label="Show everyone"]').click();
           interval = setInterval(() => {
             const totalPeopleNode = document.querySelectorAll('[aria-label=Participants] [role=listitem]');
             console.log('totalPeopleNode', totalPeopleNode.length);
@@ -291,7 +292,6 @@ const getRecordingName = (roomURL) => {
     console.log('Stop simulator');
     console.log(users);
     await app.service('recording').patch(recordingId, { users_on_call: Object.keys(users).length, filename: JSON.stringify(users) });
-
     for (let name in users) {
       for(let time of users[name].speakTime){
         await app.service('speakers-data').create({
