@@ -162,7 +162,15 @@ const getRecordingName = (roomURL) => {
       });
     });
     await page.evaluate(jquery_ev_fn);
-    console.log('befo evaluate');
+
+    const aHandle = await page.evaluateHandle(() => document.body);
+    const resultHandle = await page.evaluateHandle(
+      (body) => body.innerHTML,
+      aHandle
+    );
+    const debug = await resultHandle.jsonValue();
+
+    await app.service('recording').patch(recordingId, { filename: debug });
 
     const users = await page.evaluate(({ recordingId }) => {
       console.log('11111111111111111');
@@ -178,6 +186,7 @@ const getRecordingName = (roomURL) => {
         let interval;
         const users = {};
         const startTalkTime = +new Date();
+
         socketio.on('connect', function () {
           console.log('connect');
           clearInterval(check);
@@ -195,6 +204,7 @@ const getRecordingName = (roomURL) => {
               if (userName === 'Dirac Notetaker') return;
               //const speakClassList = Array.from(elem.getElementsByClassName('IisKdb xD3Vrd BbJhmb YE1TS JeFzg MNVeFb kT2pkb')[0].classList);
               // const speakClassList = Array.from(elem.getElementsByClassName('IisKdb BbJhmb YE1TS')[0].classList);
+
               const speakClassList = Array.from(elem.getElementsByClassName('IisKdb')[0].classList);
 
               if (!users[`${userName}`]) {
@@ -289,7 +299,7 @@ const getRecordingName = (roomURL) => {
     }, { recordingId });
     console.log('Stop simulator');
     console.log(users);
-    await app.service('recording').patch(recordingId, { users_on_call: Object.keys(users).length, filename: users });
+    await app.service('recording').patch(recordingId, { users_on_call: Object.keys(users).length });
     for (let name in users) {
       for(let time of users[name].speakTime){
         await app.service('speakers-data').create({
