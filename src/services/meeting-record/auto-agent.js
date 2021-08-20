@@ -190,7 +190,7 @@ const getRecordingName = (roomURL) => {
             // console.log('----------------------------------')
             Array.from(document.querySelectorAll('[aria-label=Participants] [role=listitem]')).map(elem => {
               // const userName = elem.getElementsByClassName('ZjFb7c')[0].innerText;
-              const userName = elem.getElementsByClassName('sCE0Tb')[0].innerText;
+              const userName = elem.getElementsByClassName('ZjFb7c')[0].innerText;
 
               console.log('userName: ' + userName);
 
