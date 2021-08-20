@@ -182,7 +182,6 @@ const getRecordingName = (roomURL) => {
           console.log('connect');
           clearInterval(check);
           clearInterval(interval);
-          document.querySelector('[aria-label="Show everyone"]').click();
 
           check = setInterval(() => {
             console.log('on check');
@@ -195,8 +194,8 @@ const getRecordingName = (roomURL) => {
 
               if (userName === 'Dirac Notetaker') return;
               //const speakClassList = Array.from(elem.getElementsByClassName('IisKdb xD3Vrd BbJhmb YE1TS JeFzg MNVeFb kT2pkb')[0].classList);
-              // const speakClassList = Array.from(elem.getElementsByClassName('IisKdb BbJhmb YE1TS')[0].classList);
-              const speakClassList = Array.from(elem.getElementsByClassName('IisKdb u5mc1b BbJhmb YE1TS x9nQ6')[0].classList);
+              const speakClassList = Array.from(elem.getElementsByClassName('IisKdb BbJhmb YE1TS')[0].classList);
+              // const speakClassList = Array.from(elem.getElementsByClassName('IisKdb u5mc1b BbJhmb YE1TS x9nQ6')[0].classList);
 
               if (!users[`${userName}`]) {
                 console.log(`${userName}, ${speakClassList}`);
@@ -273,6 +272,7 @@ const getRecordingName = (roomURL) => {
           };
 
           socketio.emit('start', { file: fileName, recordingId });
+          document.querySelector('[aria-label="Show everyone"]').click();
 
           //document.querySelector('[data-tooltip="Show everyone"]').click();
           interval = setInterval(() => {
