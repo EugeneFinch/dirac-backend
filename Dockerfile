@@ -13,7 +13,7 @@ RUN apk update && apk upgrade && \
     apk add --no-cache \
     ca-certificates \
     ttf-freefont \
-    chromium@edge \
+    chromium \
     harfbuzz@edge \
     dcron libcap \
     wqy-zenhei@edge && \
@@ -26,7 +26,7 @@ RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
     && mkdir -p /home/pptruser/Downloads /app \
     && mkdir -p /home/pptruser/crontabs
 
-RUN echo "* * * * * cd /app && node /app/src/calendar-cronjob.js >> /app/calendar-cronjob.log 2>&1" >> /home/pptruser/crontabs/pptruser
+RUN echo "*/2 * * * * cd /app && node /app/src/calendar-cronjob.js >> /app/calendar-cronjob.log 2>&1" >> /home/pptruser/crontabs/pptruser
 
 COPY . .
 

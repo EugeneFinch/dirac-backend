@@ -1,7 +1,7 @@
 const axios = require('axios');
 const dayjs = require('dayjs');
 const { get, forEach } = require('lodash');
-
+const env = process.env.NODE_ENV || 'dev';
 
 function watchCalendar({ token, email, id, resourceId }) {
   return axios(`https://www.googleapis.com/calendar/v3/calendars/${email}/events/watch`, {
@@ -13,28 +13,28 @@ function watchCalendar({ token, email, id, resourceId }) {
     data: {
       id, // Your channel ID.
       type: 'web_hook',
-      address: 'https://api.diracnlp.com/calendar-event', // Your receiving URL.
+      address: env === 'dev' ? 'https://api-dev.diracnlp.com/calendar-event' : 'https://api.diracnlp.com/calendar-event', // Your receiving URL.
       token, // (Optional) Your channel token.
       // "expiration": 1426325213000 // (Optional) Your requested channel expiration time.
     }
   })
     .then(data => {
-      console.log('push watch calendar success');
+      console.log('push watch calendar success: ' + id);
       return data;
     })
     .catch(error => {
-      console.log('push watch calendar error');
+      console.log('push watch calendar error: ' + id);
       if (error.response) {
         // Request made and server responded
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        //console.log(error.response.data);
+        //console.log(error.response.status);
+        //console.log(error.response.headers);
       } else if (error.request) {
         // The request was made but no response was received
-        console.log(error.request);
+        //console.log(error.request);
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error', error.message);
+        //console.log('Error', error.message);
       }
       return null;
     });
@@ -67,7 +67,6 @@ function getEventList({ token, email, key, syncToken }) {
 }
 
 async function handleUpdateCalendarEvent({ app, token, email, key, syncToken, user_id }) {
-  console.log('handle update calendar event', user_id);
   const db = app.get('sequelizeClient');
   try {
     const response = await getEventList({ token, email, key, syncToken });
@@ -103,7 +102,7 @@ async function handleUpdateCalendarEvent({ app, token, email, key, syncToken, us
     });
     await app.service('users').patch(user_id, { lastCheck: dayjs().toISOString() });
   } catch (error) {
-    console.log('asdjkfhnsda', error);
+    console.log('asdjkfhnsda', error.message);
   }
 }
 

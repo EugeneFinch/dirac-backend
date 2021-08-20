@@ -15,7 +15,7 @@ const updateToken = async (appCreds, user) => {
     return data.data.access_token;
   }
   catch (e) {
-    console.log('Failed update user token: ',e)
+    console.log('Failed update user token: ',e.message)
   }
 }
 
@@ -32,9 +32,9 @@ const checkJob = async (app) => {
       }
     });
     for (let res of user) {
-      console.log('Before. user id: ', get(res, 'id'))
+      console.log('dona debug')
+      console.log(JSON.stringify(res))
       if(res.gRefreshToken) {
-        console.log('Process user id: ', get(res, 'id'))
         const authResult = await updateToken(creds, res);
         await calendar.handleUpdateCalendarEvent({ app, token: authResult, email: res.email, key: app.get('GOOGLE_API_KEY') , user_id: get(res, 'id')});
       }

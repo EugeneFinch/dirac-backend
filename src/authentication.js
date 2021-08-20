@@ -19,13 +19,13 @@ class GoogleStrategy extends OAuthStrategy {
       }
     });
 
+
     if (user.length > 0) {
-      console.log("user", user);
-      console.log("id", `${env}-${get(user, "0.id")}`);
-      const response = await calendar.watchCalendar({
+      const response = await calendar.
+      watchCalendar({
         token: authResult.access_token,
         email,
-        id: `${env}-${get(user, '0.id')}`,
+        id: `${env}-${get(user, '0.id')}-${new Date().valueOf()}`,
         resourceId: `${env}-${get(user, '0.resourceId')}`
       });
 
@@ -34,9 +34,9 @@ class GoogleStrategy extends OAuthStrategy {
       if (resourceId) {
         await this.app.service('users').patch(get(user, '0.id'), { resourceId });
       }
-      console.log("authResult ", authResult)
+      //console.log("authResult ", authResult)
       if (authResult.raw.refresh_token) await this.app.service('users').patch(get(user, '0.id'), { gRefreshToken: authResult.raw.refresh_token });
-      calendar.handleUpdateCalendarEvent({ app: this.app, token: authResult.access_token, email, key, user_id: get(user, '0.id'), });
+     await calendar.handleUpdateCalendarEvent({ app: this.app, token: authResult.access_token, email, key, user_id: get(user, '0.id'), });
     }
 
     return profile;

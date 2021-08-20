@@ -14,6 +14,8 @@ module.exports = async function (context) {
   }
   const users = await client.query(`Select users_on_call from recording where id = ${context.result.id}`);
   console.log('users ', users);
+  console.log('dona before send transcripts: ' + env);
+
   var params = {
     TranscriptionJobName: `dirac-${env}-${context.result.id}`, //required
     Media: { /* required */

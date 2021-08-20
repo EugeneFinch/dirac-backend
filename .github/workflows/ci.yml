@@ -49,7 +49,7 @@ jobs:
         script: |
           docker pull ${{ steps.build-image.outputs.image }}
           docker stop dirac-backend && docker rm dirac-backend
-          docker run -d --name=dirac-backend --env NODE_ENV=prod --cap-add=SYS_ADMIN -p 80:3030 --log-driver=awslogs --log-opt awslogs-region=ap-southeast-1 --log-opt awslogs-group=dirac-ec2-log ${{ steps.build-image.outputs.image }}
+          docker run  -d --restart=always --name=dirac-backend --env NODE_ENV=prod --cap-add=SYS_ADMIN -p 80:3030 --log-driver=awslogs --log-opt awslogs-region=ap-southeast-1 --log-opt awslogs-group=dirac-ec2-log ${{ steps.build-image.outputs.image }}
 
     - name: deploy dev
       uses: appleboy/ssh-action@master
@@ -61,4 +61,4 @@ jobs:
         script: |
           docker pull ${{ steps.build-image.outputs.image }}
           docker stop dirac-backend && docker rm dirac-backend
-          docker run -d --name=dirac-backend --env NODE_ENV=dev  --cap-add=SYS_ADMIN -p 80:3030 ${{ steps.build-image.outputs.image }}
+          docker run -d --restart=always --name=dirac-backend --env NODE_ENV=dev  --cap-add=SYS_ADMIN -p 80:3030 --log-driver=awslogs --log-opt awslogs-region=ap-southeast-1 --log-opt awslogs-group=dirac-ec2-log-dev ${{ steps.build-image.outputs.image }}

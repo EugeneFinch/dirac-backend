@@ -14,7 +14,7 @@ const uploadRecording = (recordingId,path)=>{
     headers: {'Content-Type': 'multipart/form-data;boundary=' + data.getBoundary()}
   };
   console.log('uploading');
-  
+
   return axios(config)
     .then(function (response) {
       console.log(JSON.stringify(response.data));
@@ -22,7 +22,7 @@ const uploadRecording = (recordingId,path)=>{
     .catch(function (error) {
       console.log(error);
     });
-  
+
 };
 
 module.exports = function(io) {
@@ -42,10 +42,14 @@ module.exports = function(io) {
         writer.write(data);
         console.log(dataEvent);
       });
+
+      console.log('endEvent: ' + endEvent);
+
       socket.on(endEvent, function (data,callback) {
         console.log(endEvent);
         writer.end();
         socket.removeAllListeners([dataEvent,endEvent]);
+        console.log('callEndvent: ' + filePath);
         uploadRecording(recordingId,filePath);
         callback({status:'ok'});
       });
@@ -56,6 +60,6 @@ module.exports = function(io) {
   io.on('disconnect', function(socket) {
     console.log('disconnect');
   });
-  
+
 
 };

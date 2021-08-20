@@ -8,7 +8,7 @@ module.exports = {
   before: {
     all: [],
     find: [
-      // authenticate('jwt'),
+      authenticate('jwt'),
       (ctx)=> {ctx.query = ctx.params.query;},
       searchByKeyword,
       searchContent,

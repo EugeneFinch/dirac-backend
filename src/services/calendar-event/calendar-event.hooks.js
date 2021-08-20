@@ -16,15 +16,20 @@ module.exports = {
       async context => {
         try {
           console.log('before create calendar');
+          console.log('dona before create calendar env: ' + process.env.NODE_ENV);
+
           const key = context.app.get('GOOGLE_API_KEY');
-          const user_id = get(context, 'params.body.user_id');
+
+          const user_id = get(context, 'params.body.user_id', 0);
           const access_token = get(context, 'params.body.access_token');
+
           const userInfo = await context.app.service('users').get(user_id);
 
           const email = get(userInfo, 'email');
           const syncToken = get(userInfo, 'nextSyncToken');
 
-          calendar.handleUpdateCalendarEvent({ app: context.app, token: access_token, email, key, syncToken, user_id });
+          // eslint-disable-next-line max-len
+          await calendar.handleUpdateCalendarEvent({ app: context.app, token: access_token, email, key, syncToken, user_id });
           context.result = { message: 'success' };
         }
         catch (e) {
