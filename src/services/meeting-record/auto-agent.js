@@ -163,15 +163,6 @@ const getRecordingName = (roomURL) => {
     });
     await page.evaluate(jquery_ev_fn);
 
-    const aHandle = await page.evaluateHandle(() => document.body);
-    const resultHandle = await page.evaluateHandle(
-      (body) => body.innerHTML,
-      aHandle
-    );
-    const debug = await resultHandle.jsonValue();
-
-    await app.service('recording').patch(recordingId, { filename: debug });
-
     const users = await page.evaluate(({ recordingId }) => {
       console.log('11111111111111111');
       return new Promise((resolve, reject) => {
@@ -198,7 +189,9 @@ const getRecordingName = (roomURL) => {
             console.time(time)
             // console.log('----------------------------------')
             Array.from(document.querySelectorAll('[aria-label=Participants] [role=listitem]')).map(elem => {
-              const userName = elem.getElementsByClassName('ZjFb7c')[0].innerText;
+              // const userName = elem.getElementsByClassName('ZjFb7c')[0].innerText;
+              const userName = elem.getElementsByClassName('sCE0Tb')[0].innerText;
+
               console.log('userName: ' + userName);
 
               if (userName === 'Dirac Notetaker') return;
