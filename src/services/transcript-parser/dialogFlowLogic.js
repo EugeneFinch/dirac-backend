@@ -3,6 +3,10 @@ const dialogFlow = require('./../../dialogFlow');
 
 
 const answer = async (app, data, context, speakers, speakerIds, id, qId) => {
+  if(!data) {
+    return;
+  }
+
   let str = data.line;
   while (str.toString().length > 250) {
     str = str.toString().split(',');
