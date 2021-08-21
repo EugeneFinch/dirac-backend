@@ -79,6 +79,7 @@ class Service {
 
     for (let [i, item] of questions.entries()) {
       const { question, intent, answer, start_time: time } = item;
+
       if(_.includes(_.lowerCase(intent), 'spend categories')) {
         if(openAIItemCount >= 6) {
           openAIPromise.push(postAxios(buildOpenAIBody(openAIPrompt)));
@@ -124,20 +125,12 @@ class Service {
       });
     }
 
-    let openAIResponse, openAIResponseSub;
-    try {
-      openAIResponse = await Promise.all(openAIPromise);
-      openAIResponseSub = await Promise.all(openAIPromise);
-    } catch (e) {
-      console.log(e.message)
-    }
-
-
+    const openAIResponse = await Promise.all(openAIPromise);
+    const openAIResponseSub = await Promise.all(openAIPromise);
     console.log(`recoding id: ${recordingId} - openai result: ${JSON.stringify(openAIResponse)} - - openai result 2: ${JSON.stringify(openAIResponseSub)}`);
-    console.log(`question: ${openAIPrompt}`);
 
     // eslint-disable-next-line max-len
-    const processOpenAI = _.map(openAIResponse, async (v, i) => {
+    const processOpenAI = _.map(openAIResponse, (v, i) => {
       const obj = {
         intent: v.object, answer: _.get(v, 'choices.0.text') || _.get(openAIResponseSub[i], 'choices.0.text'), ...openAITracking[i]
       };
@@ -170,13 +163,10 @@ SELECT c.attendees FROM recording AS r JOIN calendar_event AS c ON c.id = r.cale
   }
 
   async handleSendMailAfterMeeting(app, recordingId) {
-    const recording = await app.service('recording').find({
-      query: {
-        id: recordingId,
-        send_mail_analyze: 0
-      },
-      raw: true
-    });
+    const query = `
+    SELECT id FROM recording WHERE send_mail_analyze = 0 AND id=${recordingId};`;
+    const recording = await client.query(query);
+
     console.log('dona recording found: ' + JSON.stringify(recording))
 
     if(recording && recording[0]) {
@@ -186,7 +176,7 @@ SELECT c.attendees FROM recording AS r JOIN calendar_event AS c ON c.id = r.cale
         this.processingData({ recordingId }),
         this.getClientEmail({recordingId})
       ]) ;
-
+      console.log(resultMeeting)
       if(emails && emails[0] && resultMeeting && resultMeeting[0]) {
         await new sendGridService().sendAnalyzeMeeting({ data: resultMeeting, emails });
       }
