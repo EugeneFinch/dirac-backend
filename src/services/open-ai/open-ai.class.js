@@ -3,6 +3,8 @@ const axios = require('axios');
 const { client } = require('../../sqlClient');
 const _ = require('lodash');
 
+const sendGridService = require('./../../sendgrid');
+
 function buildOpenAIBody(prompt) {
   return {
     prompt,
@@ -129,7 +131,7 @@ class Service {
     // eslint-disable-next-line max-len
     const processOpenAI = _.map(openAIResponse, async (v, i) => {
       const obj = {
-        intent: v.object, answer: v.choices[0].text || openAIResponseSub[i].choices[0].text, ...openAITracking[i]
+        intent: v.object, answer: _.get(v, 'choices.0.text') || _.get(openAIResponseSub[i], 'choices.0.text'), ...openAITracking[i]
       };
 
       return obj;
@@ -157,6 +159,30 @@ SELECT c.attendees FROM recording AS r JOIN calendar_event AS c ON c.id = r.cale
     }
 
     return _.map(parseAttendees, v => v.email);
+  }
+
+  async handleSendMailAfterMeeting(app, recordingId) {
+    const recording = await app.service('recording').find({
+      query: {
+        id: recordingId,
+        send_mail_analyze: false
+      }
+    });
+
+    if(!_.get(recording, 'data.0')) {
+      return;
+    }
+
+    const [resultMeeting, emails] = await Promise.all([
+      this.processingData({ recordingId }),
+      this.getClientEmail({recordingId})
+    ]) ;
+
+    if(emails && emails[0] && resultMeeting && resultMeeting[0]) {
+      await new sendGridService().sendAnalyzeMeeting({ data: resultMeeting, emails });
+    }
+
+    await app.service('recording').patch(recording, { send_mail_analyze: true });
   }
 }
 
