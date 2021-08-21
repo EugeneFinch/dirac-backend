@@ -21,6 +21,7 @@ const analyticsTalkToListen = require('./analytics-talk-to-listen/analytics-talk
 const analyticsTalkToListenExport = require('./analytics-talk-to-listen/analytics-talk-to-listen-export.service');
 const question = require('./question/question.service.js');
 const answer = require('./answer/answer.service.js');
+const openai = require('./open-ai/open-ai.service.js');
 
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
@@ -47,4 +48,5 @@ module.exports = function (app) {
   app.configure(analyticsTalkToListenExport);
   app.configure(question);
   app.configure(answer);
+  app.configure(openai);
 };

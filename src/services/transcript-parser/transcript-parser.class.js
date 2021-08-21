@@ -171,25 +171,7 @@ class Service {
       this.options.app.service('transcript-coaching').create({ recording_id: id })
     ]);
 
-    try {
-      const [resultMeeting, emails] = await Promise.all([
-        new openAIService().processingData({ recordingId: id }),
-        new openAIService().getClientEmail({
-          recordingId: id
-        })
-      ]) ;
-
-      if(emails && emails[0]) {
-        await new sendGridService().sendAnalyzeMeeting({ data: resultMeeting, emails });
-      }
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log(`Send mail error: ${e.message}`);
-    } finally {
-      // eslint-disable-next-line no-unsafe-finally
-      return { message: 'done' };
-    }
-
+    await this.options.app.service('open-ai').handleSendMailAfterMeeting(this.options.app, id);
     // eslint-disable-next-line no-unreachable
     return { message: 'done' };
   }
