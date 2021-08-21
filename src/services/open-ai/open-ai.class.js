@@ -177,8 +177,11 @@ SELECT c.attendees FROM recording AS r JOIN calendar_event AS c ON c.id = r.cale
       },
       raw: true
     });
+    console.log('dona recording found: ' + JSON.stringify(recording))
 
     if(recording && recording[0]) {
+      console.log('dona enter recording: ')
+
       const [resultMeeting, emails] = await Promise.all([
         this.processingData({ recordingId }),
         this.getClientEmail({recordingId})
