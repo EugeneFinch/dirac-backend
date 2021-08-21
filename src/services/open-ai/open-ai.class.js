@@ -123,7 +123,7 @@ class Service {
       });
     }
 
-    const [openAIResponse, openAIResponseSub] = await Promise.all([openAIPromise, openAIPromise]);
+    const [openAIResponse, openAIResponseSub] = await Promise.all([...openAIPromise, ...openAIPromise]);
 
     console.log(`recoding id: ${recordingId} - openai result: ${JSON.stringify(openAIResponse)} - - openai result 2: ${JSON.stringify(openAIResponseSub)}`);
     console.log(`question: ${openAIPrompt}`);
