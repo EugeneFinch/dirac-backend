@@ -67,6 +67,7 @@ class Service {
 // WHERE q.intent != 'Default Fallback Intent'`;
 
     const questions = await client.query(query);
+    console.log(`dona questions: ${JSON.stringify(questions)}`);
 
     const openAIPromise = [];
     const processedData = [];
@@ -173,23 +174,22 @@ SELECT c.attendees FROM recording AS r JOIN calendar_event AS c ON c.id = r.cale
       query: {
         id: recordingId,
         send_mail_analyze: false
-      }
+      },
+      raw: true
     });
 
-    if(!_.get(recording, 'data.0')) {
-      return;
+    if(recording && recording[0]) {
+      const [resultMeeting, emails] = await Promise.all([
+        this.processingData({ recordingId }),
+        this.getClientEmail({recordingId})
+      ]) ;
+
+      if(emails && emails[0] && resultMeeting && resultMeeting[0]) {
+        await new sendGridService().sendAnalyzeMeeting({ data: resultMeeting, emails });
+      }
+
+      await app.service('recording').patch(recordingId, { send_mail_analyze: true });
     }
-
-    const [resultMeeting, emails] = await Promise.all([
-      this.processingData({ recordingId }),
-      this.getClientEmail({recordingId})
-    ]) ;
-
-    if(emails && emails[0] && resultMeeting && resultMeeting[0]) {
-      await new sendGridService().sendAnalyzeMeeting({ data: resultMeeting, emails });
-    }
-
-    await app.service('recording').patch(recording, { send_mail_analyze: true });
   }
 }
 
