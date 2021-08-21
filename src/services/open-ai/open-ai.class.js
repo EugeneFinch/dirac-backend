@@ -125,7 +125,13 @@ class Service {
     console.log(`recoding id: ${recordingId} - openai result: ${JSON.stringify(openAIResponse)}`);
 
     // eslint-disable-next-line max-len
-    const processOpenAI = _.map(openAIResponse, (v, i) => { return { intent: v.object, answer: v.choices && v.choices[0] && v.choices[0].text, ...openAITracking[i] }; });
+    const processOpenAI = _.map(openAIResponse, async (v, i) => {
+      while(!(v.choices && v.choices[0] && v.choices[0].text)) {
+        v = await openAIPromise[i];
+      }
+
+      return { intent: v.object, answer: v.choices && v.choices[0] && v.choices[0].text, ...openAITracking[i] };
+    });
 
     return _.sortBy([...processedData, ...processOpenAI],'time');
   }
