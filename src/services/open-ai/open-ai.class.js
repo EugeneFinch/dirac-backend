@@ -3,7 +3,7 @@ const axios = require('axios');
 const { client } = require('../../sqlClient');
 const _ = require('lodash');
 
-function buildOpenAIBody(prompt, time) {
+function buildOpenAIBody(prompt) {
   return {
     prompt,
     temperature: 0,
@@ -58,7 +58,7 @@ class Service {
     LEFT JOIN answer AS a ON a.question_id = q.id
     WHERE q.recording_id=${recordingId} AND q.intent != 'Default Fallback Intent'`;
 
-        // dubug
+        // debug
 //     const query = `SELECT q.question, q.intent, q.start_time, a.answer FROM question AS q JOIN speaker AS s
 // ON q.speaker_id = s.id AND s.team_member = TRUE
 // LEFT JOIN answer AS a ON a.question_id = q.id
@@ -72,12 +72,17 @@ class Service {
     let openAIItemCount = 0;
     let openAIPrompt = '';
     let openAIPromptTime = '';
+    let openAITracking = [];
 
     for (let [i, item] of questions.entries()) {
       const { question, intent, answer, start_time: time } = item;
       if(_.includes(_.lowerCase(intent), 'spend categories')) {
         if(openAIItemCount >= 6) {
-          openAIPromise.push(postAxios(buildOpenAIBody(openAIPrompt, openAIPromptTime)));
+          openAIPromise.push(postAxios(buildOpenAIBody(openAIPrompt)));
+          openAITracking.push({
+            time: openAIPromptTime * 1 || 0,
+            question: openAIPrompt
+          });
 
           openAIItemCount = 0;
           openAIPrompt = '';
@@ -88,7 +93,11 @@ class Service {
         openAIItemCount++;
       } else {
         if(openAIPrompt) {
-          openAIPromise.push(postAxios(buildOpenAIBody(openAIPrompt, openAIPromptTime)));
+          openAIPromise.push(postAxios(buildOpenAIBody(openAIPrompt)));
+          openAITracking.push({
+            time: openAIPromptTime * 1 || 0,
+            question: openAIPrompt
+          });
 
           openAIItemCount = 0;
           openAIPrompt = '';
@@ -96,24 +105,29 @@ class Service {
         }
 
         processedData.push({
+          question,
           intent,
           answer,
-          time
+          time: time * 1 || 0,
         });
       }
     }
 
     if(openAIPrompt) {
-      openAIPromise.push(postAxios(buildOpenAIBody(openAIPrompt, openAIPromptTime)));
+      openAIPromise.push(postAxios(buildOpenAIBody(openAIPrompt)));
+      openAITracking.push({
+        time: openAIPromptTime * 1 || 0,
+        question: openAIPrompt
+      });
     }
 
     const openAIResponse = await Promise.all(openAIPromise);
-    console.log(`recoding id: ${recordingId} - openai result: ${JSON.stringify(openAIResponse)}`)
+    console.log(`recoding id: ${recordingId} - openai result: ${JSON.stringify(openAIResponse)}`);
 
     // eslint-disable-next-line max-len
-    const processOpenAI = _.map(openAIResponse, v => { return { intent: v.object, answer: v.choices && v.choices[0] && v.choices[0].text }; });
+    const processOpenAI = _.map(openAIResponse, (v, i) => { return { intent: v.object, answer: v.choices && v.choices[0] && v.choices[0].text, ...openAITracking[i] }; });
 
-    return [...processedData, ...processOpenAI];
+    return _.sortBy([...processedData, ...processOpenAI],'time');
   }
 
   async getClientEmail({

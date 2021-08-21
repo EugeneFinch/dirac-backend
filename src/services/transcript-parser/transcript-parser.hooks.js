@@ -21,7 +21,7 @@ module.exports = {
     create: [],
     update: [
       async function (context) {
-        const recordingId = context.id;
+      const recordingId = context.id;
 
         const [data, emails] = await Promise.all([
           new openAIService().processingData({ recordingId }),
