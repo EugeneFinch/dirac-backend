@@ -56,5 +56,7 @@
   },
   "front-end": "https://app-dev.diracnlp.com",
   "APP_SECRET": "bwvBIKT7Ia",
-  "MAIL_INBOX_TOPIC": "projects/dirac-296815/topics/mail-inbox-dev"
+  "MAIL_INBOX_TOPIC": "projects/dirac-296815/topics/mail-inbox-dev",
+  "OPENAI_API_KEY": "xxx",
+  "SENDGRID_API_KEY": "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"
 }
