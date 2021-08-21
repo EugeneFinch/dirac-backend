@@ -12,7 +12,7 @@ class Service {
 
   async sendAnalyzeMeeting({ data, emails }) {
     const buildHTML = _.reduce(data, (result, { intent, answer, question }) => {
-      return `${result}<br><p style="color:black"><b>Question: ${question}</b><br> ${intent}: ${answer || ' '}</p>`;
+      return `${result}<br><p style="color:black">Question: ${question}</b><br> ${intent}: ${answer || ' '}</p>`;
     }, '');
 
     const promise = _.map(emails, v => !_.includes(ADMIN_BOT_EMAIL, v) && sgMail.send({
