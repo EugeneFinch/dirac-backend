@@ -9,6 +9,11 @@ const get = require('lodash/get');
 const path = require('path');
 const env = process.env.NODE_ENV || 'dev';
 
+const _ = require('lodash');
+
+const openAIService = require('./../open-ai/open-ai.class');
+const sendGridService = require('./../../sendgrid');
+
 const transform = (s3File, jobName) => {
   return new Promise((resolve, reject) => {
     const filePath = path.join(process.cwd(), `./uploads/${jobName}.json`);
@@ -163,8 +168,18 @@ class Service {
     await this.options.app.service('transcript').create(insertData);
     await this.options.app.service('transcript-coaching').create({ recording_id: id });
 
-    return { message: 'done' };
+    const [resultMeeting, emails] = await Promise.all([
+      new openAIService().processingData({ recordingId: id }),
+      new openAIService().getClientEmail({
+        recordingId: id
+      })
+    ]) ;
 
+    if(emails && emails[0]) {
+      await new sendGridService().sendAnalyzeMeeting({ data: resultMeeting, emails });
+    }
+
+    return { message: 'done' };
   }
 
   async patch(id, data, params) {
