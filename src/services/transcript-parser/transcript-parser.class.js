@@ -74,7 +74,7 @@ class Service {
     console.log('\n\n', "speakTime\n", JSON.stringify(speakTime), '\n\n')
     for (const i in speakTime) {
       console.log('select', `SELECT sum(end-start) as duration, user_name FROM speakers_data where end-start > 5 and recordingId = ${id}
-      and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.2} and ${parseFloat(res.endTime) + 0.4}`)
+      and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.28} and ${parseFloat(res.endTime) + 0.32}`)
           .toString().replace(/,/gim, ' or ')}) group by user_name order by sum(end-start) DESC`, '\n\n\n');
 
       //     `select start.user_name as user_name, start.count+end.count as entries_match FROM
@@ -89,16 +89,17 @@ class Service {
       //     WHERE start.user_name = end.user_name`
 
       let users = await client.query(`SELECT sum(end-start) as duration, user_name FROM speakers_data where end-start > 5 and recordingId = ${id}
-        and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.2} and ${parseFloat(res.endTime) + 0.4}`)
+        and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.28} and ${parseFloat(res.endTime) + 0.32}`)
           .toString().replace(/,/gim, ' or ')}) group by user_name order by sum(end-start) DESC
       `)
       if (!users[0]) users = await client.query(`SELECT sum(end-start) as duration, user_name FROM speakers_data where end-start > 2 and recordingId = ${id}
-      and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.2} and ${parseFloat(res.endTime) + 0.4}`)
+      and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.28} and ${parseFloat(res.endTime) + 0.32}`)
           .toString().replace(/,/gim, ' or ')}) group by user_name order by sum(end-start) DESC
     `)
       if (users[0]) {
         speakTime[i].speaker = users[0].user_name ? users[0].user_name : null;
       } else {
+        console.log(`dona 0 0: ${JSON.stringify(users)} - ${speakTime[i]}`);
         await client.query(`INSERT INTO speakers_data (recordingId, user_name, start, end) VALUES (${id}, '${speakTime[i].speaker}' ,0,0)`)
         speakTime[i].speaker = null;
       }
