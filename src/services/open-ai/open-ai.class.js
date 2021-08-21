@@ -121,13 +121,18 @@ class Service {
       });
     }
 
-    const openAIResponse = await Promise.all(openAIPromise);
-    console.log(`recoding id: ${recordingId} - openai result: ${JSON.stringify(openAIResponse)}`);
+    const [openAIResponse, openAIResponseSub] = await Promise.all([openAIPromise, openAIPromise]);
+
+    console.log(`recoding id: ${recordingId} - openai result: ${JSON.stringify(openAIResponse)} - - openai result 2: ${JSON.stringify(openAIResponseSub)}`);
     console.log(`question: ${openAIPrompt}`);
 
     // eslint-disable-next-line max-len
     const processOpenAI = _.map(openAIResponse, async (v, i) => {
-      return { intent: v.object, answer: v.choices && v.choices[0] && v.choices[0].text, ...openAITracking[i] };
+      const obj = {
+        intent: v.object, answer: v.choices[0].text || openAIResponseSub[i].choices[0].text, ...openAITracking[i]
+      };
+
+      return obj;
     });
 
     return _.sortBy([...processedData, ...processOpenAI],'time');
