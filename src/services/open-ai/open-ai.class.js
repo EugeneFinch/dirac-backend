@@ -123,15 +123,10 @@ class Service {
 
     const openAIResponse = await Promise.all(openAIPromise);
     console.log(`recoding id: ${recordingId} - openai result: ${JSON.stringify(openAIResponse)}`);
+    console.log(`question: ${openAIPrompt}`);
 
     // eslint-disable-next-line max-len
     const processOpenAI = _.map(openAIResponse, async (v, i) => {
-      let trytimes = 0;
-      while(trytimes < 5 && (!v.choices || !v.choices[0] || !v.choices[0].text)) {
-        v = await openAIPromise[i];
-        trytimes++;
-      }
-
       return { intent: v.object, answer: v.choices && v.choices[0] && v.choices[0].text, ...openAITracking[i] };
     });
 
