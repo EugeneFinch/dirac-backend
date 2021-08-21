@@ -51,5 +51,6 @@
   },
   "front-end": "https://app.diracnlp.com",
   "APP_SECRET": "bwvBIKT7Ia",
-  "MAIL_INBOX_TOPIC": "projects/dirac-296815/topics/mail-inbox"
+  "MAIL_INBOX_TOPIC": "projects/dirac-296815/topics/mail-inbox",
+  "OPENAI_API_KEY": "xxx"
 }
