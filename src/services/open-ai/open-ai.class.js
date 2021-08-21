@@ -173,7 +173,7 @@ SELECT c.attendees FROM recording AS r JOIN calendar_event AS c ON c.id = r.cale
     const recording = await app.service('recording').find({
       query: {
         id: recordingId,
-        send_mail_analyze: false
+        send_mail_analyze: 0
       },
       raw: true
     });
@@ -191,7 +191,7 @@ SELECT c.attendees FROM recording AS r JOIN calendar_event AS c ON c.id = r.cale
         await new sendGridService().sendAnalyzeMeeting({ data: resultMeeting, emails });
       }
 
-      await app.service('recording').patch(recordingId, { send_mail_analyze: true });
+      await app.service('recording').patch(recordingId, { send_mail_analyze: 1 });
     }
   }
 }
