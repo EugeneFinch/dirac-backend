@@ -40,6 +40,9 @@ module.exports = function (app) {
     users_on_call: {
       type: DataTypes.INTEGER
     },
+    send_mail_analyze: {
+      type: DataTypes.INTEGER
+    },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.NOW

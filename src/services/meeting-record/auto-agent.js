@@ -32,7 +32,7 @@ const getRecordingName = (roomURL) => {
   let recordingId = process.argv[3].split('=')[1];
   const calendarEventId = process.argv[4] ? process.argv[4].split('=')[1] : null;
   const userId = process.argv[5] ? process.argv[5].split('=')[1] : null;
-
+  console.log(process.argv);
   if (calendarEventId) {
     const calendarEvent = await app.service('cronjob-calendar-event').get(calendarEventId);
     // 1 meaning joining, 2 meaning joined
@@ -52,7 +52,6 @@ const getRecordingName = (roomURL) => {
     args: ['--use-fake-ui-for-media-stream'],
   });
   const page = await browser.newPage();
-
   try {
     console.log('start', moment().utc().toDate(), roomURL);
     await new Promise((res) => setTimeout(() => res(1), 2000));
@@ -161,7 +160,6 @@ const getRecordingName = (roomURL) => {
       });
     });
     await page.evaluate(jquery_ev_fn);
-    console.log('befo evaluate');
 
     const users = await page.evaluate(({ recordingId }) => {
       console.log('11111111111111111');
@@ -177,23 +175,28 @@ const getRecordingName = (roomURL) => {
         let interval;
         const users = {};
         const startTalkTime = +new Date();
+
         socketio.on('connect', function () {
           console.log('connect');
           clearInterval(check);
           clearInterval(interval);
+
           check = setInterval(() => {
             console.log('on check');
             const time = +new Date;
             console.time(time)
             // console.log('----------------------------------')
             Array.from(document.querySelectorAll('[aria-label=Participants] [role=listitem]')).map(elem => {
+              // const userName = elem.getElementsByClassName('ZjFb7c')[0].innerText;
               const userName = elem.getElementsByClassName('ZjFb7c')[0].innerText;
+
               console.log('userName: ' + userName);
 
               if (userName === 'Dirac Notetaker') return;
               //const speakClassList = Array.from(elem.getElementsByClassName('IisKdb xD3Vrd BbJhmb YE1TS JeFzg MNVeFb kT2pkb')[0].classList);
-              const speakClassList = Array.from(elem.getElementsByClassName('IisKdb BbJhmb YE1TS')[0].classList);
+              // const speakClassList = Array.from(elem.getElementsByClassName('IisKdb BbJhmb YE1TS')[0].classList);
 
+              const speakClassList = Array.from(elem.getElementsByClassName('IisKdb')[0].classList);
 
               if (!users[`${userName}`]) {
                 console.log(`${userName}, ${speakClassList}`);
@@ -206,8 +209,6 @@ const getRecordingName = (roomURL) => {
               }
 
               if (users[`${userName}`].silent !== speakClassList.includes('gjg47c')) {
-
-
 
                 users[`${userName}`].silent = speakClassList.includes('gjg47c');
                 console.log('users[`${userName}`].silent', users[`${userName}`].silent);
@@ -270,9 +271,9 @@ const getRecordingName = (roomURL) => {
           };
 
           socketio.emit('start', { file: fileName, recordingId });
+          document.querySelector('[aria-label="Show everyone"]').click();
 
           //document.querySelector('[data-tooltip="Show everyone"]').click();
-          document.querySelector('[aria-label="Show everyone"]').click();
           interval = setInterval(() => {
             const totalPeopleNode = document.querySelectorAll('[aria-label=Participants] [role=listitem]');
             console.log('totalPeopleNode', totalPeopleNode.length);

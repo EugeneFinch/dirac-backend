@@ -12,7 +12,7 @@ function watchCalendar({ token, email, id, resourceId }) {
     data: {
       id, // Your channel ID.
       type: 'web_hook',
-      address: 'https://api.diracnlp.com/calendar-event', // Your receiving URL.
+      address: env === 'dev' ? 'https://api-dev.diracnlp.com/calendar-event' : 'https://api.diracnlp.com/calendar-event', // Your receiving URL.
       token, // (Optional) Your channel token.
       // "expiration": 1426325213000 // (Optional) Your requested channel expiration time.
     }
@@ -25,15 +25,15 @@ function watchCalendar({ token, email, id, resourceId }) {
       console.log('push watch calendar error: ' + id);
       if (error.response) {
         // Request made and server responded
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        //console.log(error.response.data);
+        //console.log(error.response.status);
+        //console.log(error.response.headers);
       } else if (error.request) {
         // The request was made but no response was received
-        console.log(error.request);
+        //console.log(error.request);
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error', error.message);
+        //console.log('Error', error.message);
       }
       return null;
     });
