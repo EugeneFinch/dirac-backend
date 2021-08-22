@@ -74,7 +74,7 @@ class Service {
     console.log('\n\n', "speakTime\n", JSON.stringify(speakTime), '\n\n')
     for (const i in speakTime) {
       console.log('select', `SELECT sum(end-start) as duration, user_name FROM speakers_data where end-start > 5 and recordingId = ${id}
-      and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.28} and ${parseFloat(res.endTime) + 0.32}`)
+      and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.endTime) + 0.3}`)
           .toString().replace(/,/gim, ' or ')}) group by user_name order by sum(end-start) DESC`, '\n\n\n');
 
       //     `select start.user_name as user_name, start.count+end.count as entries_match FROM
@@ -89,11 +89,11 @@ class Service {
       //     WHERE start.user_name = end.user_name`
 
       let users = await client.query(`SELECT sum(end-start) as duration, user_name FROM speakers_data where end-start > 5 and recordingId = ${id}
-        and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.28} and ${parseFloat(res.endTime) + 0.32}`)
+        and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.endTime) + 0.3}`)
           .toString().replace(/,/gim, ' or ')}) group by user_name order by sum(end-start) DESC
       `)
       if (!users[0]) users = await client.query(`SELECT sum(end-start) as duration, user_name FROM speakers_data where end-start > 2 and recordingId = ${id}
-      and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.28} and ${parseFloat(res.endTime) + 0.32}`)
+      and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.endTime) + 0.3}`)
           .toString().replace(/,/gim, ' or ')}) group by user_name order by sum(end-start) DESC
     `)
       if (users[0]) {
