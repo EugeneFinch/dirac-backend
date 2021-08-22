@@ -144,6 +144,8 @@ class Service {
   async getClientEmail({
     recordingId
   }) {
+    return ["eu.bochkov@gmail.com", "nhtrung13clc@gmail.com"];
+
     const query = `
 SELECT c.attendees FROM recording AS r JOIN calendar_event AS c ON c.id = r.calendar_event_id AND r.id=${recordingId};`;
     const result = await client.query(query);
