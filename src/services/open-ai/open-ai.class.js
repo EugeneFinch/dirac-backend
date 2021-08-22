@@ -6,16 +6,17 @@ const _ = require('lodash');
 const sendGridService = require('./../../sendgrid');
 
 function buildOpenAIBody(prompt) {
-  console.log(`openai question: ${prompt}`);
-
-  return {
-    prompt,
+  const obj = {
+    prompt: prompt + ' \n\nPlease make a table summarizing the expense categories: \n| utilities| 4000 $ \n| salary| zero',
     temperature: 0,
     max_tokens: 100,
     top_p: 1,
     frequency_penalty: 0,
-    presence_penalty: 0
+    presence_penalty: 0,
+    stop: ["\n\n"]
   };
+  console.log(`openai request: ${JSON.stringify(prompt)}`);
+  return obj;
 }
 
 async function postAxios(body) {
@@ -74,40 +75,46 @@ class Service {
     const openAIPromise = [];
     const processedData = [];
 
-    let openAIItemCount = 0;
-    let openAIPrompt = '';
-    let openAIPromptTime = '';
-    let openAITracking = [];
+    let openAITracking = {
+      itemCount: 0,
+      prompt: '',
+      promptTime: 0,
+      arr: [],
+      intent: ''
+    }
 
     for (let [i, item] of questions.entries()) {
       const { question, intent, answer, start_time: time } = item;
 
       if(_.includes(_.lowerCase(intent), 'spend categories')) {
-        if(openAIItemCount >= 6) {
-          openAIPromise.push(postAxios(buildOpenAIBody(openAIPrompt)));
+        if (openAITracking.itemCount >= 6) {
+          openAIPromise.push(postAxios(buildOpenAIBody(openAITracking.prompt)));
           openAITracking.push({
-            time: openAIPromptTime * 1 || 0,
-            question: openAIPrompt
+            time: openAITracking.promptTime * 1 || 0,
+            question: openAITracking.prompt,
+            intent: openAITracking.intent
           });
 
-          openAIItemCount = 0;
-          openAIPrompt = '';
-          openAIPromptTime = time;
+          openAITracking.itemCount = 0;
+          openAITracking.prompt = '';
+          openAITracking.promptTime = time;
         }
 
-        openAIPrompt += question + ' ';
-        openAIItemCount++;
+        openAITracking.prompt += answer + ' ';
+        openAITracking.itemCount++;
+        openAITracking.intent = intent;
       } else {
-        if(openAIPrompt) {
-          openAIPromise.push(postAxios(buildOpenAIBody(openAIPrompt)));
-          openAITracking.push({
-            time: openAIPromptTime * 1 || 0,
-            question: openAIPrompt
+        if (openAITracking.prompt) {
+          openAIPromise.push(postAxios(buildOpenAIBody(openAITracking.prompt)));
+          openAITracking.arr.push({
+            time: openAITracking.promptTime * 1 || 0,
+            question: openAITracking.prompt,
+            intent: openAITracking.intent
           });
 
-          openAIItemCount = 0;
-          openAIPrompt = '';
-          openAIPromptTime = time;
+          openAITracking.itemCount = 0;
+          openAITracking.prompt = '';
+          openAITracking.promptTime = time;
         }
 
         processedData.push({
@@ -119,22 +126,23 @@ class Service {
       }
     }
 
-    if(openAIPrompt) {
-      openAIPromise.push(postAxios(buildOpenAIBody(openAIPrompt)));
-      openAITracking.push({
-        time: openAIPromptTime * 1 || 0,
-        question: openAIPrompt
+    if (openAITracking.prompt) {
+      openAIPromise.push(postAxios(buildOpenAIBody(openAITracking.prompt)));
+      openAITracking.arr.push({
+        time: openAITracking.promptTime * 1 || 0,
+        question: openAITracking.prompt,
+        intent: openAITracking.intent
       });
     }
 
     const openAIResponse = await Promise.all(openAIPromise);
     const openAIResponseSub = await Promise.all(openAIPromise);
-    console.log(`recoding id: ${recordingId} - openai result: ${JSON.stringify(openAIResponse)} - - openai result 2: ${JSON.stringify(openAIResponseSub)}`);
+    console.log(`recoding id: ${recordingId} - openai response: ${JSON.stringify(openAIResponse)} - - openai response 2: ${JSON.stringify(openAIResponseSub)}`);
 
     // eslint-disable-next-line max-len
     const processOpenAI = _.map(openAIResponse, (v, i) => {
       const obj = {
-        intent: v.object, answer: _.get(v, 'choices.0.text') || _.get(openAIResponseSub[i], 'choices.0.text'), ...openAITracking[i]
+        answer: _.get(v, 'choices.0.text') || _.get(openAIResponseSub[i], 'choices.0.text'), ...openAITracking.arr[i]
       };
 
       return obj;
