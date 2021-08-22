@@ -13,7 +13,7 @@ function watchCalendar({ token, email, id, resourceId }) {
     data: {
       id, // Your channel ID.
       type: 'web_hook',
-      address: env === 'dev' ? 'https://api-dev.diracnlp.com/calendar-event' : 'https://api.diracnlp.com/calendar-event', // Your receiving URL.
+      address: 'https://api.diracnlp.com/calendar-event', // Your receiving URL.
       token, // (Optional) Your channel token.
       // "expiration": 1426325213000 // (Optional) Your requested channel expiration time.
     }
