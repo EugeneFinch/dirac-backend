@@ -6,6 +6,8 @@ const _ = require('lodash');
 const sendGridService = require('./../../sendgrid');
 
 function buildOpenAIBody(prompt) {
+  console.log(`openai question: ${prompt}`);
+
   return {
     prompt,
     temperature: 0,
@@ -67,7 +69,7 @@ class Service {
 // WHERE q.intent != 'Default Fallback Intent'`;
 
     const questions = await client.query(query);
-    console.log(`dona questions: ${JSON.stringify(questions)}`);
+    console.log(`openai filter database: ${JSON.stringify(questions)}`);
 
     const openAIPromise = [];
     const processedData = [];
