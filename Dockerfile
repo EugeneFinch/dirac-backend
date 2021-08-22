@@ -13,7 +13,7 @@ RUN apk update && apk upgrade && \
     apk add --no-cache \
     ca-certificates \
     ttf-freefont \
-    chromium@edge \
+    chromium \
     harfbuzz@edge \
     dcron libcap \
     wqy-zenhei@edge && \
