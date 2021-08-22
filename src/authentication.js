@@ -11,6 +11,7 @@ class GoogleStrategy extends OAuthStrategy {
     const profile = await super.getProfile(authResult);
     const email = authResult.id_token.payload.email;
     const key = this.app.get('GOOGLE_API_KEY');
+    console.log("authResult ", authResult)
 
     const { data: user } = await this.app.service('users').find({
       query: {
@@ -25,7 +26,7 @@ class GoogleStrategy extends OAuthStrategy {
       watchCalendar({
         token: authResult.access_token,
         email,
-        id: `${env}-${get(user, '0.id')}-${new Date().valueOf()}`,
+        id: `${env}-${get(user, '0.id')}}`,
         resourceId: `${env}-${get(user, '0.resourceId')}`
       });
 
@@ -34,7 +35,7 @@ class GoogleStrategy extends OAuthStrategy {
       if (resourceId) {
         await this.app.service('users').patch(get(user, '0.id'), { resourceId });
       }
-      //console.log("authResult ", authResult)
+      console.log("authResult ", authResult)
       if (authResult.raw.refresh_token) await this.app.service('users').patch(get(user, '0.id'), { gRefreshToken: authResult.raw.refresh_token });
      await calendar.handleUpdateCalendarEvent({ app: this.app, token: authResult.access_token, email, key, user_id: get(user, '0.id'), });
     }
