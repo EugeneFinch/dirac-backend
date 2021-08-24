@@ -1,7 +1,6 @@
 const axios = require('axios');
 const dayjs = require('dayjs');
 const { get, forEach } = require('lodash');
-const env = process.env.NODE_ENV || 'dev';
 
 function watchCalendar({ token, email, id, resourceId }) {
   return axios(`https://www.googleapis.com/calendar/v3/calendars/${email}/events/watch`, {
