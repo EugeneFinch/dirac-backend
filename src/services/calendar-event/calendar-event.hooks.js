@@ -16,8 +16,6 @@ module.exports = {
       async context => {
         try {
           console.log('before create calendar');
-          console.log('dona before create calendar env: ' + process.env.NODE_ENV);
-
           const key = context.app.get('GOOGLE_API_KEY');
 
           const user_id = get(context, 'params.body.user_id', 0);
