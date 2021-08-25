@@ -190,7 +190,7 @@ SELECT c.attendees FROM recording AS r JOIN calendar_event AS c ON c.id = r.cale
       ]) ;
       console.log(resultMeeting)
       if(emails && emails[0] && resultMeeting && resultMeeting[0]) {
-        await new sendGridService().sendAnalyzeMeeting({ data: resultMeeting, emails });
+        await new sendGridService().sendAnalyzeMeeting({ data: resultMeeting, emails, recordingId });
       }
 
       await app.service('recording').patch(recordingId, { send_mail_analyze: 1 });
