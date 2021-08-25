@@ -10,7 +10,7 @@ class Service {
     sgMail.setApiKey('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');
   }
 
-  async sendAnalyzeMeeting({ data, emails, recordingId }) {
+  async sendAnalyzeMeeting({ data, emails, recordingId, subject }) {
     const buildHTML = _.reduce(data, (result, { intent, answer, question }) => {
       return `${result}<br><p style="color:black"><b style="color:black">Question: ${intent}</b><br> Response: ${answer || ' '}</p>`;
     }, '');
@@ -18,7 +18,7 @@ class Service {
     const promise = _.map(emails, v => !_.includes(ADMIN_BOT_EMAIL, v) && sgMail.send({
       to: v,
       from: ADMIN_SEND_EMAIL,
-      subject: `[DIRAC] ANALYZE MEETING - ${recordingId}`,
+      subject: `Meeting recap: ${subject} - ${recordingId}`,
       text: 'We are sending the analyze your previous meeting...',
       html: buildHTML,
     }));

@@ -176,7 +176,7 @@ SELECT c.attendees FROM recording AS r JOIN calendar_event AS c ON c.id = r.cale
 
   async handleSendMailAfterMeeting(app, recordingId) {
     const query = `
-    SELECT id FROM recording WHERE send_mail_analyze = 0 AND id=${recordingId};`;
+    SELECT id, subject FROM recording WHERE send_mail_analyze = 0 AND id=${recordingId};`;
     const recording = await client.query(query);
 
     console.log('dona recording found: ' + JSON.stringify(recording))
@@ -190,7 +190,7 @@ SELECT c.attendees FROM recording AS r JOIN calendar_event AS c ON c.id = r.cale
       ]) ;
       console.log(resultMeeting)
       if(emails && emails[0] && resultMeeting && resultMeeting[0]) {
-        await new sendGridService().sendAnalyzeMeeting({ data: resultMeeting, emails, recordingId });
+        await new sendGridService().sendAnalyzeMeeting({ data: resultMeeting, emails, recordingId, subject: recording[0].subject });
       }
 
       await app.service('recording').patch(recordingId, { send_mail_analyze: 1 });
