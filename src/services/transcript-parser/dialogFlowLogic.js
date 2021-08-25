@@ -39,7 +39,7 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
     if (/\?/gim.test(data[i].line) && !skipNextPassage) {
       let questionsData = data[i].line.match(/([A-z 0-9,@#$\-%^&'*()]+\?)/gim)
       questionsData = questionsData.filter(res => res.split(' ').length > 3).map(res => {
-        let str = res.trim();
+        let str = res.toString().trim();
 
 
         while (str.toString().length > 250) {
@@ -94,12 +94,13 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
         if (processed[i].split(' ').length > 3) idx = i
       }
       if (idx !== undefined) {
-        let str = processed[idx].trim() + '?';
+        let str = processed[idx].toString().trim() + '?';
         while (str.toString().length > 250) {
           str = str.toString().split(',');
           str.shift();
         }
-        const response = await dialogFlow(str.trim());
+
+        const response = await dialogFlow(str.toString().trim());
         // console.log('question without ? ', str.trim())
         // console.log('response ', response) // Последний предложение без вопросов
         if (response && response.queryText) {
@@ -107,7 +108,7 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
           const qId = await app.service('question').create({
             speaker_id: get(speakerIds, `${speakerIdx}.id`),
             recording_id: id,
-            question: str.trim(),
+            question: str.toString().trim(),
             intent: response.intent.displayName,
             intent_info: response,
             start_time: data[i].start_time,
