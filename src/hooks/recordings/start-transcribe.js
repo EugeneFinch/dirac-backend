@@ -26,7 +26,7 @@ module.exports = async function (context) {
       MaxSpeakerLabels: +users[0].users_on_call > 1 ? +users[0].users_on_call + 1 : 2,
       ShowSpeakerLabels: true ,
       VocabularyFilterName: 'filter-1',
-      VocabularyFilterMethod: 'mask',
+      VocabularyFilterMethod: 'remove',
       VocabularyName: 'Competitors',
     }
   };
