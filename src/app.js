@@ -57,7 +57,7 @@ setInterval(()=>watchInbox(app.get('MAIL_INBOX_TOPIC'),authorize(app)),24*60*60*
 app.configure(middleware);
 
 app.configure(authentication);
-// app.configure(checkCalendar);
+app.configure(checkCalendar);
 
 // Set up our services (see `services/index.js`)
 app.configure(services);
