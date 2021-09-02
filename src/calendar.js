@@ -66,7 +66,6 @@ function getEventList({ token, email, key, syncToken }) {
 }
 
 async function handleUpdateCalendarEvent({ app, token, email, key, syncToken, user_id }) {
-  return 0;
   const db = app.get('sequelizeClient');
   try {
     const response = await getEventList({ token, email, key, syncToken });
