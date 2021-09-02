@@ -1,8 +1,9 @@
 const get = require('lodash/get');
 const dialogFlow = require('./../../dialogFlow');
+const { getKeywordCriteria } = require('./../../services/transcript/utils');
+const env = process.env.NODE_ENV || 'dev';
 
-
-const answer = async (app, data, context, speakers, speakerIds, id, qId) => {
+const answer = async (app, data, context, speakers, speakerIds, id, qId, keywordCriteria) => {
   if(!data) {
     return;
   }
@@ -12,9 +13,16 @@ const answer = async (app, data, context, speakers, speakerIds, id, qId) => {
     str = str.toString().split(',');
     str.shift();
   }
-  str = str.toString();
-  const answer = await dialogFlow(str, context);
-  if (answer && answer.queryText) {
+
+  textToAnalyze = str.toString();
+  const [answer, isQuestion] = await (env === 'prod' ? dialogFlow.comparingKeywordRecapConfig({
+    textToAnalyze,
+    keywordCriteria
+  }) : dialogFlow(str, context));
+
+  console.log('test new logic: is answering: ' + JSON.stringify(data));
+
+  if ((env === 'prod' && !isQuestion) || answer && answer.queryText) {
     const speakerIdx = speakers.findIndex(v => v === data.speaker);
     await app.service('answer').create({
       speaker_id: get(speakerIds, `${speakerIdx}.id`),
@@ -26,16 +34,14 @@ const answer = async (app, data, context, speakers, speakerIds, id, qId) => {
       start_time: data.start_time,
       end_time: data.end_time,
     });
-    console.log('answer', )
   }
 }
 
 const DFLogic = async (app, data, speakers, speakerIds, id) => {
+  const keywordCriteria = await getKeywordCriteria({ app });
 
   let skipNextPassage = 0;
   for (let i in data) {
-    // console.log('------------------------------------------------')
-    // console.log('q ', data[i]);
     if (/\?/gim.test(data[i].line) && !skipNextPassage) {
       let questionsData = data[i].line.match(/([A-z 0-9,@#$\-%^&'*()]+\?)/gim)
       questionsData = questionsData.filter(res => res.split(' ').length > 3).map(res => {
@@ -65,11 +71,17 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
       }
 
       for (let question in questionsData) {
-        const response = await dialogFlow(questionsData[question])
-        // console.log('question ', questionsData[question])
-        // console.log('response ', response)
-        if (response && response.queryText) {
+        const textToAnalyze = questionsData[question].toString().toLowerCase();
+
+        const [response, isQuestion] = await (env === 'prod' ? dialogFlow.comparingKeywordRecapConfig({
+          textToAnalyze,
+          keywordCriteria
+        }) : dialogFlow(textToAnalyze));
+
+        console.log('test new logic: is questioning: ' + JSON.stringify(data[i]));
+        if (env === 'prod' || (response && response.queryText)) {
           const speakerIdx = speakers.findIndex(v => v === data[i].speaker);
+
           const qId = await app.service('question').create({
             speaker_id: get(speakerIds, `${speakerIdx}.id`),
             recording_id: id,
@@ -80,7 +92,13 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
             end_time: data[i].end_time,
           })
 
-          await answer(app, data[+i + 1], response.outputContexts, speakers, speakerIds, id, qId.id)
+          const nextData = env === 'prod' && !isQuestion ? data[i] : data[+i + 1]
+
+          if (env === 'prod' && !isQuestion) {
+            console.log('test new logic: it looks like answer than question');
+          }
+
+          await answer(app, nextData, response.outputContexts, speakers, speakerIds, id, qId.id, keywordCriteria)
         }
       }
 
@@ -100,11 +118,17 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
           str.shift();
         }
 
-        const response = await dialogFlow(str.toString().trim());
-        // console.log('question without ? ', str.trim())
-        // console.log('response ', response) // Последний предложение без вопросов
-        if (response && response.queryText) {
+        const textToAnalyze = str.toString().trim();
+        const [response, isQuestion] = await (env === 'prod' ? dialogFlow.comparingKeywordRecapConfig({
+          textToAnalyze,
+          keywordCriteria
+        }) : dialogFlow(textToAnalyze));
+
+
+        console.log('test new logic: is questioning: ' + JSON.stringify(data[i]));
+        if (env === 'prod' || response && response.queryText) {
           const speakerIdx = speakers.findIndex(v => v === data[i].speaker);
+
           const qId = await app.service('question').create({
             speaker_id: get(speakerIds, `${speakerIdx}.id`),
             recording_id: id,
@@ -114,7 +138,14 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
             start_time: data[i].start_time,
             end_time: data[i].end_time,
           });
-          await answer(app, data[+i + 1], response.outputContexts, speakers, speakerIds, id, qId.id)
+
+          const nextData = env === 'prod' && !isQuestion ? data[i] : data[+i + 1]
+
+          if (env === 'prod' && !isQuestion) {
+            console.log('test new logic: it looks like answer than question');
+          }
+
+          await answer(app, nextData, response.outputContexts, speakers, speakerIds, id, qId.id, keywordCriteria)
         }
 
       }

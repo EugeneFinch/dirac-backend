@@ -102,5 +102,6 @@ const hightLightKeyword = async (ctx) => {
 module.exports = {
   searchByKeyword,
   hightLightKeyword,
-  searchContent
+  searchContent,
+  getKeywordCriteria
 };
