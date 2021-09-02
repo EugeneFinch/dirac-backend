@@ -71,6 +71,7 @@ class Service {
     }
 
     const { lines, speakers, speakTime, questions } = await transform(s3File, jobName);
+
     console.log('\n\n', "speakTime\n", JSON.stringify(speakTime), '\n\n')
     for (const i in speakTime) {
       console.log('select', `SELECT sum(end-start) as duration, user_name FROM speakers_data where end-start > 5 and recordingId = ${id}
@@ -123,8 +124,7 @@ class Service {
         }
       }
     }
-    // await dialogFlowLogic(lines);
-    // return true
+
     const speakerIds = await this.options.app.service('speaker').create(speakers.map(v => ({ name: speakTime[v].speaker || v, team_member: speakTime[v].team_member })));
 
     await this.options.app.service('question')._remove(null, {
