@@ -70,12 +70,7 @@ class Service {
       return;
     }
 
-    const filePath = '/Users/mac/Public/webroot/dirac-backend/uploads/dirac-pro-786.json';
-    const string = fs.readFileSync(filePath);
-    const X = SrtConvert(JSON.parse(string));
-
-
-    const { lines, speakers, speakTime, questions } = X;
+    const { lines, speakers, speakTime, questions } = await transform(s3File, jobName);
 
     console.log('\n\n', "speakTime\n", JSON.stringify(speakTime), '\n\n')
     for (const i in speakTime) {
@@ -129,8 +124,7 @@ class Service {
         }
       }
     }
-    await dialogFlowLogic(lines);
-    return true
+
     const speakerIds = await this.options.app.service('speaker').create(speakers.map(v => ({ name: speakTime[v].speaker || v, team_member: speakTime[v].team_member })));
 
     await this.options.app.service('question')._remove(null, {
@@ -145,7 +139,7 @@ class Service {
       }
 
     });
-    await dialogFlowLogic(this.options.app, lines, speakers, [], id);
+    await dialogFlowLogic(this.options.app, lines, speakers, speakerIds, id);
 
     const insertData = lines.map(l => {
       const speakerIdx = speakers.findIndex(v => v === l.speaker);
