@@ -53,6 +53,13 @@ module.exports.comparingKeywordRecapConfig = async ({ textToAnalyze, keywordCrit
       if (textToAnalyze.includes(kw)) {
         const codeRecapConfig = kwKey[kwKey.length - 1];  // 0,1,3
 
+        console.log('test new logic: ' + JSON.stringify({
+          dbKey: kwKey,
+          isQuestion,
+          textToAnalyze,
+          dbString: kw
+        }))
+
         switch (codeRecapConfig) {
           case '0': { // answer 
             isQuestion = false;
@@ -67,13 +74,6 @@ module.exports.comparingKeywordRecapConfig = async ({ textToAnalyze, keywordCrit
           default:
             break;
         }
-
-        console.log('test new logic: ' + JSON.stringify({
-          dbKey: kwKey,
-          isQuestion,
-          textToAnalyze,
-          dbString: kw
-        }))
       }
     }
   }
