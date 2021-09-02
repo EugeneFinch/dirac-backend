@@ -61,7 +61,7 @@ module.exports.comparingKeywordRecapConfig = async ({ textToAnalyze, keywordCrit
         }))
 
         switch (codeRecapConfig) {
-          case '0': { // answer 
+          case '0': { // answer .
             isQuestion = false;
             break;
           }
