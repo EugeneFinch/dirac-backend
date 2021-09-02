@@ -55,20 +55,20 @@ class Service {
 
 
   async update(id, data, params) {
-    // const transcribeservice = new AWS.TranscribeService({
-    //   accessKeyId: this.options.app.get('AWS_ACCESS_KEY_ID'),
-    //   secretAccessKey: this.options.app.get('AWS_SECRET_ACCESS_KEY'),
-    //   region: 'ap-southeast-1'
-    // });
-    // const job = { TranscriptionJobName: `dirac-${env}-${id}` };
-    // const rep = await transcribeservice.getTranscriptionJob(job).promise();
-    // const s3File = rep.TranscriptionJob.Transcript.RedactedTranscriptFileUri || rep.TranscriptionJob.Transcript.TranscriptFileUri; // поменяй  !!! TranscriptFileUri -> RedactedTranscriptFileUri
-    // const status = rep.TranscriptionJob.TranscriptionJobStatus;
-    // const jobName = rep.TranscriptionJob.TranscriptionJobName;
-    // await this.options.app.service('recording').patch(id, { status });
-    // if (status !== 'COMPLETED') {
-    //   return;
-    // }
+    const transcribeservice = new AWS.TranscribeService({
+      accessKeyId: this.options.app.get('AWS_ACCESS_KEY_ID'),
+      secretAccessKey: this.options.app.get('AWS_SECRET_ACCESS_KEY'),
+      region: 'ap-southeast-1'
+    });
+    const job = { TranscriptionJobName: `dirac-${env}-${id}` };
+    const rep = await transcribeservice.getTranscriptionJob(job).promise();
+    const s3File = rep.TranscriptionJob.Transcript.RedactedTranscriptFileUri || rep.TranscriptionJob.Transcript.TranscriptFileUri; // поменяй  !!! TranscriptFileUri -> RedactedTranscriptFileUri
+    const status = rep.TranscriptionJob.TranscriptionJobStatus;
+    const jobName = rep.TranscriptionJob.TranscriptionJobName;
+    await this.options.app.service('recording').patch(id, { status });
+    if (status !== 'COMPLETED') {
+      return;
+    }
 
     const filePath = '/Users/mac/Public/webroot/dirac-backend/uploads/dirac-pro-786.json';
     const string = fs.readFileSync(filePath);
@@ -77,76 +77,76 @@ class Service {
 
     const { lines, speakers, speakTime, questions } = X;
 
-    // console.log('\n\n', "speakTime\n", JSON.stringify(speakTime), '\n\n')
-    // for (const i in speakTime) {
-    //   console.log('select', `SELECT sum(end-start) as duration, user_name FROM speakers_data where end-start > 5 and recordingId = ${id}
-    //   and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.endTime) + 0.3}`)
-    //       .toString().replace(/,/gim, ' or ')}) group by user_name order by sum(end-start) DESC`, '\n\n\n');
+    console.log('\n\n', "speakTime\n", JSON.stringify(speakTime), '\n\n')
+    for (const i in speakTime) {
+      console.log('select', `SELECT sum(end-start) as duration, user_name FROM speakers_data where end-start > 5 and recordingId = ${id}
+      and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.endTime) + 0.3}`)
+          .toString().replace(/,/gim, ' or ')}) group by user_name order by sum(end-start) DESC`, '\n\n\n');
 
-    //   //     `select start.user_name as user_name, start.count+end.count as entries_match FROM
-    //   // (select user_name, count(*) as count from speakers_data where end-start > 0.1 and recordingId = ${id} and
-    //   // (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.2} and ${parseFloat(res.endTime) + 0.3}`)
-    //   //     .toString().replace(/,/gim, ' or ')})
-    //   // group by user_name order by count(*) DESC limit 1) as start,
+      //     `select start.user_name as user_name, start.count+end.count as entries_match FROM
+      // (select user_name, count(*) as count from speakers_data where end-start > 0.1 and recordingId = ${id} and
+      // (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.2} and ${parseFloat(res.endTime) + 0.3}`)
+      //     .toString().replace(/,/gim, ' or ')})
+      // group by user_name order by count(*) DESC limit 1) as start,
 
-    //   // (select user_name, count(*) as count from speakers_data where end-start > 0.1 and recordingId = ${id} and
-    //   // (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.2} and ${parseFloat(res.endTime) + 0.3}`)
-    //   //     .toString().replace(/,/gim, ' or ')}) group by user_name order by count(*) DESC limit 1) as end
-    //   //     WHERE start.user_name = end.user_name`
+      // (select user_name, count(*) as count from speakers_data where end-start > 0.1 and recordingId = ${id} and
+      // (${speakTime[i].times.map(res => `end between ${parseFloat(res.endTime) - 0.2} and ${parseFloat(res.endTime) + 0.3}`)
+      //     .toString().replace(/,/gim, ' or ')}) group by user_name order by count(*) DESC limit 1) as end
+      //     WHERE start.user_name = end.user_name`
 
-    //   let users = await client.query(`SELECT sum(end-start) as duration, user_name FROM speakers_data where end-start > 5 and recordingId = ${id}
-    //     and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.endTime) + 0.3}`)
-    //       .toString().replace(/,/gim, ' or ')}) group by user_name order by sum(end-start) DESC
-    //   `)
-    //   if (!users[0]) users = await client.query(`SELECT sum(end-start) as duration, user_name FROM speakers_data where end-start > 2 and recordingId = ${id}
-    //   and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.endTime) + 0.3}`)
-    //       .toString().replace(/,/gim, ' or ')}) group by user_name order by sum(end-start) DESC
-    // `)
-    //   if (users[0]) {
-    //     speakTime[i].speaker = users[0].user_name ? users[0].user_name : null;
-    //   } else {
-    //     console.log(`dona 0 0: ${JSON.stringify(users)} - ${speakTime[i]}`);
-    //     await client.query(`INSERT INTO speakers_data (recordingId, user_name, start, end) VALUES (${id}, '${speakTime[i].speaker}' ,0,0)`)
-    //     speakTime[i].speaker = null;
-    //   }
+      let users = await client.query(`SELECT sum(end-start) as duration, user_name FROM speakers_data where end-start > 5 and recordingId = ${id}
+        and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.endTime) + 0.3}`)
+          .toString().replace(/,/gim, ' or ')}) group by user_name order by sum(end-start) DESC
+      `)
+      if (!users[0]) users = await client.query(`SELECT sum(end-start) as duration, user_name FROM speakers_data where end-start > 2 and recordingId = ${id}
+      and (${speakTime[i].times.map(res => `start between ${parseFloat(res.startTime) - 0.3} and ${parseFloat(res.endTime) + 0.3}`)
+          .toString().replace(/,/gim, ' or ')}) group by user_name order by sum(end-start) DESC
+    `)
+      if (users[0]) {
+        speakTime[i].speaker = users[0].user_name ? users[0].user_name : null;
+      } else {
+        console.log(`dona 0 0: ${JSON.stringify(users)} - ${speakTime[i]}`);
+        await client.query(`INSERT INTO speakers_data (recordingId, user_name, start, end) VALUES (${id}, '${speakTime[i].speaker}' ,0,0)`)
+        speakTime[i].speaker = null;
+      }
 
-    //   speakTime[i].team_member = 0;
-    //   if (speakTime[i].speaker) {
-    //     console.log('speakTime[i].speaker', speakTime[i].speaker)
-    //     console.log('team_id  ', `select team_id from team_user where user_id = (select user_id from recording where id = ${id})`)
-    //     const team_id = await client.query(`select team_id from team_user where user_id = (select user_id from recording where id = ${id})`);
-    //     if (team_id[0]) {
-    //       const id = await client.query(`select id from user where id in (select user_id
-    //         from team_user
-    //         where team_id = ${team_id[0].team_id}) and gDisplayName = '${speakTime[i].speaker}';`)
-    //       console.log('user_id   ', `select id from user where id in (select user_id
-    //           from team_user
-    //           where team_id = ${team_id[0].team_id}) and gDisplayName = '${speakTime[i].speaker}';`, 'id', id, '\n\n\n')
-    //       if (id[0]) speakTime[i].team_member = 1;
-    //     } else {
-    //       const team = await client.query(`select id from user where id = (select user_id from recording where id = ${id}) and gDisplayName = '${speakTime[i].speaker}';`)
-    //       if (team[0]) speakTime[i].team_member = 1;
-    //     }
-    //   }
-    // }
-    // await dialogFlowLogic(lines);
-    // return true
-    // const speakerIds = await this.options.app.service('speaker').create(speakers.map(v => ({ name: speakTime[v].speaker || v, team_member: speakTime[v].team_member })));
+      speakTime[i].team_member = 0;
+      if (speakTime[i].speaker) {
+        console.log('speakTime[i].speaker', speakTime[i].speaker)
+        console.log('team_id  ', `select team_id from team_user where user_id = (select user_id from recording where id = ${id})`)
+        const team_id = await client.query(`select team_id from team_user where user_id = (select user_id from recording where id = ${id})`);
+        if (team_id[0]) {
+          const id = await client.query(`select id from user where id in (select user_id
+            from team_user
+            where team_id = ${team_id[0].team_id}) and gDisplayName = '${speakTime[i].speaker}';`)
+          console.log('user_id   ', `select id from user where id in (select user_id
+              from team_user
+              where team_id = ${team_id[0].team_id}) and gDisplayName = '${speakTime[i].speaker}';`, 'id', id, '\n\n\n')
+          if (id[0]) speakTime[i].team_member = 1;
+        } else {
+          const team = await client.query(`select id from user where id = (select user_id from recording where id = ${id}) and gDisplayName = '${speakTime[i].speaker}';`)
+          if (team[0]) speakTime[i].team_member = 1;
+        }
+      }
+    }
+    await dialogFlowLogic(lines);
+    return true
+    const speakerIds = await this.options.app.service('speaker').create(speakers.map(v => ({ name: speakTime[v].speaker || v, team_member: speakTime[v].team_member })));
 
-    // await this.options.app.service('question')._remove(null, {
-    //   query: {
-    //     recording_id: id
-    //   }
+    await this.options.app.service('question')._remove(null, {
+      query: {
+        recording_id: id
+      }
 
-    // });
-    // await this.options.app.service('answer')._remove(null, {
-    //   query: {
-    //     recording_id: id
-    //   }
+    });
+    await this.options.app.service('answer')._remove(null, {
+      query: {
+        recording_id: id
+      }
 
-    // });
+    });
     await dialogFlowLogic(this.options.app, lines, speakers, [], id);
-    return []
+
     const insertData = lines.map(l => {
       const speakerIdx = speakers.findIndex(v => v === l.speaker);
       return {
