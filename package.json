@@ -31,6 +31,7 @@
     "test": "yarn run eslint && NODE_ENV= yarn run mocha",
     "eslint": "eslint src/. test/. --config .eslintrc.json",
     "dev": "NODE_ENV=dev nodemon src/",
+    "prod": "NODE_ENV=prod nodemon src/",
     "start": "node src/",
     "mocha": "mocha test/ --recursive --exit"
   },
