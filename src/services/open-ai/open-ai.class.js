@@ -89,7 +89,7 @@ class Service {
       if(_.includes(_.lowerCase(intent), 'spend categories')) {
         if (openAITracking.itemCount >= 6) {
           openAIPromise.push(postAxios(buildOpenAIBody(openAITracking.prompt)));
-          openAITracking.push({
+          openAITracking.arr.push({
             time: openAITracking.promptTime * 1 || 0,
             question: openAITracking.prompt,
             intent: openAITracking.intent
