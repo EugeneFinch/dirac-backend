@@ -44,7 +44,8 @@ module.exports.comparingKeywordRecapConfig = async ({ textToAnalyze, keywordCrit
   let isQuestion = true;
   const fakeGoogleDialogResponse = {
     intent: {
-      displayName: 'Spend Categories'
+      displayName: '',
+      code: 2
     }
   }
 
@@ -52,6 +53,9 @@ module.exports.comparingKeywordRecapConfig = async ({ textToAnalyze, keywordCrit
     for (let kw of keywordCriteria[kwKey]) {
       if (textToAnalyze.includes(kw)) {
         const codeRecapConfig = kwKey[kwKey.length - 1];  // 0,1,3
+
+        fakeGoogleDialogResponse.intent.code = codeRecapConfig;
+        fakeGoogleDialogResponse.intent.displayName = kwKey.toString().split("-").join(" ").slice(0, -1);
 
         console.log('test new logic: ' + JSON.stringify({
           dbKey: kwKey,
@@ -61,13 +65,8 @@ module.exports.comparingKeywordRecapConfig = async ({ textToAnalyze, keywordCrit
         }))
 
         switch (codeRecapConfig) {
-          case '0': { // answer .
+          case '0', '3': { // answer or take next 5-6 para
             isQuestion = false;
-            break;
-          }
-
-          case '1': { // question
-            fakeGoogleDialogResponse.intent.displayName = kwKey.toString().split("-").join(" ").slice(0, -1);
             break;
           }
 
