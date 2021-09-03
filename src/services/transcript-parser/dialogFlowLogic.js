@@ -22,7 +22,7 @@ const answer = async (app, data, context, speakers, speakerIds, id, qId, keyword
 
   console.log('test new logic: is answering: ' + JSON.stringify(data));
 
-  if ((env === 'prod' && !isQuestion) || answer && answer.queryText) {
+  if (answer && (answer.intent.displayName || answer.queryText)) {
     const speakerIdx = speakers.findIndex(v => v === data.speaker);
     await app.service('answer').create({
       speaker_id: get(speakerIds, `${speakerIdx}.id`),
@@ -30,7 +30,7 @@ const answer = async (app, data, context, speakers, speakerIds, id, qId, keyword
       question_id: qId,
       answer: str,
       intent: answer.intent.displayName,
-      intent_info: answer,
+      intent_info: env === 'prod' ? answer.intent.code : answer,
       start_time: data.start_time,
       end_time: data.end_time,
     });
@@ -79,7 +79,7 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
         }) : dialogFlow(textToAnalyze));
 
         console.log('test new logic: is questioning: ' + JSON.stringify(data[i]));
-        if (env === 'prod' || (response && response.queryText)) {
+        if (response && (response.intent.displayName || response.queryText)) {
           const speakerIdx = speakers.findIndex(v => v === data[i].speaker);
 
           const qId = await app.service('question').create({
@@ -87,7 +87,7 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
             recording_id: id,
             question: questionsData[question],
             intent: response.intent.displayName,
-            intent_info: response,
+            intent_info: env === 'prod' ? response.intent.code : response,
             start_time: data[i].start_time,
             end_time: data[i].end_time,
           })
@@ -126,7 +126,7 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
 
 
         console.log('test new logic: is questioning: ' + JSON.stringify(data[i]));
-        if (env === 'prod' || response && response.queryText) {
+        if (response && (response.intent.displayName || response.queryText)) {
           const speakerIdx = speakers.findIndex(v => v === data[i].speaker);
 
           const qId = await app.service('question').create({
@@ -134,7 +134,7 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
             recording_id: id,
             question: str.toString().trim(),
             intent: response.intent.displayName,
-            intent_info: response,
+            intent_info: env === 'prod' ? response.intent.code : response,
             start_time: data[i].start_time,
             end_time: data[i].end_time,
           });

@@ -84,9 +84,11 @@ class Service {
     }
 
     for (let [i, item] of questions.entries()) {
-      const { question, intent, answer, start_time: time } = item;
+      const { question, intent, answer, start_time: time, intent_code } = item;
 
-      if(_.includes(_.lowerCase(intent), 'spend categories')) {
+      if (_.includes(_.lowerCase(intent), 'spend categories') || intent_code === '3') {
+        console.log('test new logic intent code = 3: ' + JSON.stringify(item));
+
         if (openAITracking.itemCount >= 6) {
           openAIPromise.push(postAxios(buildOpenAIBody(openAITracking.prompt)));
           openAITracking.arr.push({
