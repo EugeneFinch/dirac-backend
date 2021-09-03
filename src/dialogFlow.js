@@ -51,7 +51,7 @@ module.exports.comparingKeywordRecapConfig = async ({ textToAnalyze, keywordCrit
 
   for (let kwKey in keywordCriteria) {
     for (let kw of keywordCriteria[kwKey]) {
-      if (textToAnalyze.includes(kw)) {
+      if (kw.includes(textToAnalyze)) {
         const codeRecapConfig = kwKey[kwKey.length - 1];  // 0,1,3
 
         fakeGoogleDialogResponse.intent.code = codeRecapConfig;
