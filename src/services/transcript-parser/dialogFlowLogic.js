@@ -21,6 +21,7 @@ const answer = async (app, data, context, speakers, speakerIds, id, qId, keyword
   }) : dialogFlow(str, context));
 
   console.log('test new logic: is answering: ' + JSON.stringify(data));
+  console.log('test new logic response: ' + JSON.stringify(answer));
 
   if (answer && (answer.intent.displayName || answer.queryText)) {
     const speakerIdx = speakers.findIndex(v => v === data.speaker);
@@ -78,7 +79,9 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
           keywordCriteria
         }) : dialogFlow(textToAnalyze));
 
-        console.log('test new logic: is questioning: ' + JSON.stringify(data[i]));
+        console.log('test new logic is questioning: ' + JSON.stringify(data[i]));
+        console.log('test new logic response: ' + JSON.stringify(response));
+
         if (response && (response.intent.displayName || response.queryText)) {
           const speakerIdx = speakers.findIndex(v => v === data[i].speaker);
 
@@ -126,6 +129,8 @@ const DFLogic = async (app, data, speakers, speakerIds, id) => {
 
 
         console.log('test new logic: is questioning: ' + JSON.stringify(data[i]));
+        console.log('test new logic response: ' + JSON.stringify(response));
+
         if (response && (response.intent.displayName || response.queryText)) {
           const speakerIdx = speakers.findIndex(v => v === data[i].speaker);
 
