@@ -14,7 +14,7 @@ const answer = async (app, data, context, speakers, speakerIds, id, qId, keyword
     str.shift();
   }
 
-  textToAnalyze = str.toString();
+  const textToAnalyze = str.toString() === '[]' ? '' : str.toString();
   const [answer, isQuestion] = await (env === 'prod' ? dialogFlow.comparingKeywordRecapConfig({
     textToAnalyze,
     keywordCriteria

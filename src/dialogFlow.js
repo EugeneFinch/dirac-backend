@@ -38,7 +38,7 @@ module.exports = async function init(question, contexts = []) {
   catch (e) {
     //console.log(e)
   }
-}
+};
 
 module.exports.comparingKeywordRecapConfig = async ({ textToAnalyze, keywordCriteria }) => {
   let isQuestion = true;
@@ -47,7 +47,7 @@ module.exports.comparingKeywordRecapConfig = async ({ textToAnalyze, keywordCrit
       displayName: '',
       code: 2
     }
-  }
+  };
 
   for (let kwKey in keywordCriteria) {
     for (let kw of keywordCriteria[kwKey]) {
@@ -62,7 +62,7 @@ module.exports.comparingKeywordRecapConfig = async ({ textToAnalyze, keywordCrit
           isQuestion,
           textToAnalyze,
           dbString: kw
-        }))
+        }));
 
         switch (codeRecapConfig) {
           case '0', '3': { // answer or take next 5-6 para
